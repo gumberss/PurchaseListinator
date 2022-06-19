@@ -25,6 +25,7 @@
                 (pedestal/new-pedestal)
                 [:service-map :mongo :datomic])))
 
+; Put this configs to a .env file
 (def system-config
   {:env :prod
    :web-server {:port 8890
