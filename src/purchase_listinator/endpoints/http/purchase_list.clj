@@ -1,10 +1,13 @@
-(ns purchase-listinator.endpoints.http.purchase-list)
+(ns purchase-listinator.endpoints.http.purchase-list
+  (:require [taoensso.carmine :as car]))
 
 
 (defn namesss
-  [request]
+  [{{ {:keys [connection]} :redis} :component}]
   {:status 200
-   :body   {:oi :lala}})
+   :body   {:oi (try (car/wcar connection (car/get "lala"))
+                     (catch Exception e
+                       (println e)))}})
 
 (def routes
   #{["/greet" :get [namesss] :route-name :greet]
