@@ -2,10 +2,12 @@
   (:require [com.stuartsierra.component :as component]
             [io.pedestal.http :as http]
             [purchase-listinator.endpoints.http.purchase-list :as http.purchases-lists]
-            [io.pedestal.http.body-params :as body-params]))
+            [io.pedestal.http.body-params :as body-params]
+            [purchase-listinator.misc.pedestal :as misc.pedestal]))
 
 (def all-routes
   (set (concat http.purchases-lists/routes)))
+
 
 (defn test?
   [service-map]
@@ -20,6 +22,7 @@
 
 (defn interceptors [components]
   [(body-params/body-params)
+   misc.pedestal/coerce-body
    (inject-component components)])
 
 (defn include-interceptors
