@@ -1,12 +1,11 @@
 (ns purchase-listinator.components.pedestal
   (:require [com.stuartsierra.component :as component]
             [io.pedestal.http :as http]
-            [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
-            [io.pedestal.http.body-params :as body-params]
-            [io.pedestal.interceptor.error :as err-interceptor]))
+            [purchase-listinator.endpoints.http.purchase-list :as http.purchases-lists]
+            [io.pedestal.http.body-params :as body-params]))
 
 (def all-routes
-  (set (concat http.purchase-list/routes)))
+  (set (concat http.purchases-lists/routes)))
 
 (defn test?
   [service-map]
