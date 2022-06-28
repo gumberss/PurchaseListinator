@@ -1,5 +1,6 @@
 (ns purchase-listinator.misc.pedestal
-  (:require  [clojure.data.json :as json]))
+  (:require  [clojure.data.json :as json]
+             [camel-snake-kebab.core :as csk]))
 
 (defn accepted-type
   [context]
@@ -11,7 +12,7 @@
     "text/html"        body
     "text/plain"       body
     "application/edn"  (pr-str body)
-    "application/json" (json/write-str body)))
+    "application/json" (json/write-str body  :key-fn csk/->camelCaseString)))
 
 (defn coerce-to
   [response content-type]
@@ -19,10 +20,10 @@
       (update :body transform-content content-type)
       (assoc-in [:headers "Content-Type"] content-type)))
 
-(def coerce-body
+(def coerce-out-body-content-type
   {:name ::coerce-body
    :leave
    (fn [context]
      (cond-> context
-             (nil? (get-in context [:response :headers "Content-Type"]))                    ;; <1>
+             (nil? (get-in context [:response :headers "Content-Type"]))
              (update-in [:response] coerce-to (accepted-type context))))})

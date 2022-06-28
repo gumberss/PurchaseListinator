@@ -8,7 +8,6 @@
 (def all-routes
   (set (concat http.purchases-lists/routes)))
 
-
 (defn test?
   [service-map]
   (= :test (:env service-map)))
@@ -20,9 +19,14 @@
   {:name  :component-injector
    :enter (partial assoc-component component)})
 
+(def logger
+  {:name  :camel-case-converter
+   :leave (fn [context]
+            (println context))})
+
 (defn interceptors [components]
   [(body-params/body-params)
-   misc.pedestal/coerce-body
+   misc.pedestal/coerce-out-body-content-type
    (inject-component components)])
 
 (defn include-interceptors
