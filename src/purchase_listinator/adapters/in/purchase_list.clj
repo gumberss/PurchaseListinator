@@ -3,5 +3,5 @@
   (:import (java.util UUID)))
 
 (s/defn wire->internal
-  [{:keys [id] :as wire}]
-  (assoc wire :id (UUID/fromString id)))
+  [wire]
+  wire)

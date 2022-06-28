@@ -1,9 +1,10 @@
 (ns purchase-listinator.logic.purchase-list
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [purchase-listinator.misc.general :as misc.general]))
 
 (s/defn fill-default-creation-values
   [purchase-list]
   (assoc purchase-list
-    ;:id (random-uuid)
+    :id (misc.general/squuid)
     :enabled true
     :products []))

@@ -24,7 +24,6 @@
                                 :body   {}}
   [{{:keys [datomic]} :component
     :keys             [json-params]}]
-
   {:status 200
    :body (-> (adapter.in/wire->internal json-params)
              (flows.purchase-list/create-list datomic))})

@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-list :as adapter.purchase-list]))
-
+(d/squuid)
 (def schema
   [{:db/ident       :purchase-list/id
     :db/valueType   :db.type/uuid
@@ -28,10 +28,11 @@
 
 (s/defn get-enabled
   [{:keys [connection]}]
-  (d/q '[:find [(pull ?e [*]) ...]
-         :where
-         [?e :purchase-list/enabled true]]
-       (d/db connection)))
+  (->> (d/q '[:find [(pull ?e [*]) ...]
+             :where
+             [?e :purchase-list/enabled true]]
+           (d/db connection))
+      (map adapter.purchase-list/db->internal)))
 
 (s/defn create
   [purchase-list {:keys [connection]}]
