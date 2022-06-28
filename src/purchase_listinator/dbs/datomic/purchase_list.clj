@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-list :as adapter.purchase-list]))
-(d/squuid)
+
 (def schema
   [{:db/ident       :purchase-list/id
     :db/valueType   :db.type/uuid

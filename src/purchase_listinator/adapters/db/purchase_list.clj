@@ -3,7 +3,6 @@
             [purchase-listinator.misc.general :as misc.general]
             [purchase-listinator.misc.datomic :as misc.datomic]))
 
-
 (s/defn internal->db [internal]
   (-> internal
       (misc.general/namespace-keys :purchase-list)))

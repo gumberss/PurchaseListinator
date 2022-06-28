@@ -1,12 +1,12 @@
 (ns purchase-listinator.components.pedestal
   (:require [com.stuartsierra.component :as component]
             [io.pedestal.http :as http]
-            [purchase-listinator.endpoints.http.purchase-list :as http.purchases-lists]
+            [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
             [io.pedestal.http.body-params :as body-params]
             [purchase-listinator.misc.pedestal :as misc.pedestal]))
 
 (def all-routes
-  (set (concat http.purchases-lists/routes)))
+  (set (concat http.purchase-list/routes)))
 
 (defn test?
   [service-map]
@@ -18,11 +18,6 @@
 (defn inject-component [component]
   {:name  :component-injector
    :enter (partial assoc-component component)})
-
-(def logger
-  {:name  :camel-case-converter
-   :leave (fn [context]
-            (println context))})
 
 (defn interceptors [components]
   [(body-params/body-params)
