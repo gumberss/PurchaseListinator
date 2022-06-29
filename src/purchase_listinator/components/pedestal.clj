@@ -3,7 +3,7 @@
             [io.pedestal.http :as http]
             [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
             [io.pedestal.http.body-params :as body-params]
-            [io.pedestal.interceptor.error :as err-interceptor]))
+            [purchase-listinator.misc.pedestal :as misc.pedestal]))
 
 (def all-routes
   (set (concat http.purchase-list/routes)))
@@ -21,6 +21,7 @@
 
 (defn interceptors [components]
   [(body-params/body-params)
+   misc.pedestal/coerce-out-body-content-type
    (inject-component components)])
 
 (defn include-interceptors

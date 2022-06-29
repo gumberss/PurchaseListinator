@@ -1,18 +1,12 @@
 (ns purchase-listinator.components.datomic
   (:require [com.stuartsierra.component :as component]
-            [datomic.api :as d]))
+            [datomic.api :as d]
+            [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]))
 
 (def db-uri "datomic:free://localhost:4334/datomic-component?password=datomic")
 (d/create-database db-uri)
 
-(def schema [{:db/ident :person/id
-              :db/valueType :db.type/uuid
-              :db/cardinality :db.cardinality/one
-              :db/unique      :db.unique/identity}
-             {:db/ident       :person/name
-              :db/valueType   :db.type/string
-              :db/cardinality :db.cardinality/one
-              :db/doc         "The name"}])
+(def schema (conj datomic.purchase-list/schema))
 
 (defn create-schema [conn]
   (d/transact conn schema))
