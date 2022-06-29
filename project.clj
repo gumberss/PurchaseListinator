@@ -16,5 +16,6 @@
                  [com.taoensso/carmine "3.1.0"]
                  [prismatic/schema "1.3.0"]
                  [org.clojure/data.json "2.4.0"]
-                 [camel-snake-kebab "0.4.3"]]
+                 [camel-snake-kebab "0.4.3"]
+                 [funcool/cats "2.2.0"]]
   :repl-options {:init-ns purchase-listinator.core})
