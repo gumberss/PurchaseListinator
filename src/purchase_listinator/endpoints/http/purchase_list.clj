@@ -26,7 +26,9 @@
 
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   out.purchases-lists/PurchaseList}
-  [{{:keys [datomic]} :component}]
+  [{{:keys [datomic]} :component
+    :keys             [json-params]}]
+  (println json-params)
   (branch (flows.purchase-list/get-lists datomic)
           ->Error
           ->Success))
