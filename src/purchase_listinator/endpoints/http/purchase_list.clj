@@ -13,12 +13,12 @@
                      (catch Exception e
                        (println e)))}})
 
-(s/defn ->200
+(s/defn ->Success
   [data]
   {:status 200
    :body   data})
 
-(s/defn ->500
+(s/defn ->Error
   [{:keys [status body] :as err}]
   (println err)
   {:status (or status 500)
@@ -28,8 +28,8 @@
                                :body   out.purchases-lists/PurchaseList}
   [{{:keys [datomic]} :component}]
   (branch (flows.purchase-list/get-lists datomic)
-          ->500
-          ->200))
+          ->Error
+          ->Success))
 
 (s/defn post-purchase-lists :- {:status s/Int
                                 :body   {}}
@@ -37,8 +37,8 @@
     :keys             [json-params]}]
   (branch (-> (adapter.in/wire->internal json-params)
               (flows.purchase-list/create-list datomic))
-          ->500
-          ->200))
+          ->Error
+          ->Success))
 
 (def routes
   #{["/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]

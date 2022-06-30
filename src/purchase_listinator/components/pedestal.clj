@@ -3,7 +3,8 @@
             [io.pedestal.http :as http]
             [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
             [io.pedestal.http.body-params :as body-params]
-            [purchase-listinator.misc.pedestal :as misc.pedestal]))
+            [purchase-listinator.misc.pedestal :as misc.pedestal]
+            [camel-snake-kebab.core :as csk]))
 
 (def all-routes
   (set (concat http.purchase-list/routes)))
@@ -20,8 +21,9 @@
    :enter (partial assoc-component component)})
 
 (defn interceptors [components]
-  [(body-params/body-params)
-   misc.pedestal/coerce-out-body-content-type
+  [(body-params/body-params
+     (body-params/default-parser-map :json-options {:key-fn csk/->kebab-case-keyword}))
+   misc.pedestal/coerce-body-content-type
    (inject-component components)])
 
 (defn include-interceptors
