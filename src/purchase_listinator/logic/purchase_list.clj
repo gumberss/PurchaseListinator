@@ -7,4 +7,5 @@
   (assoc purchase-list
     :id (misc.general/squuid)
     :enabled true
+    :in-progress false
     :products []))
