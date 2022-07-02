@@ -15,6 +15,7 @@
     :service-map {:env         (:env config)
                   ::http/type  :jetty
                   ::http/port  (get-in config [:web-server :port])
+                  ::http/host (get-in config [:web-server :host])
                   ::http/join? false}
     :redis (component/using (redis/new-Redis) [:config])
     :mongo (component/using (mongo/new-mongo) [:config])
@@ -24,8 +25,8 @@
 ; Put this configs to a .env file
 (def system-config
   {:env        :prod
-   :web-server {:port 8890
-                :host "localhost"}
+   :web-server {:port 5150
+                :host "192.168.1.100"}
    :mongo      {:port    27017
                 :host    "localhost"
                 :db-name "monger-test"}
