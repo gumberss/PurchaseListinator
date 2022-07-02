@@ -17,6 +17,10 @@
     :db/valueType   :db.type/boolean
     :db/cardinality :db.cardinality/one
     :db/doc         "Disable if purchase-list is deleted"}
+   {:db/ident       :purchase-list/in-progress
+    :db/valueType   :db.type/boolean
+    :db/cardinality :db.cardinality/one
+    :db/doc         "If true, someone is buying the itens in this list"}
    {:db/ident       :purchase-list/products
     :db/valueType   :db.type/ref
     :db/cardinality :db.cardinality/many
@@ -33,6 +37,16 @@
              [?e :purchase-list/enabled true]]
            (d/db connection))
       (map adapter.purchase-list/db->internal)))
+
+
+
+(s/defn get-enabled-range
+  [{:keys [connection]}]
+  (->> (d/q '[:find [(pull ?e [*]) ...]
+              :where
+              [?e :purchase-list/enabled true]]
+            (d/db connection))
+       (map adapter.purchase-list/db->internal)))
 
 (s/defn create
   [purchase-list {:keys [connection]}]

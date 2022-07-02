@@ -41,8 +41,8 @@
           ->Success))
 
 (def routes
-  #{["/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
-    ["/purchases/lists" :post [post-purchase-lists] :route-name :post-purchases-lists]
+  #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
+    ["/api/purchases/lists" :post [post-purchase-lists] :route-name :post-purchases-lists]
     ["/name" :post [namesss] :route-name :name]
     ["/name" :get [namesss] :route-name :get-name]
     ["/name" :put [namesss] :route-name :put-name]})
