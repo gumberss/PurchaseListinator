@@ -39,6 +39,13 @@
        (sort-by :purchase-list/name)
       (map adapter.purchase-list/db->internal)))
 
+(s/defn get-enabled-range
+  [{:keys [connection]}]
+  (->> (d/q '[:find [(pull ?e [*]) ...]
+              :where
+              [?e :purchase-list/enabled true]]
+            (d/db connection))
+       (map adapter.purchase-list/db->internal)))
 
 (s/defn create
   [purchase-list {:keys [connection]}]
