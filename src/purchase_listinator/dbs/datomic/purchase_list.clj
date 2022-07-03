@@ -36,8 +36,8 @@
              :where
              [?e :purchase-list/enabled true]]
            (d/db connection))
-      (map adapter.purchase-list/db->internal)
-       (sort-by :name)))
+       (sort-by :purchase-list/name)
+      (map adapter.purchase-list/db->internal)))
 
 
 (s/defn create
