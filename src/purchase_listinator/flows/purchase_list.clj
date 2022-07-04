@@ -8,7 +8,7 @@
   [datomic]
   (try-either (datomic.purchase-list/get-enabled datomic)))
 
-(s/defn create-list [purchase-list datomic]
+(s/defn create-list [{:keys [name]} datomic]
   (try-either
-    (-> (logic.purchase-list/fill-default-creation-values purchase-list)
+    (-> (logic.purchase-list/generate-new name)
         (datomic.purchase-list/create datomic))))
