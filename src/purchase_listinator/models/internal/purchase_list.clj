@@ -2,14 +2,17 @@
   (:require [schema.core :as s]))
 
 (def product-skeleton
-  {:id   {:schema s/Uuid :required false}
-   :name {:schema s/Str :required true}})
+  {:id   s/Uuid
+   :name s/Str})
 (s/defschema Product product-skeleton)
 (s/defschema Products [Product])
 
 (def purchase-list-skeleton
-  {:id          {:schema s/Uuid :required false}
-   :enabled     {:schema s/Bool :required true}
-   :in-progress {:schema s/Bool :required true}
-   :products    {:schema Products :required true}})
-(s/defschema  PurchaseList purchase-list-skeleton)
+  {:id          s/Uuid
+   :name        s/Str
+   :enabled     s/Bool
+   :in-progress s/Bool
+   :products    Products})
+(s/defschema PurchaseList purchase-list-skeleton)
+
+
