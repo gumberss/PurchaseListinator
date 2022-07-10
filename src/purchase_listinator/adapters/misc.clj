@@ -1,4 +1,4 @@
-(ns purchase-listinator.misc
+(ns purchase-listinator.adapters.misc
   (:require [schema.core :as s])
   (:import (java.util UUID)))
 

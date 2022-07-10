@@ -45,3 +45,9 @@
        (transact connection))
   purchase-list)
 
+(s/defn disable
+  [id :- s/Uuid
+   {:keys [connection]}]
+  (->> {:purchase-list/id      id
+        :purchase-list/enabled false}
+       (transact connection)))
