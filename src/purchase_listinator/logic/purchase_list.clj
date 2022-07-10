@@ -10,3 +10,7 @@
                        :in-progress false
                        :products    []}]
     (assoc purchase-list :name name)))
+
+(s/defn disabled?
+  [{:keys [enabled]} :- internal.purchase-list/PurchaseList]
+  (not enabled))
