@@ -14,16 +14,18 @@
                      (catch Exception e
                        (println e)))}})
 
-(s/defn ->Success
-  [data]
-  {:status 200
-   :body   data})
-
 (s/defn ->Error
   [{:keys [status error] :as err}]
   (println err)
   {:status (or status 500)
    :body   (or error err)})
+
+(s/defn ->Success
+  [data]
+  (if (left? data)
+    (->Error data)
+    {:status 200
+     :body   data}))
 
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   out.purchases-lists/PurchaseList}
@@ -42,13 +44,13 @@
           ->Success))
 
 (s/defn disable-purchase-lists :- {:status s/Int
-                                  :body   {}}
+                                   :body   {}}
   [{{:keys [datomic]} :component
-    {id :id} :path-params}]
+    {id :id}          :path-params}]
   (branch (-> (adapters.misc/string->uuid id)
-                (flows.purchase-list/disable-list datomic))
-            ->Error
-            ->Success))
+              (flows.purchase-list/disable-list datomic))
+          ->Error
+          ->Success))
 
 (def routes
   #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
