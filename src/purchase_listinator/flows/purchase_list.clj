@@ -12,3 +12,7 @@
   (try-either
     (-> (logic.purchase-list/generate-new name)
         (datomic.purchase-list/create datomic))))
+
+(s/defn disable-list
+  [id datomic]
+  (try-either (datomic.purchase-list/disable id datomic)))
