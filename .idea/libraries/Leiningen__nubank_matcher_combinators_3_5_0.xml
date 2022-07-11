@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: nubank/matcher-combinators:3.5.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/nubank/matcher-combinators/3.5.0/matcher-combinators-3.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

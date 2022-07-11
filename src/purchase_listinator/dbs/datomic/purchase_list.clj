@@ -33,12 +33,22 @@
 (s/defn get-enabled
   [{:keys [connection]}]
   (->> (d/q '[:find [(pull ?e [*]) ...]
-             :where
-             [?e :purchase-list/enabled true]]
-           (d/db connection))
+              :where
+              [?e :purchase-list/enabled true]]
+            (d/db connection))
        (sort-by :purchase-list/name)
-      (map adapter.purchase-list/db->internal)))
+       (map adapter.purchase-list/db->internal)))
 
+(s/defn get-by-name
+  [name
+   {:keys [connection]}]
+  (->> (d/q '[:find (pull ?e [*])
+              :in $ ?name
+              :where
+              [?e :purchase-list/name ?name]]
+            (d/db connection) name)
+       ffirst
+       adapter.purchase-list/db->internal))
 
 (s/defn create
   [purchase-list {:keys [connection]}]
@@ -46,3 +56,16 @@
        (transact connection))
   purchase-list)
 
+(s/defn disable
+  [id :- s/Uuid
+   {:keys [connection]}]
+  (->> {:purchase-list/id      id
+        :purchase-list/enabled false}
+       (transact connection)))
+
+(s/defn enable
+  [id :- s/Uuid
+   {:keys [connection]}]
+  (->> {:purchase-list/id      id
+        :purchase-list/enabled true}
+       (transact connection)))
