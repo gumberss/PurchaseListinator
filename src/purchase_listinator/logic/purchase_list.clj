@@ -11,6 +11,21 @@
                        :products    []}]
     (assoc purchase-list :name name)))
 
-(s/defn disabled?
+(s/defn changed?
+  [existent :- internal.purchase-list/PurchaseList
+   new :- internal.purchase-list/PurchaseList]
+  (not= (:name existent) (:name new)))
+
+(s/defn edit
+  [existent :- internal.purchase-list/PurchaseList
+   {:keys [name]} :- internal.purchase-list/PurchaseList]
+  (assoc existent :name name))
+
+(s/defn enabled?
   [{:keys [enabled]} :- internal.purchase-list/PurchaseList]
-  (not enabled))
+  enabled)
+
+(s/defn disabled?
+  [purchase-list :- internal.purchase-list/PurchaseList]
+  (not (enabled? purchase-list)))
+

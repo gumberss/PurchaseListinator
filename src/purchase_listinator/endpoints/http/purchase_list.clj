@@ -36,10 +36,10 @@
 
 (s/defn post-purchase-lists :- {:status s/Int
                                 :body   {}}
-  [{{:keys [datomic]} :component
-    :keys             [json-params]}]
-  (branch (-> (adapter.in.purchase-list/wire->internal json-params)
-              (flows.purchase-list/create-list datomic))
+  [{{datomic :datomic} :component
+    wire               :json-params}]
+  (branch (-> (adapter.in.purchase-list/wire->internal wire)
+              (flows.purchase-list/create datomic))
           ->Error
           ->Success))
 
@@ -48,13 +48,23 @@
   [{{:keys [datomic]} :component
     {id :id}          :path-params}]
   (branch (-> (adapters.misc/string->uuid id)
-              (flows.purchase-list/disable-list datomic))
+              (flows.purchase-list/disable datomic))
+          ->Error
+          ->Success))
+
+(s/defn edit-purchase-lists :- {:status s/Int
+                                :body   {}}
+  [{{datomic :datomic} :component
+    wire        :json-params}]
+  (branch (-> (adapter.in.purchase-list/wire->internal wire)
+              (flows.purchase-list/edit datomic))
           ->Error
           ->Success))
 
 (def routes
   #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
     ["/api/purchases/lists" :post [post-purchase-lists] :route-name :post-purchases-lists]
+    ["/api/purchases/lists" :put [edit-purchase-lists] :route-name :edit-purchases-lists]
     ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
     ["/name" :post [namesss] :route-name :name]
     ["/name" :get [namesss] :route-name :get-name]

@@ -40,17 +40,29 @@
        (map adapter.purchase-list/db->internal)))
 
 (s/defn get-by-name
-  [name
+  [name :- s/Str
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [*])
               :in $ ?name
               :where
+              [?e :purchase-list/enabled true]
               [?e :purchase-list/name ?name]]
             (d/db connection) name)
        ffirst
        adapter.purchase-list/db->internal))
 
-(s/defn create
+(s/defn get-by-id
+  [id :- s/Uuid
+   {:keys [connection]}]
+  (->> (d/q '[:find (pull ?e [*])
+              :in $ ?id
+              :where
+              [?e :purchase-list/id ?id]]
+            (d/db connection) id)
+       ffirst
+       adapter.purchase-list/db->internal))
+
+(s/defn upsert
   [purchase-list {:keys [connection]}]
   (->> (adapter.purchase-list/internal->db purchase-list)
        (transact connection))
