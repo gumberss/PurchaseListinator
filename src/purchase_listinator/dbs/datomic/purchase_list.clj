@@ -71,9 +71,10 @@
 (s/defn disable
   [id :- s/Uuid
    {:keys [connection]}]
-  (->> {:purchase-list/id      id
-        :purchase-list/enabled false}
-       (transact connection)))
+  (let [wire {:purchase-list/id      id
+           :purchase-list/enabled false}]
+    (transact connection wire)
+    (adapter.purchase-list/db->internal wire)))
 
 (s/defn enable
   [id :- s/Uuid
