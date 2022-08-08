@@ -4,15 +4,7 @@
             [purchase-listinator.flows.purchase-list :as flows.purchase-list]
             [purchase-listinator.adapters.in.purchase-list :as adapter.in.purchase-list]
             [purchase-listinator.adapters.misc :as adapters.misc]
-            [taoensso.carmine :as car]
             [cats.monad.either :refer :all]))
-
-(defn namesss
-  [{{{:keys [connection]} :redis} :component}]
-  {:status 200
-   :body   {:oi (try (car/wcar connection (car/get "lala"))
-                     (catch Exception e
-                       (println e)))}})
 
 (s/defn ->Error
   [{:keys [status error] :as err}]
@@ -65,7 +57,4 @@
   #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
     ["/api/purchases/lists" :post [post-purchase-lists] :route-name :post-purchases-lists]
     ["/api/purchases/lists" :put [edit-purchase-lists] :route-name :edit-purchases-lists]
-    ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
-    ["/name" :post [namesss] :route-name :name]
-    ["/name" :get [namesss] :route-name :get-name]
-    ["/name" :put [namesss] :route-name :put-name]})
+    ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]})
