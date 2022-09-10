@@ -78,3 +78,4 @@
   (->> {:purchase-list/id      id
         :purchase-list/enabled true}
        (transact connection)))
+

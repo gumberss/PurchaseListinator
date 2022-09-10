@@ -4,4 +4,5 @@
 
 (s/defn string->uuid :- s/Uuid
 [uuid :- s/Str]
-  (UUID/fromString uuid))
+  (when uuid
+    (UUID/fromString uuid)))
