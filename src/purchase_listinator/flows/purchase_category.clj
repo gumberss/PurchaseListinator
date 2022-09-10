@@ -10,8 +10,9 @@
    datomic]
   (either/try-right
     (if-let [existent-category (datomic.purchase-category/get-by-id id datomic)]
+      (println existent-category)
       ; todo: check if there is other category from the same list with the same name
       ; if not, upsert
-      (left {:status 400
+      #_(left {:status 400
              :error  {:message "[[LIST_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
       (datomic.purchase-category/upsert category datomic))))
