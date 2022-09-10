@@ -10,6 +10,5 @@
       (is (match? {:id          uuid?
                    :name        "Most beautiful purchase list"
                    :enabled     true
-                   :in-progress false
-                   :products    []}
+                   :in-progress false}
                   (logic.purchase-list/generate-new "Most beautiful purchase list"))))))
