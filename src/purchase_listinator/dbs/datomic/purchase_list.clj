@@ -20,11 +20,7 @@
    {:db/ident       :purchase-list/in-progress
     :db/valueType   :db.type/boolean
     :db/cardinality :db.cardinality/one
-    :db/doc         "If true, someone is buying the itens in this list"}
-   {:db/ident       :purchase-list/products
-    :db/valueType   :db.type/ref
-    :db/cardinality :db.cardinality/many
-    :db/doc         "Purchase-list Product Items"}])
+    :db/doc         "If true, someone is buying the itens in this list"}])
 
 (s/defn ^:private transact
   [connection & purchases-lists]

@@ -22,11 +22,11 @@
     :datomic (component/using (datomic/new-datomic) [:config])
     :pedestal (component/using (pedestal/new-pedestal) [:service-map :redis :mongo :datomic])))
 
-; Put this configs to a .env file
+; Put this configs in the .env file
 (def system-config
   {:env        :prod
    :web-server {:port 5150
-                :host "192.168.1.100"}
+                :host "192.168.1.102"}
    :mongo      {:port    27017
                 :host    "localhost"
                 :db-name "monger-test"}

@@ -7,8 +7,7 @@
   [name :- s/Str]
   (let [purchase-list {:id          (misc.general/squuid)
                        :enabled     true
-                       :in-progress false
-                       :products    []}]
+                       :in-progress false}]
     (assoc purchase-list :name name)))
 
 (s/defn changed?
