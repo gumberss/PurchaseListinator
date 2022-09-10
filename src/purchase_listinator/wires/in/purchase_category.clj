@@ -5,7 +5,7 @@
   {:name             s/Str
    :id               s/Str
    :order-position   s/Int
-   :color            s/Str
+   :color            s/Int
    :purchase-list-id s/Str})
 (s/defschema PurchaseCategory purchase-category-skeleton)
 (s/defschema PurchaseCategories [PurchaseCategory])

@@ -18,7 +18,7 @@
     :db/cardinality :db.cardinality/one
     :db/doc         "The purchase-category order postion"}
    {:db/ident       :purchase-category/color
-    :db/valueType   :db.type/string
+    :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
     :db/doc         "The purchase-category color"}
    {:db/ident       :purchase-category/purchase-list
@@ -29,10 +29,22 @@
   [connection & purchases-categories]
   @(d/transact connection purchases-categories))
 
+
+(s/defn categories-count
+  [purchase-list-id :- s/Uuid
+   {:keys [connection]}]
+  (-> (d/q '[:find (count ?e)
+             :in $ ?purchase-list-id
+             :where
+             [?purchase-list :purchase-list/id ?purchase-list-id]
+             [?e :purchase-category/purchase-list ?purchase-list]]
+           (d/db connection) purchase-list-id)
+      ffirst))
+
 (s/defn get-by-id
   [id :- s/Uuid
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?e [* {:purchase-category/purchase-list [*]}] )
+  (->> (d/q '[:find (pull ?e [* {:purchase-category/purchase-list [*]}])
               :in $ ?id
               :where
               [?e :purchase-category/id ?id]]

@@ -33,8 +33,9 @@
                                 :body   {}}
   [{{datomic :datomic} :component
     wire               :json-params}]
-  (branch (-> (adapters.in.purchase-list/wire->internal wire)
-              (flows.purchase-list/create datomic))
+  (branch (misc.either/try-right
+            (-> (adapters.in.purchase-list/wire->internal wire)
+                (flows.purchase-list/create datomic)))
           ->Error
           ->Success))
 
