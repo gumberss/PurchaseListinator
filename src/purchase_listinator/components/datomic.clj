@@ -10,8 +10,6 @@
 (def schema (concat datomic.purchase-list/schema
                     datomic.purchase-category/schema))
 
-
-
 (defn create-schema [conn]
   @(d/transact conn schema))
 

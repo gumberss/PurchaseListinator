@@ -32,7 +32,7 @@
 (s/defn get-by-id
   [id :- s/Uuid
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?e [*])
+  (->> (d/q '[:find (pull ?e [* {:purchase-category/purchase-list [*]}] )
               :in $ ?id
               :where
               [?e :purchase-category/id ?id]]

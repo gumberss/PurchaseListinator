@@ -4,7 +4,6 @@
 (def purchase-category-skeleton
   {:name             s/Str
    :id               s/Str
-   :quantity         s/Int
    :order-position   s/Int
    :color            s/Str
    :purchase-list-id s/Str})
