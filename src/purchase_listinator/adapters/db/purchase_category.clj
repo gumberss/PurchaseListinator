@@ -8,11 +8,11 @@
   [{:keys [purchase-list-id] :as internal} :- models.internal.purchase-category/PurchaseCategory]
   (-> internal
       (dissoc :purchase-list-id)
-      (assoc :purchase-list {:purchase-list/id purchase-list-id})
-      (misc.general/namespace-keys :purchase-category)))
+      (misc.general/namespace-keys :purchase-category)
+      (->> (assoc {} :purchase-list/id purchase-list-id
+                     :purchase-list/purchase-categories))))
 
 (s/defn db->internal :- models.internal.purchase-category/PurchaseCategory
-  [{{id :purchase-list/id} :purchase-category/purchase-list :as db-wire}]
+  [db-wire]
   (-> (misc.datomic/datomic->entity db-wire)
-      (misc.general/unnamespace-keys)
-      (assoc :purchase-list id)))
+      (misc.general/unnamespace-keys)))

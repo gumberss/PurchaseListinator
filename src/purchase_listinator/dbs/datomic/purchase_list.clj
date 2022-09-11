@@ -21,7 +21,10 @@
    {:db/ident       :purchase-list/in-progress
     :db/valueType   :db.type/boolean
     :db/cardinality :db.cardinality/one
-    :db/doc         "If true, someone is buying the itens in this list"}])
+    :db/doc         "If true, someone is buying the itens in this list"}
+   {:db/ident       :purchase-list/purchase-categories
+    :db/cardinality :db.cardinality/many
+    :db/valueType   :db.type/ref}])
 
 (s/defn ^:private transact
   [connection & purchases-lists]
@@ -82,13 +85,13 @@
 
 
 (s/defn get-management-data
-  [id :- s/Uuid
+  [purchase-list-id :- s/Uuid
    {:keys [connection]}]
-  (->> (d/q '[:find [(pull ?c [*]) ...]
+  (->> (d/q '[:find (pull ?e [*
+                              {:purchase-list/purchase-categories [*]}])
               :in $ ?id
               :where
-              [?e :purchase-list/id ?id]
-              [?c :purchase-category/purchase-list ?e]]
-            (d/db connection) id)
-       (println)
-       (adapters.db.purchase-list-management-data/db->internal)))
+              [?e :purchase-list/id ?id]]
+            (d/db connection) purchase-list-id)
+       ffirst
+       (adapters.db.purchase-list-management-data/db->internal purchase-list-id)))
