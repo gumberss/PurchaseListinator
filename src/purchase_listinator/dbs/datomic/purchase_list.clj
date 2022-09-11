@@ -90,7 +90,9 @@
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [*
-                              {:purchase-list/purchase-categories [*]}])
+                              {:purchase-list/purchase-categories [*]}
+                              {:purchase-list/purchase-items [*
+                                                              {:purchase-item/purchase-category [:purchase-category/id]}]}])
               :in $ ?id
               :where
               [?e :purchase-list/id ?id]]
