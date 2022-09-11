@@ -83,7 +83,6 @@
         :purchase-list/enabled true}
        (transact connection)))
 
-
 (s/defn get-management-data
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
