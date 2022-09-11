@@ -38,14 +38,18 @@
            (d/db connection) purchase-list-id)
       ffirst))
 
-(s/defn get-by-id
-  [id :- s/Uuid
+(s/defn get-by-name
+  [purchase-list-id :- s/Uuid
+   name :- s/Str
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?e [*])
-              :in $ ?id
+  (->> (d/q '[:find (pull ?c [*])
+              :in $ ?list-id ?name
               :where
-              [?e :purchase-category/id ?id]]
-            (d/db connection) id)
+              [?l :purchase-list/id ?list-id]
+              [?l :purchase-list/purchase-categories ?c]
+              [?c :purchase-category/name ?name]
+              ]
+            (d/db connection) purchase-list-id name)
        ffirst
        adapters.db.purchase-category/db->internal))
 
