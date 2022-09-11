@@ -5,7 +5,9 @@
             [purchase-listinator.adapters.in.purchase-list :as adapters.in.purchase-list]
             [purchase-listinator.adapters.misc :as adapters.misc]
             [purchase-listinator.adapters.in.purchase-category :as adapters.in.purchase-category]
+            [purchase-listinator.adapters.in.purchase-item :as adapters.in.purchase-item]
             [purchase-listinator.flows.purchase-category :as flows.purchase-category]
+            [purchase-listinator.flows.purchase-item :as flows.purchase-item]
             [purchase-listinator.misc.either :as misc.either]
             [cats.monad.either :refer :all]))
 
@@ -60,8 +62,14 @@
 
 (s/defn add-purchases-lists-item
   [{{datomic :datomic} :component
-    wire               :json-params}]
-  {})
+    wire               :json-params
+    {id :id}           :path-params}]
+  (branch (misc.either/try-right
+            (let [purchase-list-id (adapters.misc/string->uuid id)
+                  internal-item (adapters.in.purchase-item/wire->internal wire)]
+              (flows.purchase-item/create purchase-list-id internal-item datomic)))
+          ->Error
+          ->Success))
 
 (s/defn add-purchases-lists-category
   [{{datomic :datomic} :component

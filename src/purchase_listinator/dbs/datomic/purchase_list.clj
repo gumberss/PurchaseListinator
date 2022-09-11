@@ -24,6 +24,9 @@
     :db/doc         "If true, someone is buying the itens in this list"}
    {:db/ident       :purchase-list/purchase-categories
     :db/cardinality :db.cardinality/many
+    :db/valueType   :db.type/ref}
+   {:db/ident       :purchase-list/purchase-items
+    :db/cardinality :db.cardinality/many
     :db/valueType   :db.type/ref}])
 
 (s/defn ^:private transact
