@@ -34,7 +34,7 @@
              :in $ ?purchase-list-id
              :where
              [?purchase-list :purchase-list/id ?purchase-list-id]
-             [?e :purchase-list/purchase-categories ?purchase-list]]
+             [?purchase-list :purchase-list/purchase-categories ?e]]
            (d/db connection) purchase-list-id)
       ffirst))
 
