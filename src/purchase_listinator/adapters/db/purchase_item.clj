@@ -14,6 +14,8 @@
                                      (misc.general/namespace-keys :purchase-item))})
 
 (s/defn db->internal :- models.internal.purchase-item/PurchaseItem
-  [db-wire]
+  [{{category-id :purchase-category/id} :purchase-item/purchase-category :as db-wire}]
   (-> (misc.datomic/datomic->entity db-wire)
-      (misc.general/unnamespace-keys)))
+      (misc.general/unnamespace-keys)
+      (dissoc :purchase-category)
+      (assoc :category-id category-id)))
