@@ -35,3 +35,18 @@
         timed-msb (bit-or (bit-shift-left secs 32)
                           (bit-and 0x00000000ffffffff msb))]
     (UUID. timed-msb lsb)))
+
+
+(defn assoc-some
+  ([map key val]
+   (if val
+     (assoc map key val)
+     map))
+  ([map key val & kvs]
+   (let [ret (assoc-some map key val)]
+     (if kvs
+       (if (next kvs)
+         (recur ret (first kvs) (second kvs) (nnext kvs))
+         (throw (IllegalArgumentException.
+                  "assoc expects even number of arguments after map/vector, found odd number")))
+       ret))))
