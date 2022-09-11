@@ -8,16 +8,13 @@
 
 
 (s/defn create
-  [{:keys [id purchase-list-id] :as category} :- models.internal.purchase-category/PurchaseCategory
+  [{:keys [name purchase-list-id] :as category} :- models.internal.purchase-category/PurchaseCategory
    datomic]
   (either/try-right
-    (if-let [existent-category (datomic.purchase-category/get-by-id id datomic)]
-      (println existent-category)
-
-      ; todo: check if there is other category from the same list with the same name
-      ; if not, upsert
-      #_(left {:status 400
-               :error  {:message "[[LIST_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
+    (if-let [existent-category (datomic.purchase-category/get-by-name purchase-list-id name datomic)]
+      (do (println existent-category)
+          (left {:status 400
+                 :error  {:message "[[CATEGORY_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}}))
       (-> (datomic.purchase-category/categories-count purchase-list-id datomic)
           (logic.purchase-category/change-order-position category)
           (datomic.purchase-category/upsert datomic)))))
