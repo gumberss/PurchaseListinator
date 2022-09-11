@@ -20,10 +20,7 @@
    {:db/ident       :purchase-category/color
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
-    :db/doc         "The purchase-category color"}
-   {:db/ident       :purchase-category/purchase-list
-    :db/cardinality :db.cardinality/one
-    :db/valueType   :db.type/ref}])
+    :db/doc         "The purchase-category color"}])
 
 (s/defn ^:private transact
   [connection & purchases-categories]
@@ -37,15 +34,14 @@
              :in $ ?purchase-list-id
              :where
              [?purchase-list :purchase-list/id ?purchase-list-id]
-             [?e :purchase-category/purchase-list ?purchase-list]]
+             [?e :purchase-list/purchase-categories ?purchase-list]]
            (d/db connection) purchase-list-id)
       ffirst))
 
 (s/defn get-by-id
   [id :- s/Uuid
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?e [* {:purchase-category/purchase-list [*]}
-                              {:purchase-category/purchase-list [*]}])
+  (->> (d/q '[:find (pull ?e [*])
               :in $ ?id
               :where
               [?e :purchase-category/id ?id]]
@@ -57,6 +53,6 @@
   [purchase-category
    {:keys [connection]}]
   (->> (adapters.db.purchase-category/internal->db purchase-category)
-       (assoc { :id id} :purchase-list/category )
-       (transact connection))
+       (transact connection)
+       (println))
   purchase-category)
