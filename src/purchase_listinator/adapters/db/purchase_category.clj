@@ -6,11 +6,10 @@
 
 (s/defn internal->db
   [{:keys [purchase-list-id] :as internal} :- models.internal.purchase-category/PurchaseCategory]
-  (-> internal
-      (dissoc :purchase-list-id)
-      (misc.general/namespace-keys :purchase-category)
-      (->> (assoc {} :purchase-list/id purchase-list-id
-                     :purchase-list/purchase-categories))))
+  {:purchase-list/id                  purchase-list-id
+   :purchase-list/purchase-categories (-> internal
+                                          (dissoc :purchase-list-id)
+                                          (misc.general/namespace-keys :purchase-category))})
 
 (s/defn db->internal :- models.internal.purchase-category/PurchaseCategory
   [db-wire]

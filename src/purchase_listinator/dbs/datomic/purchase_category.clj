@@ -53,6 +53,5 @@
   [purchase-category
    {:keys [connection]}]
   (->> (adapters.db.purchase-category/internal->db purchase-category)
-       (transact connection)
-       (println))
+       (transact connection))
   purchase-category)
