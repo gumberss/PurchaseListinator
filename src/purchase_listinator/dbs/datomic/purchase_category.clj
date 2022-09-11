@@ -44,7 +44,8 @@
 (s/defn get-by-id
   [id :- s/Uuid
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?e [* {:purchase-category/purchase-list [*]}])
+  (->> (d/q '[:find (pull ?e [* {:purchase-category/purchase-list [*]}
+                              {:purchase-category/purchase-list [*]}])
               :in $ ?id
               :where
               [?e :purchase-category/id ?id]]
@@ -56,5 +57,6 @@
   [purchase-category
    {:keys [connection]}]
   (->> (adapters.db.purchase-category/internal->db purchase-category)
+       (assoc { :id id} :purchase-list/category )
        (transact connection))
   purchase-category)
