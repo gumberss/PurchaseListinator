@@ -1,7 +1,8 @@
 (ns purchase-listinator.dbs.datomic.purchase-list
   (:require [schema.core :as s]
             [datomic.api :as d]
-            [purchase-listinator.adapters.db.purchase-list :as adapter.purchase-list]))
+            [purchase-listinator.adapters.db.purchase-list :as adapter.purchase-list]
+            [purchase-listinator.adapters.db.purchase-list-management-data :as adapters.db.purchase-list-management-data]))
 
 (def schema
   [{:db/ident       :purchase-list/id
@@ -68,7 +69,7 @@
   [id :- s/Uuid
    {:keys [connection]}]
   (let [wire {:purchase-list/id      id
-           :purchase-list/enabled false}]
+              :purchase-list/enabled false}]
     (transact connection wire)
     (adapter.purchase-list/db->internal wire)))
 
@@ -79,3 +80,15 @@
         :purchase-list/enabled true}
        (transact connection)))
 
+
+(s/defn get-management-data
+  [id :- s/Uuid
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?c [*]) ...]
+              :in $ ?id
+              :where
+              [?e :purchase-list/id ?id]
+              [?c :purchase-category/purchase-list ?e]]
+            (d/db connection) id)
+       (println)
+       (adapters.db.purchase-list-management-data/db->internal)))

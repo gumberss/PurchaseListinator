@@ -74,8 +74,12 @@
 
 (s/defn purchases-lists-management-data
   [{{datomic :datomic} :component
-    wire               :json-params}]
-  {})
+    {id :id}           :path-params}]
+  (branch (misc.either/try-right
+            (-> (adapters.misc/string->uuid id)
+                (flows.purchase-list/management-data datomic)))
+          ->Error
+          ->Success))
 
 ;todo: /lists should return only the purchase list data and /lists/:id should return items and categories too
 (def routes
@@ -85,4 +89,4 @@
     ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
     ["/api/purchases/lists/:id/add/item" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
     ["/api/purchases/lists/:id/add/category" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
-    ["/api/purchases/lists/:id/managementData" :post [purchases-lists-management-data] :route-name :purchases-lists-management-data]})
+    ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})

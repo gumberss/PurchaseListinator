@@ -38,3 +38,8 @@
         :else (-> (logic.purchase-list/edit existent-purchase-list purchase-list)
                   (datomic.purchase-list/upsert datomic)
                   right)))))
+
+(s/defn management-data
+  [purchase-list-id :- s/Uuid
+   datomic]
+  (datomic.purchase-list/get-management-data purchase-list-id datomic))
