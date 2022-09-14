@@ -36,7 +36,6 @@
                           (bit-and 0x00000000ffffffff msb))]
     (UUID. timed-msb lsb)))
 
-
 (defn assoc-some
   ([map key val]
    (if val
