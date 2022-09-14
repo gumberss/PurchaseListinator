@@ -6,7 +6,6 @@
             [purchase-listinator.logic.purchase-item :as logic.purchase-item]
             [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]))
 
-
 (s/defn create
   [purchase-list-id :- s/Uuid
    {:keys [name] :as item} :- models.internal.purchase-item/PurchaseItem

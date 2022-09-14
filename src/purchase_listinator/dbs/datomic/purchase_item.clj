@@ -17,7 +17,7 @@
    {:db/ident       :purchase-item/quantity
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
-    :db/doc         "The purchase-item order postion"}
+    :db/doc         "The purchase-item quantity"}
    {:db/ident       :purchase-item/order-position
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
