@@ -5,17 +5,12 @@
             [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]))
 
 (s/defn internal->db
-  [purchase-list-id :- s/Uuid
-   {:keys [category-id] :as internal} :- models.internal.purchase-item/PurchaseItem]
-  {:purchase-list/id             purchase-list-id
-   :purchase-list/purchase-items (-> internal
-                                     (dissoc :category-id)
-                                     (assoc :purchase-category {:purchase-category/id category-id})
-                                     (misc.general/namespace-keys :purchase-item))})
+  [purchase-category-id :- s/Uuid
+   internal :- models.internal.purchase-item/PurchaseItem]
+  {:purchase-category/id             purchase-category-id
+   :purchase-category/purchase-items (misc.general/namespace-keys internal :purchase-item)})
 
 (s/defn db->internal :- models.internal.purchase-item/PurchaseItem
-  [{{category-id :purchase-category/id} :purchase-item/purchase-category :as db-wire}]
+  [db-wire]
   (-> (misc.datomic/datomic->entity db-wire)
-      (misc.general/unnamespace-keys)
-      (dissoc :purchase-category)
-      (assoc :category-id category-id)))
+      (misc.general/unnamespace-keys)))

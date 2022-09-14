@@ -21,10 +21,7 @@
    {:db/ident       :purchase-item/order-position
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
-    :db/doc         "The purchase-item order postion"}
-   {:db/ident       :purchase-item/purchase-category
-    :db/cardinality :db.cardinality/one
-    :db/valueType   :db.type/ref}])
+    :db/doc         "The purchase-item order postion"}])
 
 (s/defn ^:private transact
   [connection & purchases-items]
@@ -32,33 +29,36 @@
 
 (s/defn items-count
   [purchase-list-id :- s/Uuid
+   purchase-category-id :- s/Uuid
    {:keys [connection]}]
-  (-> (d/q '[:find (count ?e)
-             :in $ ?purchase-list-id
+  (-> (d/q '[:find (count ?i)
+             :in $ ?purchase-list-id ?purchase-category-id
              :where
              [?purchase-list :purchase-list/id ?purchase-list-id]
-             [?purchase-list :purchase-list/purchase-items ?e]]
-           (d/db connection) purchase-list-id)
+             [?purchase-list :purchase-list/purchase-categories ?c]
+             [?c :purchase-category/purchase-items ?i]]
+           (d/db connection) purchase-list-id purchase-category-id)
       ffirst))
 
 (s/defn get-by-name :- models.internal.purchase-item/PurchaseItem
   [name :- s/Str
    purchase-list-id :- s/Uuid
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?c [*])
+  (->> (d/q '[:find (pull ?i [*])
               :in $ ?list-id ?name
               :where
               [?l :purchase-list/id ?list-id]
-              [?l :purchase-list/purchase-items ?c]
-              [?c :purchase-item/name ?name]]
+              [?l :purchase-list/purchase-categories ?c]
+              [?c :purchase-category/purchase-items ?i]
+              [?i :purchase-item/name ?name]]
             (d/db connection) purchase-list-id name)
        ffirst
        adapters.db.purchase-item/db->internal))
 
 (s/defn upsert :- models.internal.purchase-item/PurchaseItem
   [purchase-item :- models.internal.purchase-item/PurchaseItem
-   purchase-list-id :- s/Uuid
+   purchase-category-id :- s/Uuid
    {:keys [connection]}]
-  (->> (adapters.db.purchase-item/internal->db purchase-list-id purchase-item)
+  (->> (adapters.db.purchase-item/internal->db purchase-category-id purchase-item)
        (transact connection))
   purchase-item)

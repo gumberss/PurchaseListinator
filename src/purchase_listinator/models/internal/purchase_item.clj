@@ -5,7 +5,6 @@
   {:id               s/Uuid
    :name             s/Str
    :quantity         s/Int
-   :order-position   s/Int
-   :category-id      s/Uuid})
+   :order-position   s/Int})
 (s/defschema PurchaseItem purchase-item-skeleton)
 (s/defschema PurchaseItems [PurchaseItem])

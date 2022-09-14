@@ -21,7 +21,10 @@
    {:db/ident       :purchase-category/color
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
-    :db/doc         "The purchase-category color"}])
+    :db/doc         "The purchase-category color"}
+   {:db/ident       :purchase-category/purchase-items
+    :db/cardinality :db.cardinality/many
+    :db/valueType   :db.type/ref}])
 
 (s/defn ^:private transact
   [connection & purchases-categories]
