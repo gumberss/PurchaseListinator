@@ -61,13 +61,14 @@
           ->Success))
 
 (s/defn add-purchases-lists-item
-  [{{datomic :datomic} :component
-    wire               :json-params
-    {id :id}           :path-params}]
+  [{{datomic :datomic}            :component
+    wire                          :json-params
+    {:keys [id category-id]} :path-params}]
   (branch (misc.either/try-right
             (let [purchase-list-id (adapters.misc/string->uuid id)
+                  purchase-category-id (adapters.misc/string->uuid category-id)
                   internal-item (adapters.in.purchase-item/wire->internal wire)]
-              (flows.purchase-item/create purchase-list-id internal-item datomic)))
+              (flows.purchase-item/create purchase-list-id purchase-category-id internal-item datomic)))
           ->Error
           ->Success))
 
@@ -95,6 +96,6 @@
     ["/api/purchases/lists" :post [post-purchase-lists] :route-name :post-purchases-lists]
     ["/api/purchases/lists" :put [edit-purchase-lists] :route-name :edit-purchases-lists]
     ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
-    ["/api/purchases/lists/:id/add/item" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
+    ["/api/purchases/lists/:id/category/:category-id/add/item" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
     ["/api/purchases/lists/:id/add/category" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
     ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})

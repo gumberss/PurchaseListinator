@@ -24,9 +24,6 @@
     :db/doc         "If true, someone is buying the itens in this list"}
    {:db/ident       :purchase-list/purchase-categories
     :db/cardinality :db.cardinality/many
-    :db/valueType   :db.type/ref}
-   {:db/ident       :purchase-list/purchase-items
-    :db/cardinality :db.cardinality/many
     :db/valueType   :db.type/ref}])
 
 (s/defn ^:private transact
@@ -90,9 +87,8 @@
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [*
-                              {:purchase-list/purchase-categories [*]}
-                              {:purchase-list/purchase-items [*
-                                                              {:purchase-item/purchase-category [:purchase-category/id]}]}])
+                              {:purchase-list/purchase-categories
+                               [* {:purchase-category/purchase-items [*]}]}])
               :in $ ?id
               :where
               [?e :purchase-list/id ?id]]

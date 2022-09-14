@@ -8,6 +8,7 @@
 
 (s/defn create
   [purchase-list-id :- s/Uuid
+   purchase-category-id :- s/Uuid
    {:keys [name] :as item} :- models.internal.purchase-item/PurchaseItem
    datomic]
   (either/try-right
@@ -15,6 +16,6 @@
       (do (println existent-item)
           (left {:status 400
                  :error  {:message "[[ITEM_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}}))
-      (-> (datomic.purchase-item/items-count purchase-list-id datomic)
+      (-> (datomic.purchase-item/items-count purchase-list-id purchase-category-id datomic)
           (logic.purchase-item/change-order-position item)
-          (datomic.purchase-item/upsert purchase-list-id datomic)))))
+          (datomic.purchase-item/upsert purchase-category-id datomic)))))

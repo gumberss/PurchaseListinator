@@ -5,6 +5,5 @@
             [purchase-listinator.adapters.misc :as adapters.misc]))
 
 (s/defn wire->internal :- models.internal.purchase-item/PurchaseItem
-  [{:keys [id category-id] :as wire} :- wires.in.purchase-item/PurchaseItem]
-  (assoc wire :id (adapters.misc/string->uuid id)
-              :category-id (adapters.misc/string->uuid category-id)))
+  [{:keys [id] :as wire} :- wires.in.purchase-item/PurchaseItem]
+  (assoc wire :id (adapters.misc/string->uuid id)))
