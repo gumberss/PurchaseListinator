@@ -74,10 +74,12 @@
 
 (s/defn add-purchases-lists-category
   [{{datomic :datomic} :component
+    {:keys [id]} :path-params
     wire               :json-params}]
   (branch (misc.either/try-right
-            (-> (adapters.in.purchase-category/wire->internal wire)
-                (flows.purchase-category/create datomic)))
+            (let [list-id (adapters.misc/string->uuid id)
+                  category (adapters.in.purchase-category/wire->internal wire)]
+              (flows.purchase-category/create list-id category datomic)))
           ->Error
           ->Success))
 

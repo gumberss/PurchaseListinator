@@ -15,13 +15,29 @@
   [{:keys [order-position] :as category} :- internal.purchase-category/PurchaseCategory]
   (change-order-position (dec order-position) category))
 
-(s/defn reorder :- [internal.purchase-category/PurchaseCategory]
+(s/defn ^:private reposition-one
+  [old-position :- s/Num
+   new-position :- s/Num
+   {:keys [order-position] :as category} :- internal.purchase-category/PurchaseCategory]
+  (let [decrease-position? (< old-position new-position)
+        the-category-reordered (= old-position order-position)
+        reposition-way (if decrease-position? decrement-order increment-order)]
+    (if the-category-reordered
+      (change-order-position new-position category)
+      (reposition-way category))))
+
+(s/defn reposition :- [internal.purchase-category/PurchaseCategory]
   [old-position :- s/Num
    new-position :- s/Num
    categories :- [internal.purchase-category/PurchaseCategory]]
-  (let [increase-position? (< old-position new-position)
-        reorder-func #(cond
-                        (= old-position (:order-position %)) (change-order-position new-position %)
-                        increase-position? (decrement-order %)
-                        :else (increment-order %))]
-    (map reorder-func categories)))
+  (let [reposition-func* (partial reposition-one old-position new-position)]
+    (map reposition-func* categories)))
+
+(s/defn sort-items-by-position :- internal.purchase-category/PurchaseCategory
+  [{:keys [purchase-items] :as category} :- internal.purchase-category/PurchaseCategory]
+  (->> (sort-by :order-position purchase-items)
+       (assoc category :purchase-items)))
+
+(s/defn sort-by-position :- [internal.purchase-category/PurchaseCategory]
+  [categories :- [internal.purchase-category/PurchaseCategory]]
+  (sort-by :order-position categories))

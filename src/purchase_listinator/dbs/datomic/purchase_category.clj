@@ -60,7 +60,7 @@
    start-range :- s/Num
    end-range :- s/Num
    {:keys [connection]}]
-  (->> (d/q '[:find [(pull ?c [*])...]
+  (->> (d/q '[:find [(pull ?c [*]) ...]
               :in $ ?l-id ?s-range ?e-range
               :where
               [?l :purchase-list/id ?l-id]
@@ -72,7 +72,8 @@
        (map adapters.db.purchase-category/db->internal)))
 
 (s/defn upsert :- models.internal.purchase-category/PurchaseCategory
-  [purchase-category :- models.internal.purchase-category/PurchaseCategory
+  [list-id :- s/Uuid
+   purchase-category :- models.internal.purchase-category/PurchaseCategory
    {:keys [connection]}]
   (->> (adapters.db.purchase-category/internal->db purchase-category)
        (transact connection))
@@ -82,7 +83,7 @@
   [purchase-categories :- [models.internal.purchase-category/PurchaseCategory]
    {:keys [connection]}]
   (->> purchase-categories
-       (map adapters.db.purchase-category/internal->db)
-       (transact connection))
+       (mapv adapters.db.purchase-category/internal->db)
+       (apply transact connection))
   purchase-categories)
 

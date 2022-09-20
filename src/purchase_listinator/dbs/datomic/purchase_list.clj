@@ -83,6 +83,14 @@
         :purchase-list/enabled true}
        (transact connection)))
 
+(s/defn add-category
+  [list-id
+   category
+   {:keys [connection]}]
+  (->> (adapter.purchase-list/add-category->db list-id category)
+       (transact connection))
+  category)
+
 (s/defn get-management-data
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
