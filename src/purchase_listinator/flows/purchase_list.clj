@@ -3,6 +3,7 @@
             [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
             [purchase-listinator.models.internal.purchase-list :as internal.purchase-list]
             [purchase-listinator.logic.purchase-list :as logic.purchase-list]
+            [purchase-listinator.logic.purchase-category :as logic.purchase-category]
             [cats.monad.either :refer [left right]]
             [purchase-listinator.misc.either :as either]))
 
@@ -42,4 +43,7 @@
 (s/defn management-data
   [purchase-list-id :- s/Uuid
    datomic]
-  (datomic.purchase-list/get-management-data purchase-list-id datomic))
+  (let [{:keys [categories] :as management-data} (datomic.purchase-list/get-management-data purchase-list-id datomic)]
+    (->> (map logic.purchase-category/sort-items-by-position categories)
+         logic.purchase-category/sort-by-position
+         (assoc management-data :categories))))
