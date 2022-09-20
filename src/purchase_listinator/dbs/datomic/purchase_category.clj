@@ -55,9 +55,34 @@
        ffirst
        adapters.db.purchase-category/db->internal))
 
+(s/defn get-by-position-range :- [models.internal.purchase-category/PurchaseCategory]
+  [list-id :- s/Uuid
+   start-range :- s/Num
+   end-range :- s/Num
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?c [*])...]
+              :in $ ?l-id ?s-range ?e-range
+              :where
+              [?l :purchase-list/id ?l-id]
+              [?l :purchase-list/purchase-categories ?c]
+              [?c :purchase-category/order-position ?o]
+              [(<= ?s-range ?o)]
+              [(<= ?o ?e-range)]]
+            (d/db connection) list-id start-range end-range)
+       (map adapters.db.purchase-category/db->internal)))
+
 (s/defn upsert :- models.internal.purchase-category/PurchaseCategory
   [purchase-category :- models.internal.purchase-category/PurchaseCategory
    {:keys [connection]}]
   (->> (adapters.db.purchase-category/internal->db purchase-category)
        (transact connection))
   purchase-category)
+
+(s/defn upsert-many :- [models.internal.purchase-category/PurchaseCategory]
+  [purchase-categories :- [models.internal.purchase-category/PurchaseCategory]
+   {:keys [connection]}]
+  (->> purchase-categories
+       (map adapters.db.purchase-category/internal->db)
+       (transact connection))
+  purchase-categories)
+
