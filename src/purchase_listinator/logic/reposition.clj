@@ -15,7 +15,7 @@
         [{:keys [order-position] :as reorder} :- models.logic.reposition/Reorder]
         (change-order-position (dec order-position) reorder))
 
-(s/defn ^:private reposition-one
+(s/defn ^:private reposition-one :- models.logic.reposition/Reorder
         [old-position :- s/Num
          new-position :- s/Num
          {:keys [order-position] :as reorder} :- models.logic.reposition/Reorder]
