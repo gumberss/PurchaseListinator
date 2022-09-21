@@ -55,12 +55,6 @@
             (d/db connection) purchase-list-id name)
        ffirst
        adapters.db.purchase-item/db->internal))
-(defn passear-com [b a ] (prn (str a) "Passeou com o " (str b)))
-
-(def zap :dog)
-(passear-com zap :gustavo)
-
-
 
 (s/defn get-by-position-range :- models.internal.purchase-item/PurchaseItems
   [category-id :- s/Uuid
