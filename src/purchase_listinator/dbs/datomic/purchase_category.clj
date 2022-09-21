@@ -87,3 +87,11 @@
        (apply transact connection))
   purchase-categories)
 
+
+(s/defn add-item
+  [list-id
+   category
+   {:keys [connection]}]
+  (->> (adapters.db.purchase-category/add-item->db list-id category)
+       (transact connection))
+  category)

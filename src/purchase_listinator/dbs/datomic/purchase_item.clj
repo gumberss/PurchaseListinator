@@ -2,7 +2,8 @@
   (:require [schema.core :as s]
             [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]
-            [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]))
+            [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]
+            [purchase-listinator.adapters.db.purchase-category :as adapters.db.purchase-category]))
 
 (def schema
   [{:db/ident       :purchase-item/id
@@ -55,10 +56,34 @@
        ffirst
        adapters.db.purchase-item/db->internal))
 
+(s/defn get-by-position-range :- models.internal.purchase-item/PurchaseItems
+  [category-id :- s/Uuid
+   start-range :- s/Num
+   end-range :- s/Num
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?c [*]) ...]
+              :in $ ?c-id ?s-range ?e-range
+              :where
+              [?c :purchase-list/purchase-categories ?c-id]
+              [?c :purchase-category/purchase-items ?i]
+              [?i :purchase-item/order-position ?o]
+              [(<= ?s-range ?o)]
+              [(<= ?o ?e-range)]]
+            (d/db connection) category-id start-range end-range)
+       (map adapters.db.purchase-item/db->internal)))
+
 (s/defn upsert :- models.internal.purchase-item/PurchaseItem
   [purchase-item :- models.internal.purchase-item/PurchaseItem
    purchase-category-id :- s/Uuid
    {:keys [connection]}]
-  (->> (adapters.db.purchase-item/internal->db purchase-category-id purchase-item)
+  (->> (adapters.db.purchase-category/add-item->db purchase-category-id purchase-item)
        (transact connection))
   purchase-item)
+
+(s/defn upsert-many :- [models.internal.purchase-item/PurchaseItem]
+  [purchase-items :- [models.internal.purchase-item/PurchaseItem]
+   {:keys [connection]}]
+  (->> purchase-items
+       (map adapters.db.purchase-item/internal->db)
+       (apply transact connection))
+  purchase-items)

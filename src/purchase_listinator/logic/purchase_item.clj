@@ -6,3 +6,7 @@
   [order-position :- s/Int
    category :- internal.purchase-item/PurchaseItem]
   (assoc category :order-position (or order-position 0)))
+
+(s/defn sort-by-position :- internal.purchase-item/PurchaseItems
+  [categories :- internal.purchase-item/PurchaseItems]
+  (sort-by :order-position categories))

@@ -5,6 +5,12 @@
             [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]))
 
+(s/defn add-item->db [category-id
+                      internal-item]
+  {:purchase-category/id                  category-id
+   :purchase-category/purchase-items [(adapters.db.purchase-item/internal->db internal-item)]})
+
+
 (s/defn internal->db
   [internal :- models.internal.purchase-category/PurchaseCategory]
   (misc.general/namespace-keys internal :purchase-category))
