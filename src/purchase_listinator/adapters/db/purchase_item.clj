@@ -5,10 +5,8 @@
             [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]))
 
 (s/defn internal->db
-  [purchase-category-id :- s/Uuid
-   internal :- models.internal.purchase-item/PurchaseItem]
-  {:purchase-category/id             purchase-category-id
-   :purchase-category/purchase-items (misc.general/namespace-keys internal :purchase-item)})
+  [internal :- models.internal.purchase-item/PurchaseItem]
+  (misc.general/namespace-keys internal :purchase-item))
 
 (s/defn db->internal :- models.internal.purchase-item/PurchaseItem
   [db-wire]
