@@ -11,8 +11,8 @@
 
 (s/defn db->internal :- models.internal.purchase-category/PurchaseCategory
   [db-wire]
-  (let [{:keys [purchase-items] :as internal} (-> (misc.datomic/datomic->entity db-wire)
-                                                  (misc.general/unnamespace-keys))]
-    (when internal
+  (when db-wire
+    (let [{:keys [purchase-items] :as internal} (-> (misc.datomic/datomic->entity db-wire)
+                                                    (misc.general/unnamespace-keys))]
       (assoc internal :purchase-items (map adapters.db.purchase-item/db->internal purchase-items)))))
 

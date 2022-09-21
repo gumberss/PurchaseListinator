@@ -29,7 +29,7 @@
     (let [start-position (min old-position new-position)
           end-position (max old-position new-position)
           repositioned-categories (->> (datomic.purchase-category/get-by-position-range list-id start-position end-position datomic)
-                                       (sort-by :order-position)
+                                       logic.purchase-category/sort-by-position
                                        (logic.purchase-category/reposition old-position new-position))]
       (datomic.purchase-category/upsert-many repositioned-categories datomic))))
 
