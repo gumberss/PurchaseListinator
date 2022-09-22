@@ -21,18 +21,40 @@
           (logic.purchase-item/change-order-position item)
           (datomic.purchase-item/upsert purchase-category-id datomic)))))
 
+(s/defn change-items-order-inside-same-category
+  [category-id :- s/Uuid
+   old-position :- s/Num
+   new-position :- s/Num
+   datomic]
+  (let [start-position (min old-position new-position)
+        end-position (max old-position new-position)
+        repositioned-items (->> (datomic.purchase-item/get-by-position-range category-id start-position end-position datomic)
+                                     logic.purchase-item/sort-by-position
+                                     (logic.reposition/reposition old-position new-position))]
+    (datomic.purchase-item/upsert-many repositioned-items datomic)))
+
+(s/defn insert-existent-item-in-another-category
+  [old-category-id :- s/Uuid
+   new-category-id :- s/Uuid
+   old-position :- s/Num
+   new-position :- s/Num
+   datomic]
+  (let [old-category-items-to-change-position (datomic.purchase-item/get-by-position-start old-category-id old-position datomic)
+        new-category-items-to-change-position (datomic.purchase-item/get-by-position-start new-category-id new-position datomic)
+        item-changed (first (filter old-category-items-to-change-position #(= old-position (:order-position %))))]
+    (datomic.purchase-item/delete item-changed datomic)
+    (datomic.purchase-item/upsert item-changed new-category-id datomic)))
+
 (s/defn change-items-order
-  [list-id :- s/Uuid
+  [old-category-id :- s/Uuid
+   new-category-id :- s/Uuid
    old-position :- s/Num
    new-position :- s/Num
    datomic]
   (either/try-right
-    (let [start-position (min old-position new-position)
-          end-position (max old-position new-position)
-          repositioned-categories (->> (datomic.purchase-item/get-by-position-range list-id start-position end-position datomic)
-                                       logic.purchase-item/sort-by-position
-                                       (logic.reposition/reposition old-position new-position))]
-      (datomic.purchase-item/upsert-many repositioned-categories datomic))))
+    (if (= old-category-id new-category-id)
+      (change-items-order-inside-same-category new-category-id old-position new-position datomic)
+      (insert-existent-item-in-another-category old-category-id new-category-id old-position new-position datomic))))
 
 
 

@@ -28,6 +28,10 @@
   [connection & purchases-items]
   @(d/transact connection purchases-items))
 
+(s/defn ^:private retract
+  [connection & purchases-items]
+  @(d/transact connection {:db/retract purchases-items}))
+
 (s/defn items-count
   [purchase-list-id :- s/Uuid
    purchase-category-id :- s/Uuid
@@ -61,16 +65,37 @@
    start-range :- s/Num
    end-range :- s/Num
    {:keys [connection]}]
-  (->> (d/q '[:find [(pull ?c [*]) ...]
+  (->> (d/q '[:find [(pull ?i [*]) ...]
               :in $ ?c-id ?s-range ?e-range
               :where
-              [?c :purchase-list/purchase-categories ?c-id]
+              [?c :purchase-category/id ?c-id]
               [?c :purchase-category/purchase-items ?i]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]
               [(<= ?o ?e-range)]]
             (d/db connection) category-id start-range end-range)
        (map adapters.db.purchase-item/db->internal)))
+
+(s/defn get-by-position-start :- models.internal.purchase-item/PurchaseItems
+  [category-id :- s/Uuid
+   start-range :- s/Num
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?i [*]) ...]
+              :in $ ?c-id ?s-range
+              :where
+              [?c :purchase-category/id ?c-id]
+              [?c :purchase-category/purchase-items ?i]
+              [?i :purchase-item/order-position ?o]
+              [(>= ?s-range ?o)]]
+            (d/db connection) category-id start-range)
+       (map adapters.db.purchase-item/db->internal)))
+
+(s/defn delete :- models.internal.purchase-item/PurchaseItem
+  [purchase-item :- models.internal.purchase-item/PurchaseItem
+   {:keys [connection]}]
+  (->> (adapters.db.purchase-item/internal->db purchase-item)
+       (retract connection))
+  purchase-item)
 
 (s/defn upsert :- models.internal.purchase-item/PurchaseItem
   [purchase-item :- models.internal.purchase-item/PurchaseItem

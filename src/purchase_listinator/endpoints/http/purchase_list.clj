@@ -74,7 +74,7 @@
 
 (s/defn add-purchases-lists-category
   [{{datomic :datomic} :component
-    {:keys [id]} :path-params
+    {:keys [id]}       :path-params
     wire               :json-params}]
   (branch (misc.either/try-right
             (let [list-id (adapters.misc/string->uuid id)
@@ -84,7 +84,7 @@
           ->Success))
 
 (s/defn change-category-order
-  [{{datomic :datomic}                  :component
+  [{{datomic :datomic}                     :component
     {:keys [old-position new-position id]} :path-params}]
   (branch (misc.either/try-right
             (let [list-id (adapters.misc/string->uuid id)
@@ -95,13 +95,15 @@
           ->Success))
 
 (s/defn change-item-order
-  [{{datomic :datomic}                  :component
-    {:keys [old-position new-position id]} :path-params}]
+  [{{datomic :datomic}                                                     :component
+    {:keys [old-position new-position id old-category-id new-category-id]} :path-params}]
   (branch (misc.either/try-right
-            (let [category-id (adapters.misc/string->uuid id)
+            (let [list-id (adapters.misc/string->uuid id)
+                  old-category-id (adapters.misc/string->uuid old-category-id)
+                  new-category-id (adapters.misc/string->uuid new-category-id)
                   old-position (adapters.misc/string->integer old-position)
                   new-position (adapters.misc/string->integer new-position)]
-              (flows.purchase-item/change-items-order category-id old-position new-position datomic)))
+              (flows.purchase-item/change-items-order old-category-id new-category-id old-position new-position datomic)))
           ->Error
           ->Success))
 
@@ -123,5 +125,5 @@
     ["/api/purchases/lists/:id/category/:category-id/add/item" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
     ["/api/purchases/lists/:id/add/category" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
     ["/api/purchases/lists/:id/categories/changeOrder/:old-position/:new-position" :post [change-category-order] :route-name :change-category-order]
-    ["/api/purchases/lists/:id/items/changeOrder/:old-position/:new-position" :post [change-item-order] :route-name :change-item-order]
+    ["/api/purchases/lists/:id/items/changeOrder/:old-category-id/:new-category-id/:old-position/:new-position" :post [change-item-order] :route-name :change-item-order]
     ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})

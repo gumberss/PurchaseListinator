@@ -5,4 +5,3 @@
   {:order-position   s/Int})
 
 (s/defschema Reorder reorder-skeleton)
-(s/defschema Reorders [Reorder])

@@ -10,6 +10,6 @@
 
 (s/defn db->internal :- models.internal.purchase-item/PurchaseItem
   [db-wire]
-  (when db-wire
+  (when (not-empty db-wire)
     (-> (misc.datomic/datomic->entity db-wire)
         (misc.general/unnamespace-keys))))
