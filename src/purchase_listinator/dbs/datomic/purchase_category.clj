@@ -55,20 +55,32 @@
        ffirst
        adapters.db.purchase-category/db->internal))
 
+(s/defn get-by-id :- models.internal.purchase-category/PurchaseCategory
+  [category-id :- s/Uuid
+   {:keys [connection]}]
+  (->> (d/q '[:find (pull ?c [* {:purchase-category/purchase-list [:purchase-list/id]}])
+              :in $ ?c-id ?name
+              :where
+              [?c :purchase-category/id ?c-id]]
+            (d/db connection) category-id name)
+       ffirst
+       adapters.db.purchase-category/db->internal))
+
 (s/defn get-by-position-range :- [models.internal.purchase-category/PurchaseCategory]
-  [list-id :- s/Uuid
+  [category-id :- s/Uuid
    start-range :- s/Num
    end-range :- s/Num
    {:keys [connection]}]
-  (->> (d/q '[:find [(pull ?c [*]) ...]
-              :in $ ?l-id ?s-range ?e-range
+  (->> (d/q '[:find [(pull ?cs [* {:purchase-category/purchase-list [:purchase-list/id]}]) ...]
+              :in $ ?c-id ?s-range ?e-range
               :where
-              [?l :purchase-list/id ?l-id]
-              [?l :purchase-list/purchase-categories ?c]
-              [?c :purchase-category/order-position ?o]
+              [?c :purchase-category/id ?c-id]
+              [?c :purchase-category/purchase-list ?l]
+              [?cs :purchase-category/purchase-list ?l]
+              [?cs :purchase-category/order-position ?o]
               [(<= ?s-range ?o)]
               [(<= ?o ?e-range)]]
-            (d/db connection) list-id start-range end-range)
+            (d/db connection) category-id start-range end-range)
        (map adapters.db.purchase-category/db->internal)))
 
 (s/defn upsert :- models.internal.purchase-category/PurchaseCategory

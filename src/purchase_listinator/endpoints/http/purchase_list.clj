@@ -61,8 +61,8 @@
           ->Success))
 
 (s/defn add-purchases-lists-item
-  [{{datomic :datomic}       :component
-    wire                     :json-params}]
+  [{{datomic :datomic} :component
+    wire               :json-params}]
   (branch (misc.either/try-right
             (let [internal-item (adapters.in.purchase-item/wire->internal wire)]
               (flows.purchase-item/create internal-item datomic)))
@@ -79,26 +79,23 @@
           ->Success))
 
 (s/defn change-category-order
-  [{{datomic :datomic}                     :component
-    {:keys [old-position new-position id]} :path-params}]
+  [{{datomic :datomic}        :component
+    {:keys [id new-position]} :path-params}]
   (branch (misc.either/try-right
-            (let [list-id (adapters.misc/string->uuid id)
-                  old-position (adapters.misc/string->integer old-position)
+            (let [category-id (adapters.misc/string->uuid id)
                   new-position (adapters.misc/string->integer new-position)]
-              (flows.purchase-category/change-categories-order list-id old-position new-position datomic)))
+              (flows.purchase-category/change-categories-order category-id new-position datomic)))
           ->Error
           ->Success))
 
 (s/defn change-item-order
-  [{{datomic :datomic}                                                     :component
-    {:keys [old-position new-position id old-category-id new-category-id]} :path-params}]
+  [{{datomic :datomic}                        :component
+    {:keys [id new-category-id new-position]} :path-params}]
   (branch (misc.either/try-right
-            (let [list-id (adapters.misc/string->uuid id)
-                  old-category-id (adapters.misc/string->uuid old-category-id)
+            (let [item-id (adapters.misc/string->uuid id)
                   new-category-id (adapters.misc/string->uuid new-category-id)
-                  old-position (adapters.misc/string->integer old-position)
                   new-position (adapters.misc/string->integer new-position)]
-              (flows.purchase-item/change-items-order old-category-id new-category-id old-position new-position datomic)))
+              (flows.purchase-item/change-items-order item-id new-category-id new-position datomic)))
           ->Error
           ->Success))
 
@@ -118,7 +115,7 @@
     ["/api/purchases/lists" :put [edit-purchase-lists] :route-name :edit-purchases-lists]
     ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
     ["/api/purchases/categories" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
-    ["/api/purchases/lists/:id/categories/changeOrder/:old-position/:new-position" :post [change-category-order] :route-name :change-category-order]
+    ["/api/purchases/categories/:id/changeOrder/:new-position" :put [change-category-order] :route-name :change-category-order]
     ["/api/purchases/items" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
-    ["/api/purchases/lists/:id/items/changeOrder/:old-category-id/:new-category-id/:old-position/:new-position" :post [change-item-order] :route-name :change-item-order]
+    ["/api/purchases/items/:id/changeOrder/:new-category-id/:new-position" :put [change-item-order] :route-name :change-item-order]
     ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})

@@ -6,7 +6,6 @@
             [purchase-listinator.adapters.db.purchase-category :as adapters.db.purchase-category]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]))
 
-
 (s/defn ^:private category->internal
   [{:purchase-category/keys [items] :as db-category}]
   (-> (adapters.db.purchase-category/db->internal db-category)

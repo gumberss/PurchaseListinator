@@ -62,16 +62,27 @@
        ffirst
        adapters.db.purchase-item/db->internal))
 
+(s/defn get-by-id :- models.internal.purchase-item/PurchaseItem
+  [item-id :- s/Uuid
+   {:keys [connection]}]
+  (->> (d/q '[:find (pull ?i [* {:purchase-item/category [:purchase-category/id]}])
+              :in $ ?i-id ?name
+              :where
+              [?i :purchase-item/id ?i-id]]
+            (d/db connection) item-id name)
+       ffirst
+       adapters.db.purchase-item/db->internal))
+
 (s/defn get-by-position-range :- models.internal.purchase-item/PurchaseItems
   [category-id :- s/Uuid
    start-range :- s/Num
    end-range :- s/Num
    {:keys [connection]}]
-  (->> (d/q '[:find [(pull ?i [*]) ...]
+  (->> (d/q '[:find [(pull ?i [* {:purchase-item/category [:purchase-category/id]}]) ...]
               :in $ ?c-id ?s-range ?e-range
               :where
               [?c :purchase-category/id ?c-id]
-              [?c :purchase-category/purchase-items ?i]
+              [?i :purchase-item/category ?c]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]
               [(<= ?o ?e-range)]]
@@ -82,13 +93,13 @@
   [category-id :- s/Uuid
    start-range :- s/Num
    {:keys [connection]}]
-  (->> (d/q '[:find [(pull ?i [*]) ...]
+  (->> (d/q '[:find [(pull ?i [* {:purchase-item/category [:purchase-category/id]}]) ...]
               :in $ ?c-id ?s-range
               :where
               [?c :purchase-category/id ?c-id]
-              [?c :purchase-category/purchase-items ?i]
+              [?i :purchase-item/category ?c]
               [?i :purchase-item/order-position ?o]
-              [(>= ?s-range ?o)]]
+              [(<= ?s-range ?o)]]
             (d/db connection) category-id start-range)
        (map adapters.db.purchase-item/db->internal)))
 

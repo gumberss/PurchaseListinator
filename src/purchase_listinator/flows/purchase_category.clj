@@ -21,16 +21,16 @@
         (datomic.purchase-category/upsert new-category datomic)))))
 
 (s/defn change-categories-order
-  [list-id :- s/Uuid
-   old-position :- s/Num
+  [category-id :- s/Uuid
    new-position :- s/Num
    datomic]
   (either/try-right
-    (let [start-position (min old-position new-position)
-          end-position (max old-position new-position)
-          repositioned-categories (->> (datomic.purchase-category/get-by-position-range list-id start-position end-position datomic)
+    (let [{:keys [order-position]} (datomic.purchase-category/get-by-id category-id datomic)
+          start-position (min order-position new-position)
+          end-position (max order-position new-position)
+          repositioned-categories (->> (datomic.purchase-category/get-by-position-range category-id start-position end-position datomic)
                                        logic.purchase-category/sort-by-position
-                                       (logic.reposition/reposition old-position new-position))]
+                                       (logic.reposition/reposition order-position new-position))]
       (datomic.purchase-category/upsert-many repositioned-categories datomic))))
 
 
