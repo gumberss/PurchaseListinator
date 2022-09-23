@@ -119,6 +119,6 @@
     ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
     ["/api/purchases/categories" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
     ["/api/purchases/lists/:id/categories/changeOrder/:old-position/:new-position" :post [change-category-order] :route-name :change-category-order]
-    ["/api/purchases/category/add/item" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
+    ["/api/purchases/items" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
     ["/api/purchases/lists/:id/items/changeOrder/:old-category-id/:new-category-id/:old-position/:new-position" :post [change-item-order] :route-name :change-item-order]
     ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})

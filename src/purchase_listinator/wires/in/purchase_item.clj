@@ -6,8 +6,7 @@
    :id               s/Str
    :quantity         s/Int
    :order-position   s/Int
-   :category-id      s/Str
-   :purchase-list-id s/Str})
+   :category-id      s/Str})
 
 (s/defschema PurchaseItem purchase-item-skeleton)
 

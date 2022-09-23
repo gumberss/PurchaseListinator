@@ -13,5 +13,7 @@
 (s/defn db->internal :- models.internal.purchase-item/PurchaseItem
   [db-wire]
   (when (not-empty db-wire)
-    (-> (misc.datomic/datomic->entity db-wire)
-        (misc.general/unnamespace-keys))))
+    (let [{:keys [category] :as parsed} (-> (misc.datomic/datomic->entity db-wire)
+                                            (misc.general/unnamespace-keys))]
+      (-> (assoc parsed :category-id (:purchase-category/id category))
+          (dissoc :category)))))

@@ -84,12 +84,11 @@
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [* {[:purchase-category/_purchase-list :as :purchase-list/categories]
-                                 [* {[:purchase-item/_category :as :purchase-category/items] [*]
+                                 [* {[:purchase-item/_category :as :purchase-category/items] [* {:purchase-item/category [:purchase-category/id]}]
                                      :purchase-category/purchase-list [:purchase-list/id]}]}])
               :in $ ?id
               :where
               [?e :purchase-list/id ?id]]
             (d/db connection) purchase-list-id)
        ffirst
-
        (adapters.db.purchase-list-management-data/db->categories+items-view)))
