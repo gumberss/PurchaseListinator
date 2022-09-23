@@ -5,15 +5,11 @@
             [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]))
 
-(s/defn add-item->db [category-id
-                      internal-item]
-  {:purchase-category/id                  category-id
-   :purchase-category/purchase-items [(adapters.db.purchase-item/internal->db internal-item)]})
-
-
 (s/defn internal->db
-  [internal :- models.internal.purchase-category/PurchaseCategory]
-  (misc.general/namespace-keys internal :purchase-category))
+  [{:keys [purchase-list-id] :as internal} :- models.internal.purchase-category/PurchaseCategory]
+  (-> (dissoc internal :purchase-list-id)
+      (assoc :purchase-list {:purchase-list/id purchase-list-id})
+      (misc.general/namespace-keys :purchase-category)))
 
 (s/defn db->internal :- models.internal.purchase-category/PurchaseCategory
   [db-wire]

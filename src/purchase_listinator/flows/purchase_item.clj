@@ -8,18 +8,16 @@
             [purchase-listinator.logic.reposition :as logic.reposition]))
 
 (s/defn create
-  [purchase-list-id :- s/Uuid
-   purchase-category-id :- s/Uuid
-   {:keys [name] :as item} :- models.internal.purchase-item/PurchaseItem
+  [{:keys [name category-id] :as item} :- models.internal.purchase-item/PurchaseItem
    datomic]
   (either/try-right
-    (if-let [existent-item (datomic.purchase-item/get-by-name name purchase-list-id datomic)]
+    (if-let [existent-item (datomic.purchase-item/get-by-name name category-id datomic)]
       (do (println existent-item)
           (left {:status 400
                  :error  {:message "[[ITEM_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}}))
-      (-> (datomic.purchase-item/items-count purchase-list-id purchase-category-id datomic)
+      (-> (datomic.purchase-item/items-count category-id datomic)
           (logic.purchase-item/change-order-position item)
-          (datomic.purchase-item/upsert purchase-category-id datomic)))))
+          (datomic.purchase-item/upsert datomic)))))
 
 (s/defn change-items-order-inside-same-category
   [category-id :- s/Uuid
@@ -43,7 +41,7 @@
         new-category-items-to-change-position (datomic.purchase-item/get-by-position-start new-category-id new-position datomic)
         item-changed (first (filter old-category-items-to-change-position #(= old-position (:order-position %))))]
     (datomic.purchase-item/delete item-changed datomic)
-    (datomic.purchase-item/upsert item-changed new-category-id datomic)))
+    (datomic.purchase-item/upsert item-changed datomic)))
 
 (s/defn change-items-order
   [old-category-id :- s/Uuid

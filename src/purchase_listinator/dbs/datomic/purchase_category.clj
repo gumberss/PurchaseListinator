@@ -22,8 +22,8 @@
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
     :db/doc         "The purchase-category color"}
-   {:db/ident       :purchase-category/purchase-items
-    :db/cardinality :db.cardinality/many
+   {:db/ident       :purchase-category/purchase-list
+    :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/ref}])
 
 (s/defn ^:private transact
@@ -33,11 +33,11 @@
 (s/defn categories-count
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
-  (-> (d/q '[:find (count ?e)
+  (-> (d/q '[:find (count ?c)
              :in $ ?purchase-list-id
              :where
-             [?purchase-list :purchase-list/id ?purchase-list-id]
-             [?purchase-list :purchase-list/purchase-categories ?e]]
+             [?l :purchase-list/id ?purchase-list-id]
+             [?c :purchase-category/purchase-list ?l]]
            (d/db connection) purchase-list-id)
       ffirst))
 
@@ -49,7 +49,7 @@
               :in $ ?list-id ?name
               :where
               [?l :purchase-list/id ?list-id]
-              [?l :purchase-list/purchase-categories ?c]
+              [?c :purchase-category/purchase-list ?l]
               [?c :purchase-category/name ?name]]
             (d/db connection) purchase-list-id name)
        ffirst
@@ -72,8 +72,7 @@
        (map adapters.db.purchase-category/db->internal)))
 
 (s/defn upsert :- models.internal.purchase-category/PurchaseCategory
-  [list-id :- s/Uuid
-   purchase-category :- models.internal.purchase-category/PurchaseCategory
+  [purchase-category :- models.internal.purchase-category/PurchaseCategory
    {:keys [connection]}]
   (->> (adapters.db.purchase-category/internal->db purchase-category)
        (transact connection))
@@ -86,12 +85,3 @@
        (mapv adapters.db.purchase-category/internal->db)
        (apply transact connection))
   purchase-categories)
-
-
-(s/defn add-item
-  [list-id
-   category
-   {:keys [connection]}]
-  (->> (adapters.db.purchase-category/add-item->db list-id category)
-       (transact connection))
-  category)
