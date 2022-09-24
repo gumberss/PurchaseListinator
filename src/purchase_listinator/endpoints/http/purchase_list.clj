@@ -24,6 +24,17 @@
     {:status 200
      :body   data}))
 
+(s/defn default-branch*
+  [err-func
+   suc-fun
+   try-fun]
+  (branch try-fun err-func suc-fun))
+
+(s/defn default-branch
+  [try-fun]
+  (default-branch* ->Error ->Success try-fun))
+
+
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   out.purchases-lists/PurchaseList}
   [{{:keys [datomic]} :component}]
@@ -108,6 +119,14 @@
           ->Error
           ->Success))
 
+(s/defn change-item-quantity
+  [{{:keys [datomic]}         :component
+    {:keys [id new-quantity]} :path-params}]
+  (default-branch (misc.either/try-right
+                    (let [new-quantity (adapters.misc/string->integer new-quantity)
+                          item-id (adapters.misc/string->uuid id)]
+                      (flows.purchase-item/change-item-quantity item-id new-quantity datomic)))))
+
 ;todo: /lists should return only the purchase list data and /lists/:id should return items and categories too
 (def routes
   #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
@@ -117,5 +136,6 @@
     ["/api/purchases/categories" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
     ["/api/purchases/categories/:id/changeOrder/:new-position" :put [change-category-order] :route-name :change-category-order]
     ["/api/purchases/items" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
+    ["/api/purchases/items/:id/changeQuantity/:new-quantity" :put [change-item-quantity] :route-name :change-item-quantity]
     ["/api/purchases/items/:id/changeOrder/:new-category-id/:new-position" :put [change-item-order] :route-name :change-item-order]
     ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})
