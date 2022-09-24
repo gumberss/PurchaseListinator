@@ -19,6 +19,12 @@
           (logic.purchase-item/change-order-position item)
           (datomic.purchase-item/upsert datomic)))))
 
+(s/defn delete
+  [item-id :- s/Uuid
+   datomic]
+  (either/try-right
+    (datomic.purchase-item/delete-by-id item-id datomic)))
+
 (s/defn change-items-order-inside-same-category
   [category-id :- s/Uuid
    old-position :- s/Num
