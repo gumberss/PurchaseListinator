@@ -32,8 +32,8 @@
   @(d/transact connection purchases-items))
 
 (s/defn ^:private retract
-  [connection & purchases-items]
-  @(d/transact connection {:db/retract purchases-items}))
+  [connection & purchases-items-ids]
+  @(d/transact connection (mapv #(vector :db.fn/retractEntity [:purchase-item/id %]) purchases-items-ids)))
 
 (s/defn items-count
   [purchase-category-id :- s/Uuid
@@ -103,12 +103,11 @@
             (d/db connection) category-id start-range)
        (map adapters.db.purchase-item/db->internal)))
 
-(s/defn delete :- models.internal.purchase-item/PurchaseItem
-  [purchase-item :- models.internal.purchase-item/PurchaseItem
+(s/defn delete-by-id :- models.internal.purchase-item/PurchaseItem
+  [purchase-item-id :- models.internal.purchase-item/PurchaseItem
    {:keys [connection]}]
-  (->> (adapters.db.purchase-item/internal->db purchase-item)
-       (retract connection))
-  purchase-item)
+  (retract connection purchase-item-id)
+  purchase-item-id)
 
 (s/defn upsert :- models.internal.purchase-item/PurchaseItem
   [purchase-item :- models.internal.purchase-item/PurchaseItem

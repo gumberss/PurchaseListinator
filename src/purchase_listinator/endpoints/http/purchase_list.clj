@@ -127,6 +127,13 @@
                           item-id (adapters.misc/string->uuid id)]
                       (flows.purchase-item/change-item-quantity item-id new-quantity datomic)))))
 
+(s/defn delete-purchases-lists-item
+  [{{:keys [datomic]}         :component
+    {:keys [id]} :path-params}]
+  (default-branch (misc.either/try-right
+                    (-> (adapters.misc/string->uuid id)
+                        (flows.purchase-item/delete datomic)))))
+
 ;todo: /lists should return only the purchase list data and /lists/:id should return items and categories too
 (def routes
   #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
@@ -136,6 +143,7 @@
     ["/api/purchases/categories" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
     ["/api/purchases/categories/:id/changeOrder/:new-position" :put [change-category-order] :route-name :change-category-order]
     ["/api/purchases/items" :post [add-purchases-lists-item] :route-name :add-purchases-lists-item]
+    ["/api/purchases/items/:id" :delete [delete-purchases-lists-item] :route-name :delete-purchases-lists-item]
     ["/api/purchases/items/:id/changeQuantity/:new-quantity" :put [change-item-quantity] :route-name :change-item-quantity]
     ["/api/purchases/items/:id/changeOrder/:new-category-id/:new-position" :put [change-item-order] :route-name :change-item-order]
     ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})
