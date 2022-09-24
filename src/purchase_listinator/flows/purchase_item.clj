@@ -8,18 +8,16 @@
             [purchase-listinator.logic.reposition :as logic.reposition]))
 
 (s/defn create
-  [purchase-list-id :- s/Uuid
-   purchase-category-id :- s/Uuid
-   {:keys [name] :as item} :- models.internal.purchase-item/PurchaseItem
+  [{:keys [name category-id] :as item} :- models.internal.purchase-item/PurchaseItem
    datomic]
   (either/try-right
-    (if-let [existent-item (datomic.purchase-item/get-by-name name purchase-list-id datomic)]
+    (if-let [existent-item (datomic.purchase-item/get-by-name name category-id datomic)]
       (do (println existent-item)
           (left {:status 400
                  :error  {:message "[[ITEM_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}}))
-      (-> (datomic.purchase-item/items-count purchase-list-id purchase-category-id datomic)
+      (-> (datomic.purchase-item/items-count category-id datomic)
           (logic.purchase-item/change-order-position item)
-          (datomic.purchase-item/upsert purchase-category-id datomic)))))
+          (datomic.purchase-item/upsert datomic)))))
 
 (s/defn change-items-order-inside-same-category
   [category-id :- s/Uuid
@@ -29,32 +27,37 @@
   (let [start-position (min old-position new-position)
         end-position (max old-position new-position)
         repositioned-items (->> (datomic.purchase-item/get-by-position-range category-id start-position end-position datomic)
-                                     logic.purchase-item/sort-by-position
-                                     (logic.reposition/reposition old-position new-position))]
+                                logic.purchase-item/sort-by-position
+                                (logic.reposition/reposition old-position new-position))]
     (datomic.purchase-item/upsert-many repositioned-items datomic)))
 
 (s/defn insert-existent-item-in-another-category
-  [old-category-id :- s/Uuid
+  [{:keys [id category-id order-position] :as item} :- models.internal.purchase-item/PurchaseItem
    new-category-id :- s/Uuid
-   old-position :- s/Num
    new-position :- s/Num
    datomic]
-  (let [old-category-items-to-change-position (datomic.purchase-item/get-by-position-start old-category-id old-position datomic)
-        new-category-items-to-change-position (datomic.purchase-item/get-by-position-start new-category-id new-position datomic)
-        item-changed (first (filter old-category-items-to-change-position #(= old-position (:order-position %))))]
-    (datomic.purchase-item/delete item-changed datomic)
-    (datomic.purchase-item/upsert item-changed new-category-id datomic)))
+  (let [old-category-items-changed (->> (datomic.purchase-item/get-by-position-start category-id order-position datomic)
+                                        (filter #(not= id (:id %)))
+                                        (map logic.reposition/decrement-order))
+        new-category-items-changed (->> (datomic.purchase-item/get-by-position-start new-category-id new-position datomic)
+                                        (map logic.reposition/increment-order))
+        changed-item (assoc item :category-id new-category-id :order-position new-position)]
+
+    (-> (concat old-category-items-changed
+                new-category-items-changed
+                [changed-item])
+        (datomic.purchase-item/upsert-many datomic))))
 
 (s/defn change-items-order
-  [old-category-id :- s/Uuid
+  [item-id :- s/Uuid
    new-category-id :- s/Uuid
-   old-position :- s/Num
    new-position :- s/Num
    datomic]
   (either/try-right
-    (if (= old-category-id new-category-id)
-      (change-items-order-inside-same-category new-category-id old-position new-position datomic)
-      (insert-existent-item-in-another-category old-category-id new-category-id old-position new-position datomic))))
+    (let [{:keys [category-id order-position] :as item} (datomic.purchase-item/get-by-id item-id datomic)]
+      (if (= category-id new-category-id)
+        (change-items-order-inside-same-category new-category-id order-position new-position datomic)
+        (insert-existent-item-in-another-category item new-category-id new-position datomic)))))
 
 
 

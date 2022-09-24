@@ -10,28 +10,27 @@
 
 
 (s/defn create
-  [list-id :- s/Uuid
-   {:keys [name] :as category} :- models.internal.purchase-category/PurchaseCategory
+  [{:keys [name purchase-list-id] :as category} :- models.internal.purchase-category/PurchaseCategory
    datomic]
   (either/try-right
-    (if (datomic.purchase-category/get-by-name list-id name datomic)
+    (if (datomic.purchase-category/get-by-name purchase-list-id name datomic)
       (left {:status 400
              :error  {:message "[[CATEGORY_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
-      (let [new-category (-> (datomic.purchase-category/categories-count list-id datomic)
+      (let [new-category (-> (datomic.purchase-category/categories-count purchase-list-id datomic)
                              (logic.reposition/change-order-position category))]
-        (datomic.purchase-list/add-category list-id new-category datomic)))))
+        (datomic.purchase-category/upsert new-category datomic)))))
 
 (s/defn change-categories-order
-  [list-id :- s/Uuid
-   old-position :- s/Num
+  [category-id :- s/Uuid
    new-position :- s/Num
    datomic]
   (either/try-right
-    (let [start-position (min old-position new-position)
-          end-position (max old-position new-position)
-          repositioned-categories (->> (datomic.purchase-category/get-by-position-range list-id start-position end-position datomic)
+    (let [{:keys [order-position]} (datomic.purchase-category/get-by-id category-id datomic)
+          start-position (min order-position new-position)
+          end-position (max order-position new-position)
+          repositioned-categories (->> (datomic.purchase-category/get-by-position-range category-id start-position end-position datomic)
                                        logic.purchase-category/sort-by-position
-                                       (logic.reposition/reposition old-position new-position))]
+                                       (logic.reposition/reposition order-position new-position))]
       (datomic.purchase-category/upsert-many repositioned-categories datomic))))
 
 

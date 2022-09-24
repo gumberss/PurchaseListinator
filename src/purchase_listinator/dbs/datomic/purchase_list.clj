@@ -21,10 +21,7 @@
    {:db/ident       :purchase-list/in-progress
     :db/valueType   :db.type/boolean
     :db/cardinality :db.cardinality/one
-    :db/doc         "If true, someone is buying the itens in this list"}
-   {:db/ident       :purchase-list/purchase-categories
-    :db/cardinality :db.cardinality/many
-    :db/valueType   :db.type/ref}])
+    :db/doc         "If true, someone is buying the itens in this list"}])
 
 (s/defn ^:private transact
   [connection & purchases-lists]
@@ -83,23 +80,15 @@
         :purchase-list/enabled true}
        (transact connection)))
 
-(s/defn add-category
-  [list-id
-   category
-   {:keys [connection]}]
-  (->> (adapter.purchase-list/add-category->db list-id category)
-       (transact connection))
-  category)
-
 (s/defn get-management-data
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?e [*
-                              {:purchase-list/purchase-categories
-                               [* {:purchase-category/purchase-items [*]}]}])
+  (->> (d/q '[:find (pull ?e [* {[:purchase-category/_purchase-list :as :purchase-list/categories]
+                                 [* {[:purchase-item/_category :as :purchase-category/items] [* {:purchase-item/category [:purchase-category/id]}]
+                                     :purchase-category/purchase-list [:purchase-list/id]}]}])
               :in $ ?id
               :where
               [?e :purchase-list/id ?id]]
             (d/db connection) purchase-list-id)
        ffirst
-       (adapters.db.purchase-list-management-data/db->internal purchase-list-id)))
+       (adapters.db.purchase-list-management-data/db->categories+items-view)))

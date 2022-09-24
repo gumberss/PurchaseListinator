@@ -6,6 +6,7 @@
             [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]))
 
 (def db-uri "datomic:free://localhost:4334/datomic-component?password=datomic")
+
 (d/create-database db-uri)
 
 (def schema (concat datomic.purchase-list/schema

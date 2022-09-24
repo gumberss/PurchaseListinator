@@ -5,7 +5,8 @@
             [purchase-listinator.logic.purchase-list :as logic.purchase-list]
             [purchase-listinator.logic.purchase-category :as logic.purchase-category]
             [cats.monad.either :refer [left right]]
-            [purchase-listinator.misc.either :as either]))
+            [purchase-listinator.misc.either :as either]
+            [purchase-listinator.models.internal.purchase-list-management-data :as internal.purchase-list-management-data]))
 
 (s/defn get-lists
   [datomic]
@@ -40,7 +41,7 @@
                   (datomic.purchase-list/upsert datomic)
                   right)))))
 
-(s/defn management-data
+(s/defn management-data :- internal.purchase-list-management-data/ManagementData
   [purchase-list-id :- s/Uuid
    datomic]
   (let [{:keys [categories] :as management-data} (datomic.purchase-list/get-management-data purchase-list-id datomic)]
