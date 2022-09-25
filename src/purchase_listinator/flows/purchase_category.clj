@@ -4,7 +4,6 @@
             [cats.monad.either :refer [left]]
             [purchase-listinator.misc.either :as either]
             [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]
-            [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
             [purchase-listinator.logic.purchase-category :as logic.purchase-category]
             [purchase-listinator.logic.reposition :as logic.reposition]))
 
@@ -19,6 +18,12 @@
       (let [new-category (-> (datomic.purchase-category/categories-count purchase-list-id datomic)
                              (logic.reposition/change-order-position category))]
         (datomic.purchase-category/upsert new-category datomic)))))
+
+(s/defn delete
+  [item-id :- s/Uuid
+   datomic]
+  (either/try-right
+    (datomic.purchase-category/delete-by-id item-id datomic)))
 
 (s/defn change-categories-order
   [category-id :- s/Uuid

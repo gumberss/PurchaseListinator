@@ -30,6 +30,10 @@
   [connection & purchases-categories]
   @(d/transact connection purchases-categories))
 
+(s/defn ^:private retract
+  [connection & purchases-items-ids]
+  @(d/transact connection (mapv #(vector :db.fn/retractEntity [:purchase-category/id %]) purchases-items-ids)))
+
 (s/defn categories-count
   [purchase-list-id :- s/Uuid
    {:keys [connection]}]
@@ -97,3 +101,10 @@
        (mapv adapters.db.purchase-category/internal->db)
        (apply transact connection))
   purchase-categories)
+
+(s/defn delete-by-id :- s/Uuid
+  [purchase-category-id :- s/Uuid
+   {:keys [connection]}]
+  (retract connection purchase-category-id)
+  purchase-category-id)
+

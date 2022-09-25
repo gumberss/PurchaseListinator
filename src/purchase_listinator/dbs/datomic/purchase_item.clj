@@ -103,8 +103,8 @@
             (d/db connection) category-id start-range)
        (map adapters.db.purchase-item/db->internal)))
 
-(s/defn delete-by-id :- models.internal.purchase-item/PurchaseItem
-  [purchase-item-id :- models.internal.purchase-item/PurchaseItem
+(s/defn delete-by-id :- s/Uuid
+  [purchase-item-id :- s/Uuid
    {:keys [connection]}]
   (retract connection purchase-item-id)
   purchase-item-id)
