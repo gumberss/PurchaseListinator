@@ -4,10 +4,8 @@
             [cats.monad.either :refer [left]]
             [purchase-listinator.misc.either :as either]
             [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]
-            [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
             [purchase-listinator.logic.purchase-category :as logic.purchase-category]
             [purchase-listinator.logic.reposition :as logic.reposition]))
-
 
 (s/defn create
   [{:keys [name purchase-list-id] :as category} :- models.internal.purchase-category/PurchaseCategory
@@ -19,6 +17,25 @@
       (let [new-category (-> (datomic.purchase-category/categories-count purchase-list-id datomic)
                              (logic.reposition/change-order-position category))]
         (datomic.purchase-category/upsert new-category datomic)))))
+
+(s/defn edit
+  [{:keys [name color id]} :- models.internal.purchase-category/PurchaseCategory
+   datomic]
+  (either/try-right
+    (if-let [existent-category (datomic.purchase-category/get-by-id id datomic)]
+      (if (or (not= name (:name existent-category))
+              (not= color (:color existent-category)))
+        (-> (assoc existent-category :name name :color color)
+            (datomic.purchase-category/upsert datomic))
+        existent-category)
+      (left {:status 404
+             :error  {:message "[[CATEGORY_NOT_FOUND]]"}}))))
+
+(s/defn delete
+  [item-id :- s/Uuid
+   datomic]
+  (either/try-right
+    (datomic.purchase-category/delete-by-id item-id datomic)))
 
 (s/defn change-categories-order
   [category-id :- s/Uuid

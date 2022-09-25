@@ -65,6 +65,16 @@
         (change-items-order-inside-same-category new-category-id order-position new-position datomic)
         (insert-existent-item-in-another-category item new-category-id new-position datomic)))))
 
+(s/defn edit-name
+  [item-id :- s/Uuid
+   new-name :- s/Str
+   datomic]
+  (either/try-right
+    (let [{:keys [name] :as item} (datomic.purchase-item/get-by-id item-id datomic)]
+      (if (not= new-name name)
+        (-> (assoc item :name new-name)
+            (datomic.purchase-item/upsert datomic))))))
+
 (s/defn change-item-quantity
   [item-id :- s/Uuid
    new-quantity :- s/Num
