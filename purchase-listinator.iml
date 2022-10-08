@@ -19,7 +19,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Leiningen: camel-snake-kebab:0.4.3" level="project" />
     <orderEntry type="library" name="Leiningen: cheshire:5.9.0" level="project" />
-    <orderEntry type="library" name="Leiningen: clj-time:0.15.1" level="project" />
+    <orderEntry type="library" name="Leiningen: clj-time:0.15.2" level="project" />
     <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
     <orderEntry type="library" name="Leiningen: clojure-complete:0.2.5" level="project" />
     <orderEntry type="library" name="Leiningen: clojurewerkz/support:1.1.0" level="project" />

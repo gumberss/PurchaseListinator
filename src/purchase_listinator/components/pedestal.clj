@@ -2,12 +2,14 @@
   (:require [com.stuartsierra.component :as component]
             [io.pedestal.http :as http]
             [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
+            [purchase-listinator.endpoints.http.shopping :as http.shopping]
             [io.pedestal.http.body-params :as body-params]
             [purchase-listinator.misc.pedestal :as misc.pedestal]
             [camel-snake-kebab.core :as csk]))
 
 (def all-routes
-  (set (concat http.purchase-list/routes)))
+  (set (concat http.purchase-list/routes
+               http.shopping/routes)))
 
 (defn test?
   [service-map]
@@ -41,10 +43,10 @@
     (if service
       this
       (cond-> service-map
-              true (assoc ::http/routes  (add-interceptors all-routes this))
-              true                      http/create-server
+              true (assoc ::http/routes (add-interceptors all-routes this))
+              true http/create-server
               (not (test? service-map)) http/start
-              true                      ((partial assoc this :service)))))
+              true ((partial assoc this :service)))))
   (stop [this]
     (when (and service (not (test? service-map)))
       (http/stop service))
