@@ -9,38 +9,16 @@
             [purchase-listinator.flows.purchase-category :as flows.purchase-category]
             [purchase-listinator.flows.purchase-item :as flows.purchase-item]
             [purchase-listinator.misc.either :as misc.either]
+            [purchase-listinator.misc.http :as misc.http]
             [cats.monad.either :refer :all]))
-
-(s/defn ->Error
-  [{:keys [status error] :as err}]
-  (println err)
-  {:status (or status 500)
-   :body   (or error err)})
-
-(s/defn ->Success
-  [data]
-  (if (left? data)
-    (->Error data)
-    {:status 200
-     :body   data}))
-
-(s/defn default-branch*
-  [err-func
-   suc-fun
-   try-fun]
-  (branch try-fun err-func suc-fun))
-
-(s/defn default-branch
-  [try-fun]
-  (default-branch* ->Error ->Success try-fun))
 
 
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   out.purchases-lists/PurchaseList}
   [{{:keys [datomic]} :component}]
   (branch (flows.purchase-list/get-lists datomic)
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn post-purchase-lists :- {:status s/Int
                                 :body   {}}
@@ -49,8 +27,8 @@
   (branch (misc.either/try-right
             (-> (adapters.in.purchase-list/wire->internal wire)
                 (flows.purchase-list/create datomic)))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn disable-purchase-lists :- {:status s/Int
                                    :body   {}}
@@ -59,8 +37,8 @@
 
   (branch (-> (adapters.misc/string->uuid id)
               (flows.purchase-list/disable datomic))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn edit-purchase-lists :- {:status s/Int
                                 :body   {}}
@@ -68,8 +46,8 @@
     wire               :json-params}]
   (branch (-> (adapters.in.purchase-list/wire->internal wire)
               (flows.purchase-list/edit datomic))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn add-purchases-lists-item
   [{{datomic :datomic} :component
@@ -77,8 +55,8 @@
   (branch (misc.either/try-right
             (let [internal-item (adapters.in.purchase-item/wire->internal wire)]
               (flows.purchase-item/create internal-item datomic)))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn add-purchases-lists-category
   [{{datomic :datomic} :component
@@ -86,8 +64,8 @@
   (branch (misc.either/try-right
             (let [category (adapters.in.purchase-category/wire->internal wire)]
               (flows.purchase-category/create category datomic)))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn change-category-order
   [{{datomic :datomic}        :component
@@ -96,8 +74,8 @@
             (let [category-id (adapters.misc/string->uuid id)
                   new-position (adapters.misc/string->integer new-position)]
               (flows.purchase-category/change-categories-order category-id new-position datomic)))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn change-item-order
   [{{datomic :datomic}                        :component
@@ -107,8 +85,8 @@
                   new-category-id (adapters.misc/string->uuid new-category-id)
                   new-position (adapters.misc/string->integer new-position)]
               (flows.purchase-item/change-items-order item-id new-category-id new-position datomic)))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn purchases-lists-management-data
   [{{datomic :datomic} :component
@@ -116,43 +94,42 @@
   (branch (misc.either/try-right
             (-> (adapters.misc/string->uuid id)
                 (flows.purchase-list/management-data datomic)))
-          ->Error
-          ->Success))
+          misc.http/->Error
+          misc.http/->Success))
 
 (s/defn change-item-quantity
   [{{:keys [datomic]}         :component
     {:keys [id new-quantity]} :path-params}]
-  (default-branch (misc.either/try-right
+  (misc.http/default-branch (misc.either/try-right
                     (let [new-quantity (adapters.misc/string->integer new-quantity)
                           item-id (adapters.misc/string->uuid id)]
                       (flows.purchase-item/change-item-quantity item-id new-quantity datomic)))))
 
 (s/defn delete-purchases-lists-item
-  [{{:keys [datomic]}         :component
-    {:keys [id]} :path-params}]
-  (default-branch (misc.either/try-right
+  [{{:keys [datomic]} :component
+    {:keys [id]}      :path-params}]
+  (misc.http/default-branch (misc.either/try-right
                     (-> (adapters.misc/string->uuid id)
                         (flows.purchase-item/delete datomic)))))
 
 (s/defn edit-item-name
-  [{{:keys [datomic]}         :component
+  [{{:keys [datomic]}     :component
     {:keys [id new-name]} :path-params}]
-  (default-branch (misc.either/try-right
+  (misc.http/default-branch (misc.either/try-right
                     (-> (adapters.misc/string->uuid id)
-                        (flows.purchase-item/edit-name  new-name datomic)))))
+                        (flows.purchase-item/edit-name new-name datomic)))))
 
 (s/defn delete-purchases-lists-category
-  [{{:keys [datomic]}         :component
-    {:keys [id]} :path-params}]
-  (default-branch (misc.either/try-right
+  [{{:keys [datomic]} :component
+    {:keys [id]}      :path-params}]
+  (misc.http/default-branch (misc.either/try-right
                     (-> (adapters.misc/string->uuid id)
                         (flows.purchase-category/delete datomic)))))
 
-
 (s/defn edit-category
-  [{{:keys [datomic]}         :component
-    wire               :json-params}]
-  (default-branch (misc.either/try-right
+  [{{:keys [datomic]} :component
+    wire              :json-params}]
+  (misc.http/default-branch (misc.either/try-right
                     (-> (adapters.in.purchase-category/wire->internal wire)
                         (flows.purchase-category/edit datomic)))))
 
