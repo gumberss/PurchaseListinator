@@ -3,7 +3,8 @@
             [datomic.api :as d]
             [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
             [purchase-listinator.dbs.datomic.purchase-category :as datomic.purchase-category]
-            [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]))
+            [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]
+            [purchase-listinator.dbs.datomic.shopping :as datomic.shopping]))
 
 (def db-uri "datomic:free://localhost:4334/datomic-component?password=datomic")
 
@@ -11,7 +12,8 @@
 
 (def schema (concat datomic.purchase-list/schema
                     datomic.purchase-category/schema
-                    datomic.purchase-item/schema))
+                    datomic.purchase-item/schema
+                    datomic.shopping/schema))
 
 (defn create-schema [conn]
   @(d/transact conn schema))

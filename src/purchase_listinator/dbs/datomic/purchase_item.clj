@@ -3,7 +3,7 @@
             [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]
             [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]
-            [purchase-listinator.adapters.db.purchase-category :as adapters.db.purchase-category]))
+            [purchase-listinator.misc.datomic :as misc.datomic]))
 
 (def schema
   [{:db/ident       :purchase-item/id
@@ -26,10 +26,6 @@
    {:db/ident       :purchase-item/category
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/ref}])
-
-(s/defn ^:private transact
-  [connection & purchases-items]
-  @(d/transact connection purchases-items))
 
 (s/defn ^:private retract
   [connection & purchases-items-ids]
@@ -113,7 +109,7 @@
   [purchase-item :- models.internal.purchase-item/PurchaseItem
    {:keys [connection]}]
   (->> (adapters.db.purchase-item/internal->db purchase-item)
-       (transact connection))
+       (misc.datomic/transact connection))
   purchase-item)
 
 (s/defn upsert-many :- [models.internal.purchase-item/PurchaseItem]
@@ -121,5 +117,5 @@
    {:keys [connection]}]
   (->> purchase-items
        (map adapters.db.purchase-item/internal->db)
-       (apply transact connection))
+       (apply misc.datomic/transact connection))
   purchase-items)
