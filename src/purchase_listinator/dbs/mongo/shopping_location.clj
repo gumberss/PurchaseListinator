@@ -5,8 +5,8 @@
 
 (def collection :shopping-location-test)
 
-(s/defn insert :- models.internal.shopping-location/ShoppingLocation
-  [shopping-location :- models.internal.shopping-location/ShoppingLocation
+(s/defn upsert :- models.internal.shopping-location/ShoppingLocation
+  [{:keys [shopping-id] :as shopping-location} :- models.internal.shopping-location/ShoppingLocation
    {:keys [db]}]
-  (mc/insert db collection shopping-location)
+  (mc/update db collection {:shopping-id shopping-id} shopping-location {:upsert true})
   shopping-location)

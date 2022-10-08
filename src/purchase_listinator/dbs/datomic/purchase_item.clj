@@ -22,7 +22,7 @@
    {:db/ident       :purchase-item/order-position
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one
-    :db/doc         "The purchase-item order postion"}
+    :db/doc         "The purchase-item order position"}
    {:db/ident       :purchase-item/category
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/ref}])

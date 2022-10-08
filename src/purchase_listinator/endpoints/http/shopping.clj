@@ -8,11 +8,11 @@
             [purchase-listinator.adapters.in.shopping-initiation :as adapters.in.shopping-initiation]))
 
 (s/defn init-shopping
-  [{{:keys [datomic mongo]} :component
+  [{component :component
     wire                    :json-params}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.in.shopping-initiation/wire->internal wire)
-                                  (flows.shopping/init-shopping datomic mongo)))))
+                                  (flows.shopping/init-shopping component)))))
 
 (def routes
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
