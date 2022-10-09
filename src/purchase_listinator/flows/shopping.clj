@@ -30,6 +30,6 @@
 (s/defn find-existent
   [list-id :- s/Uuid
    {:keys [datomic]}]
-  (if-let [existent (datomic.shopping/get-by-list-id list-id datomic)]
+  (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id datomic)]
     existent
     (left (logic.errors/build 404 nil))))
