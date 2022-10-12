@@ -9,6 +9,3 @@
   (assoc wire :list-id (adapters.misc/string->uuid list-id)
               :latitude (Double/parseDouble latitude)
               :longitude (Double/parseDouble longitude)))
-
-
-
