@@ -11,6 +11,7 @@
             [purchase-listinator.dbs.mongo.shopping-location :as mongo.shopping-location]
             [purchase-listinator.misc.general :as misc.general]
             [purchase-listinator.logic.errors :as logic.errors]
+            [purchase-listinator.models.internal.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
             [purchase-listinator.dbs.redis.shopping :as redis.shopping]))
 
 (s/defn init-shopping
@@ -26,6 +27,16 @@
            (async/map vector)
            <!!
            last))))
+
+(s/defn get-initial-data
+  [{:keys [latitude longitude list-id]} :- models.internal.shopping-initiation-data-request/ShoppingInitiationDataRequest
+   {:keys [mongo datomic]}]
+  (let [near-places (mongo.shopping-location/find-by-location latitude longitude mongo)
+        first-near-shopping (and (seq near-places)
+                                 (datomic.shopping/get-by-id (-> near-places first :shopping-id) datomic))]
+    (if first-near-shopping
+      first-near-shopping
+      (left {:status 404 :data "not-found"}))))
 
 (s/defn find-existent
   [list-id :- s/Uuid
