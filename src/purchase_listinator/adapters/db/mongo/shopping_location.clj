@@ -9,6 +9,6 @@
       (dissoc :latitude :longitude)))
 
 (s/defn db->internal :- models.internal.shopping-location/ShoppingLocation
-  [{:keys [latlong] :as db}]
-  (-> (assoc db :longitude (first latlong) :latitude (second latlong))
-      (dissoc :latlong)))
+  [{{coordinates :coordinates} :latlong :as db}]
+  (-> (assoc db :longitude (first coordinates) :latitude (second coordinates))
+      (dissoc :latlong :_id)))

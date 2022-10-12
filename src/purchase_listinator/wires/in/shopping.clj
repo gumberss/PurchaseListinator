@@ -11,3 +11,8 @@
    :longitude s/Num})
 (s/defschema ShoppingInitiation shopping-initiation-skeleton)
 
+(def shopping-initiation-data-request-skeleton
+  {:list-id s/Str
+   :latitude s/Str
+   :longitude s/Str})
+(s/defschema ShoppingInitiationDataRequest shopping-initiation-data-request-skeleton)

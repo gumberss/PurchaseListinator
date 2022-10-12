@@ -16,3 +16,12 @@
   (let [db-shopping-location (adapters.db.mongo.shopping-location/internal->db shopping-location)]
     (mc/update db collection {:shopping-id shopping-id} db-shopping-location {:upsert true}))
   shopping-location)
+
+(s/defn find-by-location  :- models.internal.shopping-location/ShoppingLocation
+  [latitude :- s/Num
+   longitude :- s/Num
+   {:keys [db]}]
+  (->> (mc/find-maps db collection {:latlong {"$near" {"$geometry"    {:type        "Point"
+                                                                      :coordinates [longitude latitude]}
+                                                      "$maxDistance" 100}}})
+      (map adapters.db.mongo.shopping-location/db->internal)))

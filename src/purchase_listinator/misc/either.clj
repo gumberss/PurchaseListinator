@@ -1,5 +1,5 @@
 (ns purchase-listinator.misc.either
-  (:require [cats.monad.either :refer [left right either?]]))
+  (:require [cats.monad.either :refer [left right left? either? branch]]))
 
 (defmacro try-right
   [function]
