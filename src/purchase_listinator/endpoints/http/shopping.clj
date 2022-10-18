@@ -41,4 +41,4 @@
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
-    ["/api/shopping/:id/list" :get [get-shopping-list] :route-name :get-in-progress]})
+    ["/api/shopping/list/:id" :get [get-shopping-list] :route-name :get-in-progress]})
