@@ -11,11 +11,10 @@
   (wcar connection
         (car/set id []))))
 
-
 (s/defn upsert :- models.internal.shopping-cart/Cart
-  [{:keys [id] :as cart} :- models.internal.shopping-cart/Cart
+  [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
    {:keys [connection]}]
   (wcar connection
-        (car/set id cart))
+        (car/set shopping-id cart))
   cart)
 

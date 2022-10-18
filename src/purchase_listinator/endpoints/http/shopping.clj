@@ -30,7 +30,15 @@
                               (-> (adapters.misc/string->uuid list-id)
                                   (flows.shopping/find-existent component)))))
 
+(s/defn get-shopping-list
+  [{component             :component
+    {:keys [id]} :path-params}]
+  (misc.http/default-branch (misc.either/try-right
+                              (-> (adapters.misc/string->uuid id)
+                                  (flows.shopping/get-in-progress-list component)))))
+
 (def routes
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
-    ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]})
+    ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
+    ["/api/shopping/:id/list" :get [get-shopping-list] :route-name :get-in-progress]})
