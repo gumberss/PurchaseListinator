@@ -12,7 +12,9 @@
             [purchase-listinator.misc.general :as misc.general]
             [purchase-listinator.logic.errors :as logic.errors]
             [purchase-listinator.models.internal.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
-            [purchase-listinator.dbs.redis.shopping :as redis.shopping]))
+            [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]
+            [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
+            [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]))
 
 (s/defn init-shopping
   [shopping-initiation :- models.internal.shopping-initiation/ShoppingInitiation
@@ -20,7 +22,7 @@
   (either/try-right
     (let [now (misc.date/numb-now)
           {:keys [id] :as shopping} (logic.shopping/initiation->shopping shopping-initiation now)]
-      (->> [(go (redis.shopping/init-cart id redis))
+      (->> [(go (redis.shopping-cart/init-cart id redis))
             (go (-> (logic.shopping-location/initiation->shopping-location shopping-initiation (misc.general/squuid))
                     (mongo.shopping-location/upsert mongo)))
             (go (datomic.shopping/upsert shopping datomic))]
@@ -37,6 +39,15 @@
     (if first-near-shopping
       first-near-shopping
       (left {:status 404 :data "not-found"}))))
+
+(s/defn get-in-progress-list
+  [shopping-id :- s/Uuid
+   {:keys [datomic redis]}]
+  (let [cart (redis.shopping-cart/find shopping-id redis)
+        {:keys [list-id]} (datomic.shopping/get-by-id shopping-id datomic)
+        purchase-list (dbs.datomic.purchase-list/get-management-data list-id datomic)
+        shopping (logic.shopping/purchase-list->shopping-list purchase-list)]
+    (logic.shopping-cart-event/apply-cart cart shopping)))
 
 (s/defn find-existent
   [list-id :- s/Uuid

@@ -10,10 +10,15 @@
   (s/cond-pre
     ))
 
-(def cart-skeleton
+(def cart-event-skeleton
   {:moment     s/Num
    :event-type s/Keyword
    :data       EventData})
+(s/defschema CartEvent cart-event-skeleton)
+
+(def cart-skeleton
+  {:shopping-id s/Uuid
+   :events [CartEvent]})
 (s/defschema Cart cart-skeleton)
 
 

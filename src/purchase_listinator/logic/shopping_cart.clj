@@ -3,6 +3,3 @@
             [schema.core :as s]
             [purchase-listinator.models.internal.shopping :as models.internal.shopping]))
 
-(s/defn shopping->initial-cart :- models.internal.shopping-cart/Cart
-  [shopping :- models.internal.shopping/Shopping]
-  (assoc shopping :items []))
