@@ -6,19 +6,32 @@
 #_(def cart-item-skeleton models.internal.shopping-item/shopping-item-skeleton)
 #_(s/defschema CartItem cart-item-skeleton)
 
-(s/defschema EventData
-  (s/cond-pre
-    ))
+(s/defschema OrderCategoryEvent
+  {:moment       s/Num
+   :event-type   (s/enum :order-category)
+   :old-position s/Int
+   :new-position s/Int})
 
-(def cart-event-skeleton
-  {:moment     s/Num
-   :event-type s/Keyword
-   :data       EventData})
-(s/defschema CartEvent cart-event-skeleton)
+(s/defschema OrderItemEvent
+  {:moment       s/Num
+   :event-type   s/Keyword
+   :old-position s/Int
+   :new-position s/Int
+   :old-category s/Uuid
+   :new-category s/Uuid})
+
+(s/defn of-type
+  [expected-event-type {:keys [event-type]}]
+  (= expected-event-type event-type))
+
+(s/defschema CartEvent
+  (s/conditional
+    (partial of-type :order-category) OrderCategoryEvent
+    (partial of-type :order-item) OrderItemEvent))
 
 (def cart-skeleton
   {:shopping-id s/Uuid
-   :events [CartEvent]})
+   :events      [CartEvent]})
 (s/defschema Cart cart-skeleton)
 
 
