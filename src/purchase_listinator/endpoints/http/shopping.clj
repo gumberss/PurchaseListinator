@@ -38,14 +38,14 @@
                               (-> (adapters.misc/string->uuid list-id)
                                   (flows.shopping/get-in-progress-list component)))))
 
-(s/defn shopping-list-receive-event
+(s/defn change-category-order
   [{component         :component
-    {:keys [list-id]} :path-params
+    {:keys [id]} :path-params
     query-params      :query-params}]
   (misc.http/default-branch (misc.either/try-right
-                              (let [list-id (adapters.misc/string->uuid list-id)
+                              (let [category-id (adapters.misc/string->uuid id)
                                     event (adapters.in.shopping-cart-event/wire->internal query-params)]
-                                (->
+                                (-> event
                                     (flows.shopping/get-in-progress-list component))))))
 
 (def routes
@@ -53,4 +53,4 @@
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
     ["/api/shopping/list/:list-id" :get [get-shopping-list] :route-name :get-in-progress]
-    ["/api/shopping/list/event/:list-id" :post [shopping-list-receive-event] :route-name :shopping-list-receive-event]})
+    ["/api/shopping/categories/:id/changeOrder/:new-position" :post [change-category-order] :route-name :change-shopping-category-order]})
