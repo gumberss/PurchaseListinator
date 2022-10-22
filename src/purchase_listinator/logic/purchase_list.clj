@@ -5,10 +5,11 @@
 
 (s/defn generate-new :- internal.purchase-list/PurchaseList
   [name :- s/Str]
-  (let [purchase-list {:id          (misc.general/squuid)
-                       :enabled     true
-                       :in-progress false}]
-    (assoc purchase-list :name name)))
+  {:id          (misc.general/squuid)
+   :enabled     true
+   :in-progress false
+   :status      :waiting                                    ;what should be the initial status?
+   :name        name})
 
 (s/defn changed?
   [existent :- internal.purchase-list/PurchaseList
