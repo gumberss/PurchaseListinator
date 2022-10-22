@@ -14,7 +14,9 @@
             [purchase-listinator.models.internal.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
             [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]
             [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
-            [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]))
+            [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]
+            [purchase-listinator.logic.shopping-cart :as logic.shopping-cart]
+            [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
 
 (s/defn init-shopping
   [shopping-initiation :- models.internal.shopping-initiation/ShoppingInitiation
@@ -22,7 +24,8 @@
   (either/try-right
     (let [now (misc.date/numb-now)
           {:keys [id] :as shopping} (logic.shopping/initiation->shopping shopping-initiation now)]
-      (->> [(go (redis.shopping-cart/init-cart id redis))
+      (->> [(go (-> (logic.shopping-cart/init id)
+                    (redis.shopping-cart/init-cart redis)))
             (go (-> (logic.shopping-location/initiation->shopping-location shopping-initiation (misc.general/squuid))
                     (mongo.shopping-location/upsert mongo)))
             (go (datomic.shopping/upsert shopping datomic))]
@@ -31,7 +34,7 @@
            last))))
 
 (s/defn get-initial-data
-  [{:keys [latitude longitude list-id]} :- models.internal.shopping-initiation-data-request/ShoppingInitiationDataRequest
+  [{:keys [latitude longitude]} :- models.internal.shopping-initiation-data-request/ShoppingInitiationDataRequest
    {:keys [mongo datomic]}]
   (let [near-places (mongo.shopping-location/find-by-location latitude longitude mongo)
         first-near-shopping (and (seq near-places)
@@ -43,10 +46,10 @@
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
    {:keys [datomic redis]}]
-  (let [cart (redis.shopping-cart/find shopping-id redis)
+  (let [cart (redis.shopping-cart/find-cart shopping-id redis)
         {:keys [list-id]} (datomic.shopping/get-by-id shopping-id datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id datomic)
-        shopping (logic.shopping/purchase-list->shopping-list purchase-list)]
+        shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)]
     (logic.shopping-cart-event/apply-cart cart shopping)))
 
 (s/defn find-existent
@@ -55,3 +58,11 @@
   (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id datomic)]
     existent
     (left (logic.errors/build 404 nil))))
+
+(s/defn receive-cart-event
+  [{:keys [shopping-id] :as event} :- models.internal.shopping-cart/CartEvent
+   {:keys [redis]}]
+  (-> (redis.shopping-cart/find-cart shopping-id redis)
+      (logic.shopping-cart-event/add-event event)
+      (redis.shopping-cart/upsert redis))
+  event)

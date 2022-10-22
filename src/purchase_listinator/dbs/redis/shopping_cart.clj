@@ -4,14 +4,14 @@
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
 
 (s/defn init-cart :- models.internal.shopping-cart/Cart
-  [id :- s/Uuid
+  [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
    {:keys [connection]}]
-  (if-let [existent (wcar connection (car/get id))]
+  (if-let [existent (wcar connection (car/get shopping-id))]
     existent
-  (wcar connection
-        (car/set id []))))
+    (wcar connection
+          (car/set shopping-id cart))))
 
-(s/defn find :- (s/maybe models.internal.shopping-cart/Cart)
+(s/defn find-cart :- (s/maybe models.internal.shopping-cart/Cart)
   [id :- s/Uuid
    {:keys [connection]}]
   (wcar connection (car/get id)))

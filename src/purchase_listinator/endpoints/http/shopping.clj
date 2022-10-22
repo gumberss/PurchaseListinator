@@ -8,7 +8,8 @@
             [purchase-listinator.adapters.in.shopping-initiation :as adapters.in.shopping-initiation]
             [purchase-listinator.adapters.in.shopping-initiation-data-request :as adapters.in.shopping-initiation-data-request]
             [purchase-listinator.adapters.in.shopping-cart-event :as adapters.in.shopping-cart-event]
-            [purchase-listinator.adapters.misc :as adapters.misc]))
+            [purchase-listinator.adapters.misc :as adapters.misc]
+            [purchase-listinator.misc.date :as misc.date]))
 
 (s/defn init-shopping
   [{component :component
@@ -32,25 +33,24 @@
                                   (flows.shopping/find-existent component)))))
 
 (s/defn get-shopping-list
-  [{component         :component
-    {:keys [list-id]} :path-params}]
+  [{component             :component
+    {:keys [shopping-id]} :path-params}]
   (misc.http/default-branch (misc.either/try-right
-                              (-> (adapters.misc/string->uuid list-id)
+                              (-> (adapters.misc/string->uuid shopping-id)
                                   (flows.shopping/get-in-progress-list component)))))
 
-(s/defn change-category-order
-  [{component         :component
-    {:keys [id]} :path-params
-    query-params      :query-params}]
-  (misc.http/default-branch (misc.either/try-right
-                              (let [category-id (adapters.misc/string->uuid id)
-                                    event (adapters.in.shopping-cart-event/wire->internal query-params)]
-                                (-> event
-                                    (flows.shopping/get-in-progress-list component))))))
+(s/defn receive-events
+  [{component :component
+    wire      :json-params}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (let [now (misc.date/numb-now)
+            cart-event (adapters.in.shopping-cart-event/wire->internal wire now)]
+        (flows.shopping/receive-cart-event cart-event component)))))
 
 (def routes
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
-    ["/api/shopping/list/:list-id" :get [get-shopping-list] :route-name :get-in-progress]
-    ["/api/shopping/categories/:id/changeOrder/:new-position" :post [change-category-order] :route-name :change-shopping-category-order]})
+    ["/api/shopping/list/:shopping-id" :get [get-shopping-list] :route-name :get-in-progress]
+    ["/api/shopping/cart/events" :post [receive-events] :route-name :receive-shopping-list-events]})

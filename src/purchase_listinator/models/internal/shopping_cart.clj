@@ -8,13 +8,17 @@
 
 (s/defschema OrderCategoryEvent
   {:moment       s/Num
-   :event-type   (s/enum :order-category)
+   :event-type   (s/eq :order-category)
+   :shopping-id  s/Uuid
+   :category-id  s/Uuid
    :old-position s/Int
    :new-position s/Int})
 
 (s/defschema OrderItemEvent
   {:moment       s/Num
-   :event-type   s/Keyword
+   :event-type   (s/eq :order-item)
+   :shopping-id  s/Uuid
+   :item-id      s/Uuid
    :old-position s/Int
    :new-position s/Int
    :old-category s/Uuid
