@@ -10,6 +10,17 @@
    shopping :- models.internal.shopping-list/ShoppingList]
   shopping)
 
+(s/defmethod ^:private apply-event :order-category
+  [cart-event :- models.internal.shopping-cart/CartEvent
+   shopping :- models.internal.shopping-list/ShoppingList]
+  shopping)
+
+(s/defmethod ^:private apply-event :default
+  [{:keys [event-type]} :- models.internal.shopping-cart/CartEvent
+   shopping :- models.internal.shopping-list/ShoppingList]
+  (println "Not found apply-event function for " event-type " event type")
+  shopping)
+
 (s/defn ^:private apply-events
   [[current & remaining] :- (s/maybe [models.internal.shopping-cart/CartEvent])
    shopping :- models.internal.shopping-list/ShoppingList]
@@ -22,5 +33,8 @@
    shopping :- models.internal.shopping-list/ShoppingList]
   (apply-events events shopping))
 
-
+(s/defn add-event :- models.internal.shopping-cart/Cart
+  [{:keys [events] :as cart} :- models.internal.shopping-cart/Cart
+   event :- models.internal.shopping-cart/CartEvent]
+  (assoc cart :events (conj events event)))
 

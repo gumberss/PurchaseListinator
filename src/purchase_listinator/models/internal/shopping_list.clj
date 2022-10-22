@@ -15,11 +15,12 @@
    :order-position   s/Int
    :color            s/Int
    :purchase-list-id s/Uuid
-   :items [ShoppingItem]})
+   :items            [ShoppingItem]})
 (s/defschema ShoppingListCategory shopping-category-skeleton)
 
 (def shopping-list-skeleton
   {:purchase-list-id s/Uuid
-   :categories [ShoppingListCategory]})
+   :shopping-id      s/Uuid
+   :categories       [ShoppingListCategory]})
 (s/defschema ShoppingList shopping-list-skeleton)
 

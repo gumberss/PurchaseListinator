@@ -13,6 +13,7 @@
       (select-keys (keys models.internal.shopping/Shopping))))
 
 (s/defn purchase-list->shopping-list :- models.internal.shopping-list/ShoppingList
-  [purchase-list  :- purchase-list-management-data/ManagementData]
-  purchase-list)
+  [shopping-id :- s/Uuid
+   purchase-list :- purchase-list-management-data/ManagementData]
+  (assoc purchase-list :shopping-id shopping-id))
 
