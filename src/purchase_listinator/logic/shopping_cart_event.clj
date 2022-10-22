@@ -5,17 +5,22 @@
 
 (defmulti apply-event (fn [{:keys [event-type]} _] event-type))
 
-(s/defmethod ^:private apply-event :add-item
+(s/defmethod ^:private apply-event :add-item :- models.internal.shopping-list/ShoppingList
   [cart-event :- models.internal.shopping-cart/CartEvent
    shopping :- models.internal.shopping-list/ShoppingList]
   shopping)
 
-(s/defmethod ^:private apply-event :order-category
+(s/defmethod ^:private apply-event :reorder-category :- models.internal.shopping-list/ShoppingList
   [cart-event :- models.internal.shopping-cart/CartEvent
    shopping :- models.internal.shopping-list/ShoppingList]
   shopping)
 
-(s/defmethod ^:private apply-event :default
+(s/defmethod ^:private apply-event :reorder-item :- models.internal.shopping-list/ShoppingList
+  [cart-event :- models.internal.shopping-cart/CartEvent
+   shopping :- models.internal.shopping-list/ShoppingList]
+  shopping)
+
+(s/defmethod ^:private apply-event :default :- models.internal.shopping-list/ShoppingList
   [{:keys [event-type]} :- models.internal.shopping-cart/CartEvent
    shopping :- models.internal.shopping-list/ShoppingList]
   (println "Not found apply-event function for " event-type " event type")

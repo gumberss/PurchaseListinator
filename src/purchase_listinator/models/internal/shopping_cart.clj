@@ -6,23 +6,23 @@
 #_(def cart-item-skeleton models.internal.shopping-item/shopping-item-skeleton)
 #_(s/defschema CartItem cart-item-skeleton)
 
-(s/defschema OrderCategoryEvent
+(s/defschema ReorderCategoryEvent
   {:moment       s/Num
-   :event-type   (s/eq :order-category)
+   :event-type   (s/eq :reorder-category)
    :shopping-id  s/Uuid
    :category-id  s/Uuid
    :old-position s/Int
    :new-position s/Int})
 
-(s/defschema OrderItemEvent
+(s/defschema ReorderItemEvent
   {:moment       s/Num
-   :event-type   (s/eq :order-item)
+   :event-type   (s/eq :reorder-item)
    :shopping-id  s/Uuid
    :item-id      s/Uuid
    :old-position s/Int
    :new-position s/Int
-   :old-category s/Uuid
-   :new-category s/Uuid})
+   :old-category-id s/Uuid
+   :new-category-id s/Uuid})
 
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
@@ -30,8 +30,8 @@
 
 (s/defschema CartEvent
   (s/conditional
-    (partial of-type :order-category) OrderCategoryEvent
-    (partial of-type :order-item) OrderItemEvent))
+    (partial of-type :reorder-category) ReorderCategoryEvent
+    (partial of-type :reorder-item) ReorderItemEvent))
 
 (def cart-skeleton
   {:shopping-id s/Uuid

@@ -42,9 +42,11 @@
 (s/defn receive-events
   [{component :component
     wire      :json-params}]
+  (clojure.pprint/pprint wire)
   (misc.http/default-branch
     (misc.either/try-right
       (let [now (misc.date/numb-now)
+
             cart-event (adapters.in.shopping-cart-event/wire->internal wire now)]
         (flows.shopping/receive-cart-event cart-event component)))))
 
