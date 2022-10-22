@@ -4,10 +4,21 @@
             [purchase-listinator.wires.in.shopping-cart :as wires.in.shopping-cart]
             [purchase-listinator.adapters.misc :as adapters.misc]))
 
-(s/defn wire->internal :- models.internal.shopping-cart/OrderCategoryEvent
-  [{:keys [event-type shopping-id category-id] :as wire} :- wires.in.shopping-cart/OrderCategoryEvent
+(defmulti wire->internal (fn [{:keys [event-type]} _] (keyword event-type)))
+
+(s/defmethod wire->internal :reorder-category :- models.internal.shopping-cart/ReorderCategoryEvent
+  [{:keys [event-type shopping-id category-id] :as wire} :- wires.in.shopping-cart/ReorderCategoryEvent
    moment :- s/Num]
   (assoc wire :event-type (keyword event-type)
               :shopping-id (adapters.misc/string->uuid shopping-id)
+              :category-id (adapters.misc/string->uuid category-id)
+              :moment moment))
+
+(s/defmethod wire->internal :reorder-item :- models.internal.shopping-cart/ReorderItemEvent
+  [{:keys [event-type shopping-id category-id item-id] :as wire} :- wires.in.shopping-cart/ReorderItemEvent
+   moment :- s/Num]
+  (assoc wire :event-type (keyword event-type)
+              :shopping-id (adapters.misc/string->uuid shopping-id)
+              :item-id (adapters.misc/string->uuid item-id)
               :category-id (adapters.misc/string->uuid category-id)
               :moment moment))
