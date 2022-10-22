@@ -2,6 +2,6 @@
   (:require [schema.core :as s]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
 
-(s/defn wire->internal :- models.internal.shopping-cart/CartEvent
-  [wire]
+(s/defn order-category-wire->internal :- models.internal.shopping-cart/OrderCategoryEvent
+  [wire :- ]
   )
