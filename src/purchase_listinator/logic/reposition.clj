@@ -15,6 +15,20 @@
   [{:keys [order-position] :as reorder} :- models.logic.reposition/Reorder]
   (change-order-position (dec order-position) reorder))
 
+(s/defn decrement-if-after :- models.logic.reposition/Reorder
+  [position
+   {:keys [order-position] :as item} :- models.logic.reposition/Reorder]
+  (if (> order-position position)
+    (decrement-order item)
+    item))
+
+(s/defn increment-if-after-or-equal :- models.logic.reposition/Reorder
+  [position
+   {:keys [order-position] :as item} :- models.logic.reposition/Reorder]
+  (if (>= order-position position)
+    (increment-order item)
+    item))
+
 (s/defn ^:private reposition-one :- models.logic.reposition/Reorder
   [old-position :- s/Num
    new-position :- s/Num
@@ -30,5 +44,10 @@
   [old-position :- s/Num
    new-position :- s/Num
    reorder :- [models.logic.reposition/Reorder]]
-  (let [reposition-func* (partial reposition-one old-position new-position)]
-    (sort-by :order-position (map reposition-func* reorder))))
+  (let [reposition-func* (partial reposition-one old-position new-position)
+        max-position (max old-position new-position)
+        min-position (min old-position new-position)
+        to-reoder (filter #(<= min-position (:order-position %) max-position) reorder)
+        not-changed (clojure.set/difference (set reorder) (set to-reoder))
+        changed (map reposition-func* to-reoder)]
+    (sort-by :order-position (concat changed not-changed))))
