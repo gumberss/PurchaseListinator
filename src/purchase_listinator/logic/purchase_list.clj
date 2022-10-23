@@ -8,7 +8,7 @@
   {:id          (misc.general/squuid)
    :enabled     true
    :in-progress false
-   :status      :waiting                                    ;what should be the initial status?
+   :status      :waiting
    :name        name})
 
 (s/defn changed?
