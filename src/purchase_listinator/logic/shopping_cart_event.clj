@@ -1,6 +1,7 @@
 (ns purchase-listinator.logic.shopping-cart-event
   (:require [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
+            [purchase-listinator.logic.reposition :as logic.reposition]
             [schema.core :as s]))
 
 (defmulti apply-event (fn [{:keys [event-type]} _] event-type))
@@ -11,9 +12,13 @@
   shopping)
 
 (s/defmethod ^:private apply-event :reorder-category :- models.internal.shopping-list/ShoppingList
-  [cart-event :- models.internal.shopping-cart/CartEvent
-   shopping :- models.internal.shopping-list/ShoppingList]
-  shopping)
+  [{:keys [category-id new-position]} :- models.internal.shopping-cart/ReorderCategoryEvent
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [current-position (->> categories
+                              (map-indexed vector)
+                              (filter #(= (-> % second :id) category-id))
+                              ffirst)]
+    (assoc shopping :categories (logic.reposition/reposition current-position new-position categories))))
 
 (s/defmethod ^:private apply-event :reorder-item :- models.internal.shopping-list/ShoppingList
   [cart-event :- models.internal.shopping-cart/CartEvent
