@@ -11,7 +11,6 @@
    :event-type   (s/eq :reorder-category)
    :shopping-id  s/Uuid
    :category-id  s/Uuid
-   :old-position s/Int
    :new-position s/Int})
 
 (s/defschema ReorderItemEvent
@@ -19,7 +18,6 @@
    :event-type   (s/eq :reorder-item)
    :shopping-id  s/Uuid
    :item-id      s/Uuid
-   :old-position s/Int
    :new-position s/Int
    :old-category-id s/Uuid
    :new-category-id s/Uuid})
