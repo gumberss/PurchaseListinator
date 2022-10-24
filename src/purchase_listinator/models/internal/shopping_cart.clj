@@ -19,7 +19,6 @@
    :shopping-id  s/Uuid
    :item-id      s/Uuid
    :new-position s/Int
-   :old-category-id s/Uuid
    :new-category-id s/Uuid})
 
 (s/defn of-type
