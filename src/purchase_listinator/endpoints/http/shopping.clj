@@ -42,7 +42,6 @@
 (s/defn receive-events
   [{component :component
     wire      :json-params}]
-  (clojure.pprint/pprint wire)
   (misc.http/default-branch
     (misc.either/try-right
       (let [now (misc.date/numb-now)

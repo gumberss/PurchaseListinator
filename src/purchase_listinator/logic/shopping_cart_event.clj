@@ -45,11 +45,11 @@
   [{:keys [items] :as category}
    item
    new-position]
-  (clojure.pprint/pprint category)
-  (let [{:keys [order-position] :as item} (assoc item :order-position new-position)
-        max-position (-> (apply max-key :order-position items) :order-position)
+  (let [{:keys [order-position] :as item} (assoc item :order-position new-position :category-id (:id category))
+        max-position (or (-> (sort-by :order-position items) last :order-position)
+                         0)
         reordered-items (-> (logic.reposition/reposition order-position max-position items)
-                            (conj item))]
+                            (conj (assoc item :order-position new-position)))]
     (assoc category :items reordered-items)))
 
 (s/defn reorder-item-other-category
