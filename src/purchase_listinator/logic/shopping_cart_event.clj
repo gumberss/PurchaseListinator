@@ -21,10 +21,10 @@
     (assoc shopping :categories (logic.reposition/reposition current-position new-position categories))))
 
 (s/defn reorder-item-same-category
-  [shopping
-   category
-   current-position
-   new-position]
+  [shopping :- models.internal.shopping-list/ShoppingList
+   category :- models.internal.shopping-list/ShoppingListCategory
+   current-position :- s/Num
+   new-position :- s/Num]
   (let [old-category (assoc category :items (->> (:items category)
                                                  (logic.reposition/reposition current-position new-position)))]
     (-> (:categories shopping)
@@ -33,18 +33,17 @@
         (->> (assoc shopping :categories)))))
 
 (s/defn remove-item-from-old-category
-  [{:keys [items] :as category}
-   {:keys [order-position] :as item}
-   ]
+  [{:keys [items] :as category} :- models.internal.shopping-list/ShoppingListCategory
+   {:keys [order-position] :as item} :- models.internal.shopping-list/ShoppingItem]
   (let [max-position (-> (apply max-key :order-position items) :order-position)
         reordered-items (->> (filter #(not= % item) items)
                              (logic.reposition/reposition order-position max-position))]
     (assoc category :items reordered-items)))
 
 (s/defn add-item-to-new-category
-  [{:keys [items] :as category}
-   item
-   new-position]
+  [{:keys [items] :as category} :- models.internal.shopping-list/ShoppingListCategory
+   item :- models.internal.shopping-list/ShoppingItem
+   new-position :- s/Num]
   (let [{:keys [order-position] :as item} (assoc item :order-position new-position :category-id (:id category))
         max-position (or (-> (sort-by :order-position items) last :order-position)
                          0)
@@ -54,16 +53,17 @@
 
 (s/defn reorder-item-other-category
   [{:keys [categories] :as shopping}
-   item
-   old-category
-   new-category
-   new-position]
+   item :- models.internal.shopping-list/ShoppingItem
+   old-category :- models.internal.shopping-list/ShoppingListCategory
+   new-category :- models.internal.shopping-list/ShoppingListCategory
+   new-position :- s/Num]
   (let [changed-old-category (remove-item-from-old-category old-category item)
         changed-new-category (add-item-to-new-category new-category item new-position)]
     (assoc shopping :categories (->> (remove #{old-category new-category} categories)
                                      (concat [changed-old-category changed-new-category])))))
-(s/defn contains-item? [item-id
-                        {:keys [items]}]
+(s/defn contains-item?
+  [item-id :- s/Uuid
+   {:keys [items]} :- models.internal.shopping-list/ShoppingListCategory]
   (some #(= item-id (:id %)) items))
 
 (s/defmethod ^:private apply-event :reorder-item :- models.internal.shopping-list/ShoppingList
