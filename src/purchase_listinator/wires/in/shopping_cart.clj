@@ -14,5 +14,4 @@
    :item-id      s/Str
    :old-position s/Int
    :new-position s/Int
-   :old-category s/Str
-   :new-category s/Str})
+   :new-category-id s/Str})

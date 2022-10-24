@@ -15,11 +15,10 @@
   [{:keys [category-id new-position]} :- models.internal.shopping-cart/ReorderCategoryEvent
    {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
   (let [current-position (->> categories
-                              (filter #(= (-> % second :id) category-id))
+                              (filter #(= (-> % :id) category-id))
                               first
                               :order-position)]
     (assoc shopping :categories (logic.reposition/reposition current-position new-position categories))))
-
 
 (s/defn reorder-item-same-category
   [shopping
@@ -29,39 +28,54 @@
   (let [old-category (assoc category :items (->> (:items category)
                                                  (logic.reposition/reposition current-position new-position)))]
     (-> (:categories shopping)
-        (->> (filter #(not= old-category)))
+        (->> (filter #(not= category %)))
         (conj old-category)
         (->> (assoc shopping :categories)))))
 
+(s/defn remove-item-from-old-category
+  [{:keys [items] :as category}
+   {:keys [order-position] :as item}
+   ]
+  (let [max-position (-> (apply max-key :order-position items) :order-position)
+        reordered-items (->> (filter #(not= % item) items)
+                             (logic.reposition/reposition order-position max-position))]
+    (assoc category :items reordered-items)))
 
+(s/defn add-item-to-new-category
+  [{:keys [items] :as category}
+   item
+   new-position]
+  (clojure.pprint/pprint category)
+  (let [{:keys [order-position] :as item} (assoc item :order-position new-position)
+        max-position (-> (apply max-key :order-position items) :order-position)
+        reordered-items (-> (logic.reposition/reposition order-position max-position items)
+                            (conj item))]
+    (assoc category :items reordered-items)))
 
 (s/defn reorder-item-other-category
   [{:keys [categories] :as shopping}
-   {:keys [current-position] :as item}
+   item
    old-category
    new-category
    new-position]
-  (let [changed-old-category (->> (:items old-category)
-                                  (map (partial logic.reposition/decrement-if-after current-position))
-                                  (remove (set item))
-                                  (assoc old-category :items))
-        changed-new-category (->> (:items new-category)
-                                  (map (partial logic.reposition/increment-if-after-or-equal current-position))
-                                  (apply vector (assoc item :order-position new-position))
-                                  (assoc new-category :items))]
+  (let [changed-old-category (remove-item-from-old-category old-category item)
+        changed-new-category (add-item-to-new-category new-category item new-position)]
     (assoc shopping :categories (->> (remove #{old-category new-category} categories)
-                                     (apply vector changed-old-category changed-new-category)))))
+                                     (concat [changed-old-category changed-new-category])))))
+(s/defn contains-item? [item-id
+                        {:keys [items]}]
+  (some #(= item-id (:id %)) items))
 
 (s/defmethod ^:private apply-event :reorder-item :- models.internal.shopping-list/ShoppingList
-  [{:keys [old-category-id new-category-id item-id new-position]} :- models.internal.shopping-cart/ReorderItemEvent
-   {:keys [items] :as shopping} :- models.internal.shopping-list/ShoppingList]
-  (let [old-category (first (filter #(= (:id %) old-category-id)))
-        new-category (first (filter #(= (:id %) new-category-id)))
-        current-item (->> items
-                          (filter #(= (-> % second :id) item-id))
+  [{:keys [new-category-id item-id new-position]} :- models.internal.shopping-cart/ReorderItemEvent
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [old-category (first (filter #(contains-item? item-id %) categories))
+        new-category (first (filter #(= (:id %) new-category-id) categories))
+        current-item (->> (:items old-category)
+                          (filter #(= (:id %) item-id))
                           first)
         current-item-position (-> current-item :order-position)
-        same-category? (= old-category-id new-category-id)]
+        same-category? (= (:id old-category) new-category-id)]
     (if same-category?
       (reorder-item-same-category shopping old-category current-item-position new-position)
       (reorder-item-other-category shopping current-item old-category new-category new-position))))
