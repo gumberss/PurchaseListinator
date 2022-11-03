@@ -6,10 +6,35 @@
 
 (defmulti apply-event (fn [{:keys [event-type]} _] event-type))
 
-(s/defmethod ^:private apply-event :add-item :- models.internal.shopping-list/ShoppingList
-  [cart-event :- models.internal.shopping-cart/CartEvent
-   shopping :- models.internal.shopping-list/ShoppingList]
-  shopping)
+(s/defn change-item :- models.internal.shopping-list/ShoppingItem
+  [{:keys [quantity-in-cart] :as item} :- models.internal.shopping-list/ShoppingItem
+   price :- s/Num
+   quantity-changed :- s/Int]
+  (assoc item :price price
+              :quantity-in-cart (+ (or quantity-in-cart 0) (or quantity-changed 0))))
+
+(s/defn replace-item :- models.internal.shopping-list/ShoppingListCategory
+  [{:keys [items] :as category} :- models.internal.shopping-list/ShoppingListCategory
+   {:keys [id] :as new-item} :- models.internal.shopping-list/ShoppingItem]
+  (assoc category :items (-> (filter #(not= id (:id %)) items)
+                             (conj new-item))))
+
+(s/defn replace-category :- models.internal.shopping-list/ShoppingList
+  [{:keys [categories] :as shopping-list} :- models.internal.shopping-list/ShoppingList
+   {:keys [id] :as new-category} :- models.internal.shopping-list/ShoppingListCategory]
+  (assoc shopping-list :categories (-> (filter #(not= id (:id %)) categories)
+                                       (conj new-category))))
+
+(s/defmethod ^:private apply-event :change-item :- models.internal.shopping-list/ShoppingList
+  [{:keys [item-id price quantity-changed]} :- models.internal.shopping-cart/ChangeItemEvent
+   {:keys [categories] :as shopping-list} :- models.internal.shopping-list/ShoppingList]
+  (let [{:keys [category-id] :as item} (->> (mapcat :items categories)
+                                            (filter #(= item-id (:id %)))
+                                            first)
+        category (first (filter #(= category-id (:id %)) categories))
+        changed-item (change-item item price quantity-changed)
+        changed-category (replace-item category changed-item)]
+    (replace-category shopping-list changed-category)))
 
 (s/defmethod ^:private apply-event :reorder-category :- models.internal.shopping-list/ShoppingList
   [{:keys [category-id new-position]} :- models.internal.shopping-cart/ReorderCategoryEvent

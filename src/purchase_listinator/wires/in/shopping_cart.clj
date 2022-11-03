@@ -9,9 +9,16 @@
    :new-position s/Int})
 
 (s/defschema ReorderItemEvent
-  {:event-type   s/Str
-   :shopping-id  s/Str
-   :item-id      s/Str
-   :old-position s/Int
-   :new-position s/Int
+  {:event-type      s/Str
+   :shopping-id     s/Str
+   :item-id         s/Str
+   :old-position    s/Int
+   :new-position    s/Int
    :new-category-id s/Str})
+
+(s/defschema ChangeItemEvent
+  {:event-type       s/Str
+   :shopping-id      s/Str
+   :item-id          s/Str
+   :price            s/Num
+   :quantity-changed s/Int})
