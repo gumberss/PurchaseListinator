@@ -14,12 +14,21 @@
    :new-position s/Int})
 
 (s/defschema ReorderItemEvent
-  {:moment       s/Num
-   :event-type   (s/eq :reorder-item)
-   :shopping-id  s/Uuid
-   :item-id      s/Uuid
-   :new-position s/Int
+  {:moment          s/Num
+   :event-type      (s/eq :reorder-item)
+   :shopping-id     s/Uuid
+   :item-id         s/Uuid
+   :new-position    s/Int
    :new-category-id s/Uuid})
+
+(s/defschema ChangeItemEvent
+  {:moment           s/Num
+   :event-type       (s/eq :change-item)
+   :shopping-id      s/Uuid
+   :item-id          s/Uuid
+   :price            s/Num
+   :quantity-changed s/Int})
+
 
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]

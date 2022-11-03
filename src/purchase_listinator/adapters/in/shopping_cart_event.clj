@@ -22,3 +22,11 @@
               :item-id (adapters.misc/string->uuid item-id)
               :new-category-id (adapters.misc/string->uuid new-category-id)
               :moment moment))
+
+(s/defmethod wire->internal :change-item :- models.internal.shopping-cart/ChangeItemEvent
+  [{:keys [event-type shopping-id item-id] :as wire} :- wires.in.shopping-cart/ChangeItemEvent
+   moment :- s/Num]
+  (assoc wire :event-type (keyword event-type)
+              :shopping-id (adapters.misc/string->uuid shopping-id)
+              :item-id (adapters.misc/string->uuid item-id)
+              :moment moment))
