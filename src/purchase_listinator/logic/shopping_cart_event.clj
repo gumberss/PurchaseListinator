@@ -6,7 +6,7 @@
 
 (defmulti apply-event (fn [{:keys [event-type]} _] event-type))
 
-(s/defn update-item :- models.internal.shopping-list/ShoppingItem
+(s/defn change-item :- models.internal.shopping-list/ShoppingItem
   [{:keys [quantity-in-cart] :as item} :- models.internal.shopping-list/ShoppingItem
    price :- s/Num
    quantity-changed :- s/Int]
@@ -32,7 +32,7 @@
                                             (filter #(= item-id (:id %)))
                                             first)
         category (first (filter #(= category-id (:id %)) categories))
-        changed-item (update-item item price quantity-changed)
+        changed-item (change-item item price quantity-changed)
         changed-category (replace-item category changed-item)]
     (replace-category shopping-list changed-category)))
 
