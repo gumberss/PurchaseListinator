@@ -8,7 +8,7 @@
 (defn coerce-response-to
   [response content-type]
   (-> response
-      (update :body misc.content-type-parser/transform-response content-type)
+      (update :body misc.content-type-parser/transform-content-to content-type)
       (assoc-in [:headers "Content-Type"] content-type)))
 
 (def coerce-body-content-type

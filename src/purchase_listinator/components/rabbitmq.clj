@@ -8,40 +8,61 @@
             [com.stuartsierra.component :as component]
             [purchase-listinator.endpoints.queue.shopping-purchase-list-event-received :as endpoints.queue.shopping-purchase-list-event-received]
             [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
-            [schema.core :as s]))
+            [cheshire.core :as cheshire]
+            [schema.core :as s]
+            [clojure.data.json :as json]
+            [camel-snake-kebab.core :as csk]))
 
 (def subscribers (concat
                    endpoints.queue.shopping-purchase-list-event-received/subscribers))
 
+(s/defn ->rabbitmq :- s/Str
+  [key :- s/Keyword]
+  (subs (str key) 1))
+
+(s/defn consumer-base
+  [consumer
+   channel
+   metadata
+   ^bytes payload]
+  (let [data (String. payload "UTF-8")
+        map-data (json/read-str data :key-fn csk/->kebab-case-keyword)
+        map-data (json/read-str map-data :key-fn csk/->kebab-case-keyword)]
+    (println "data")
+    (println (type map-data))
+    (println map-data)
+    (consumer channel metadata map-data)))
+
 (defn start-consumer
   [ch {:keys [exchange queue handler]}]
-  (lq/declare ch (str queue) {:exclusive false :auto-delete true})
-  (lq/bind ch (str queue) (str exchange))
-  (lc/subscribe ch (str queue) handler {:auto-ack true}))
+  (lq/declare ch (->rabbitmq queue) {:exclusive false :auto-delete false})
+  (lq/bind ch (->rabbitmq queue) (->rabbitmq exchange))
+  (lc/subscribe ch (->rabbitmq queue) (partial consumer-base handler) {:auto-ack true}))
 
 (s/defn publish
   ([channel
     exchange :- s/Keyword
     payload :- {s/Any s/Any}]
-   (publish channel exchange payload))
+   (publish channel exchange payload {:content-type "application/json"}))
   ([channel
     exchange :- s/Keyword
     payload :- {s/Any s/Any}
     {:keys [content-type]}]
    (lb/publish channel
-               exchange
+               (->rabbitmq exchange)
                ""
-               (misc.content-type-parser/transform-response payload content-type)
+               (misc.content-type-parser/transform-content-to payload content-type)
                content-type)))
 
 (defrecord RabbitMq [config]
   component/Lifecycle
   (start [this]
-    (let [conn (rmq/connect)
+    (let [{rabbit-config :rabbitmq} config
+          conn (rmq/connect rabbit-config)
           ch (lch/open conn)
           exchanges (map :exchange subscribers)]
       (doseq [e exchanges]
-        (le/declare ch e "fanout" {:durable true}))
+        (le/declare ch (->rabbitmq e) "fanout" {:durable true}))
       (doseq [s subscribers]
         (start-consumer ch s))
       (assoc this

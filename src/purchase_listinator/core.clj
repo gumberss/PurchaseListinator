@@ -6,7 +6,8 @@
             [purchase-listinator.components.pedestal :as pedestal]
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.redis :as redis]
-            [purchase-listinator.components.datomic :as datomic]))
+            [purchase-listinator.components.datomic :as datomic]
+            [purchase-listinator.components.rabbitmq :as rabbitmq]))
 
 (defn new-system
   [config]
@@ -20,7 +21,8 @@
     :redis (component/using (redis/new-Redis) [:config])
     :mongo (component/using (mongo/new-mongo) [:config])
     :datomic (component/using (datomic/new-datomic) [:config])
-    :pedestal (component/using (pedestal/new-pedestal) [:service-map :redis :mongo :datomic])))
+    :pedestal (component/using (pedestal/new-pedestal) [:service-map :redis :mongo :datomic])
+    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config])))
 
 ; Put this configs in the .env file
 (def system-config
@@ -34,7 +36,12 @@
    :redis      {:host     "127.0.0.1"
                 :port     6379
                 :password "pass"
-                :timeout  6000}})
+                :timeout  6000}
+   :rabbitmq {:host "localhost"
+              :port 5672
+              :username "guest"
+              :password "guest"
+              :vhost "/"}})
 
 
 (set-init (constantly (new-system system-config)))

@@ -3,9 +3,10 @@
 (defn purchase-list-event-received
   [channel
    _
-   payload])
+   payload]
+  (println {:foo "bar"}))
 
 (def subscribers
-  [ {:exhange :purchase-listinator/purchase-list.updated
-     :queue :purchase-listinator/shopping-list.update
-     :handler purchase-list-event-received}])
+  [{:exchange :purchase-listinator/purchase-list.updated
+    :queue   :purchase-listinator/shopping-list.update
+    :handler purchase-list-event-received}])

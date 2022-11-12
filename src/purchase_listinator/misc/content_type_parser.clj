@@ -2,7 +2,7 @@
   (:require [clojure.data.json :as json]
             [camel-snake-kebab.core :as csk]))
 
-(defn transform-response
+(defn transform-content-to
   [body content-type]
   (case content-type
     "text/html" body
