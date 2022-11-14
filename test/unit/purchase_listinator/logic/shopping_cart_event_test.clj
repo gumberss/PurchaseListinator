@@ -8,20 +8,22 @@
 (def category-id (random-uuid))
 (def item-id (random-uuid))
 
-(def item1 {:id               item-id
-            :name             "item"
-            :quantity         15
-            :price            0
-            :quantity-in-cart 0
-            :order-position   0
-            :category-id      category-id})
+(def item1
+  {:id               item-id
+   :name             "item"
+   :quantity         15
+   :price            0
+   :quantity-in-cart 0
+   :order-position   0
+   :category-id      category-id})
 
-(def category1 {:name             "Category 1"
-                :id               category-id
-                :order-position   1
-                :color            123
-                :purchase-list-id purchase-list-id
-                :items            [item1]})
+(def category1
+  {:name             "Category 1"
+   :id               category-id
+   :order-position   1
+   :color            123
+   :purchase-list-id purchase-list-id
+   :items            [item1]})
 
 (def shopping-list
   {:purchase-list-id purchase-list-id
@@ -44,20 +46,22 @@
    :price            0
    :quantity-changed -5})
 
-(def expected-item1 {:id               item-id
-                     :name             "item"
-                     :quantity         15
-                     :price            0
-                     :quantity-in-cart 10
-                     :order-position   0
-                     :category-id      category-id})
+(def expected-item1
+  {:id               item-id
+   :name             "item"
+   :quantity         15
+   :price            0
+   :quantity-in-cart 10
+   :order-position   0
+   :category-id      category-id})
 
-(def expected-category1 {:name             "Category 1"
-                         :id               category-id
-                         :order-position   1
-                         :color            123
-                         :purchase-list-id purchase-list-id
-                         :items            [expected-item1]})
+(def expected-category1
+  {:name             "Category 1"
+   :id               category-id
+   :order-position   1
+   :color            123
+   :purchase-list-id purchase-list-id
+   :items            [expected-item1]})
 
 (def expected-shopping-list
   {:purchase-list-id purchase-list-id

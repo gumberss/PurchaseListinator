@@ -4,7 +4,7 @@
   [channel
    _
    payload]
-  (println {:foo "bar"}))
+  (println payload))
 
 (def subscribers
   [{:exchange :purchase-listinator/purchase-list.updated
