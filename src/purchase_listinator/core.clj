@@ -22,7 +22,7 @@
     :mongo (component/using (mongo/new-mongo) [:config])
     :datomic (component/using (datomic/new-datomic) [:config])
     :pedestal (component/using (pedestal/new-pedestal) [:service-map :redis :mongo :datomic])
-    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config])))
+    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config :redis :mongo :datomic])))
 
 ; Put this configs in the .env file
 (def system-config

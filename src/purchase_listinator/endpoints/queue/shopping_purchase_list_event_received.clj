@@ -3,8 +3,11 @@
 (defn purchase-list-event-received
   [channel
    _
+   components
    payload]
-  (println payload))
+  (println payload)
+  (println "components")
+  (println (keys components)))
 
 (def subscribers
   [{:exchange :purchase-listinator/purchase-list.updated

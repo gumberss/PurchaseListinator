@@ -21,7 +21,8 @@
   (subs (str key) 1))
 
 (s/defn consumer-base
-  [consumer
+  [components
+   consumer
    channel
    metadata
    ^bytes payload]
@@ -30,13 +31,15 @@
         map-data (if (string? map-data)
                    (json/read-str map-data :key-fn csk/->kebab-case-keyword) ;I don't know why I need to do it the second time
                    map-data)]
-    (consumer channel metadata map-data)))
+    (consumer channel metadata components map-data)))
 
 (defn start-consumer
-  [ch {:keys [exchange queue handler]}]
+  [ch
+   components
+   {:keys [exchange queue handler]}]
   (lq/declare ch (->rabbitmq queue) {:exclusive false :auto-delete false})
   (lq/bind ch (->rabbitmq queue) (->rabbitmq exchange))
-  (lc/subscribe ch (->rabbitmq queue) (partial consumer-base handler) {:auto-ack true}))
+  (lc/subscribe ch (->rabbitmq queue) (partial consumer-base components handler) {:auto-ack true}))
 
 (s/defn publish
   ([channel
@@ -63,7 +66,7 @@
       (doseq [e exchanges]
         (le/declare ch (->rabbitmq e) "fanout" {:durable true}))
       (doseq [s subscribers]
-        (start-consumer ch s))
+        (start-consumer ch this s))
       (assoc this
         :connection conn
         :channel ch
