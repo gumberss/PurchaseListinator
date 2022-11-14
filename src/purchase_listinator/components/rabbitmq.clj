@@ -27,10 +27,9 @@
    ^bytes payload]
   (let [data (String. payload "UTF-8")
         map-data (json/read-str data :key-fn csk/->kebab-case-keyword)
-        map-data (json/read-str map-data :key-fn csk/->kebab-case-keyword)]
-    (println "data")
-    (println (type map-data))
-    (println map-data)
+        map-data (if (string? map-data)
+                   (json/read-str map-data :key-fn csk/->kebab-case-keyword) ;I don't know why I need to do it the second time
+                   map-data)]
     (consumer channel metadata map-data)))
 
 (defn start-consumer
