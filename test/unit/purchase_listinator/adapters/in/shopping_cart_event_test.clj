@@ -10,14 +10,12 @@
   {:event-type   "reorder-category"
    :shopping-id  shipping-id
    :category-id  "6412e718-72bf-4a29-8b3a-9c3fb532ab7b"
-   :old-position 0
    :new-position 1})
 
 (def wire-reorder-item-event
   {:event-type      "reorder-item"
    :shopping-id     shipping-id
    :item-id         "30010c9b-c70d-4268-8602-8214d9a75336"
-   :old-position    0
    :new-position    1
    :new-category-id "6412e718-72bf-4a29-8b3a-9c3fb532ab7b"})
 
@@ -34,7 +32,6 @@
             :event-type   :reorder-category
             :moment       0
             :new-position 1
-            :old-position 0
             :shopping-id  #uuid "6412e718-72bf-4a29-8b3a-9c3fb532ab7b"}
            (adapters.in.shopping-cart-event/wire->internal wire-reorder-category-event 0)))
     (is (= {:event-type      :reorder-item
@@ -42,7 +39,6 @@
             :moment          0
             :new-category-id #uuid "6412e718-72bf-4a29-8b3a-9c3fb532ab7b"
             :new-position    1
-            :old-position    0
             :shopping-id     #uuid "6412e718-72bf-4a29-8b3a-9c3fb532ab7b"}
            (adapters.in.shopping-cart-event/wire->internal wire-reorder-item-event 0)))
     (is (= {:event-type       :change-item
