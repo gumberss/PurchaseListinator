@@ -5,6 +5,7 @@
 
 #_(def cart-item-skeleton models.internal.shopping-item/shopping-item-skeleton)
 #_(s/defschema CartItem cart-item-skeleton)
+(def EventTypes (s/enum :reorder-category :reorder-item :change-item))
 
 (s/defschema ReorderCategoryEvent
   {:moment       s/Num
