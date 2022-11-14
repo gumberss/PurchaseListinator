@@ -1,6 +1,5 @@
 (ns purchase-listinator.logic.shopping-cart-event-test
   (:require [clojure.test :refer :all]
-            [matcher-combinators.test :refer [match?]]
             [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
             [schema.test :as st]))
 
@@ -75,5 +74,13 @@
             expected-shopping (assoc-in expected-shopping-list [:categories 0 :items 0 :quantity-in-cart] 0)]
         (is (= expected-shopping
                (logic.shopping-cart-event/apply-event change-item-removing-event shopping)))))
-    (testing "When adding more items in the cart")
-    (testing "When changing the price of the item")))
+    (testing "When adding more items in the cart"
+      (let [shopping (assoc-in shopping-list [:categories 0 :items 0 :quantity-in-cart] 5)
+            expected-shopping (assoc-in expected-shopping-list [:categories 0 :items 0 :quantity-in-cart] 15)]
+        (is (= expected-shopping
+               (logic.shopping-cart-event/apply-event change-item-event shopping)))))
+    (testing "When changing the price of the item"
+      (let [expected-shopping (assoc-in expected-shopping-list [:categories 0 :items 0 :price] 50.30)
+            event (assoc change-item-event :price 50.30)]
+        (is (= expected-shopping
+               (logic.shopping-cart-event/apply-event event shopping-list)))))))
