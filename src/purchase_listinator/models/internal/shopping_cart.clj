@@ -1,11 +1,5 @@
 (ns purchase-listinator.models.internal.shopping-cart
-  (:require [schema.core :as s]
-            [purchase-listinator.models.internal.shopping-item :as models.internal.shopping-item]
-            [purchase-listinator.models.internal.shopping :as models.internal.shopping]))
-
-#_(def cart-item-skeleton models.internal.shopping-item/shopping-item-skeleton)
-#_(s/defschema CartItem cart-item-skeleton)
-(def EventTypes (s/enum :reorder-category :reorder-item :change-item))
+  (:require [schema.core :as s]))
 
 (s/defschema ReorderCategoryEvent
   {:moment       s/Num

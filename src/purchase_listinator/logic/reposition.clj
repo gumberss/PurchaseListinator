@@ -1,6 +1,7 @@
 (ns purchase-listinator.logic.reposition
   (:require [schema.core :as s]
-            [purchase-listinator.models.logic.reposition :as models.logic.reposition]))
+            [purchase-listinator.models.logic.reposition :as models.logic.reposition]
+            [clojure.set :as c.set]))
 
 (s/defn change-order-position :- models.logic.reposition/Reorder
   [order-position :- s/Int
@@ -48,6 +49,6 @@
         max-position (max old-position new-position)
         min-position (min old-position new-position)
         to-reoder (filter #(<= min-position (:order-position %) max-position) reorder)
-        not-changed (clojure.set/difference (set reorder) (set to-reoder))
+        not-changed (c.set/difference (set reorder) (set to-reoder))
         changed (map reposition-func* to-reoder)]
     (sort-by :order-position (concat changed not-changed))))
