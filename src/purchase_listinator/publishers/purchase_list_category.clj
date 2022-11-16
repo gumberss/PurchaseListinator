@@ -1,0 +1,10 @@
+(ns purchase-listinator.publishers.purchase-list-category
+  (:require [schema.core :as s]
+            [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]
+            [purchase-listinator.adapters.out.purchase-list-category-events :as adapters.out.purchase-list-category-events]))
+
+(s/defn category-deleted
+  [category :- models.internal.purchase-category/PurchaseCategory
+   {:keys [publish]}]
+  (publish :purchase-listinator/purchase-list.category.deleted
+           (adapters.out.purchase-list-category-events/->CategoryDeletedEvent category)))

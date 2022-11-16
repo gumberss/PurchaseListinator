@@ -25,6 +25,7 @@
 
 (s/defn ^:private transact
   [connection & purchases-lists]
+  (println purchases-lists)
   @(d/transact connection purchases-lists))
 
 (s/defn get-enabled

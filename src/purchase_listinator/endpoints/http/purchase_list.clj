@@ -120,11 +120,11 @@
                         (flows.purchase-item/edit-name new-name datomic)))))
 
 (s/defn delete-purchases-lists-category
-  [{{:keys [datomic]} :component
+  [{{:keys [datomic rabbitmq]} :component
     {:keys [id]}      :path-params}]
   (misc.http/default-branch (misc.either/try-right
                     (-> (adapters.misc/string->uuid id)
-                        (flows.purchase-category/delete datomic)))))
+                        (flows.purchase-category/delete datomic rabbitmq)))))
 
 (s/defn edit-category
   [{{:keys [datomic]} :component

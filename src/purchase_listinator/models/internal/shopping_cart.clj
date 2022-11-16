@@ -24,7 +24,6 @@
    :price            s/Num
    :quantity-changed s/Int})
 
-
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
   (= expected-event-type event-type))
