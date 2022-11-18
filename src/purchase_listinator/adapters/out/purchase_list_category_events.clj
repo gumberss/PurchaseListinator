@@ -4,6 +4,8 @@
             [purchase-listinator.wires.out.purchase-list-caegory-events :as wires.out.purchase-list-caegory-events]))
 
 (s/defn ->CategoryDeletedEvent :- wires.out.purchase-list-caegory-events/CategoryDeletedEvent
-  [{:keys [id purchase-list-id]} :- models.internal.purchase-category/PurchaseCategory]
+  [{:keys [id purchase-list-id]} :- models.internal.purchase-category/PurchaseCategory
+   moment :- s/Num]
   {:category-id      id
-   :purchase-list-id purchase-list-id})
+   :purchase-list-id purchase-list-id
+   :moment           moment})

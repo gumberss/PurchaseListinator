@@ -24,6 +24,12 @@
    :price            s/Num
    :quantity-changed s/Int})
 
+(s/defschema PurchaseListCategoryDeleted
+  {:moment           s/Num
+   :event-type       (s/eq :purchase-list-category-deleted)
+   :category-id      s/Uuid
+   :purchase-list-id s/Uuid})
+
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
   (= expected-event-type event-type))

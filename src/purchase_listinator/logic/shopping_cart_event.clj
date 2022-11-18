@@ -105,6 +105,14 @@
       (reorder-item-same-category shopping old-category current-item-position new-position)
       (reorder-item-other-category shopping current-item old-category new-category new-position))))
 
+
+(s/defmethod ^:private apply-event :purchase-list-category-deleted :- models.internal.shopping-list/ShoppingList
+  [{:keys [category-id]} :- models.internal.shopping-cart/PurchaseListCategoryDeleted
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (->> categories
+       (filter #(not= (:id % category-id)))
+       (assoc shopping :categories)))
+
 (s/defmethod ^:private apply-event :default :- models.internal.shopping-list/ShoppingList
   [{:keys [event-type]} :- models.internal.shopping-cart/CartEvent
    shopping :- models.internal.shopping-list/ShoppingList]
@@ -114,6 +122,7 @@
 (s/defn ^:private apply-events
   [[current & remaining] :- (s/maybe [models.internal.shopping-cart/CartEvent])
    shopping :- models.internal.shopping-list/ShoppingList]
+  (println current)
   (if (not current)
     shopping
     (recur remaining (apply-event current shopping))))

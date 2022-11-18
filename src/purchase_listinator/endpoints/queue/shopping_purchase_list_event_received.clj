@@ -1,6 +1,9 @@
 (ns purchase-listinator.endpoints.queue.shopping-purchase-list-event-received
   (:require [purchase-listinator.wires.in.purchase-category-events :as wires.in.purchase-category-events]
-            [schema.core :as s]))
+            [purchase-listinator.adapters.in.shopping-purchase-list-events :as adapters.in.shopping-purchase-list-events]
+            [schema.core :as s]
+            [purchase-listinator.misc.date :as misc.date]
+            [purchase-listinator.flows.shopping :as flows.shopping]))
 
 (defn purchase-list-event-received
   [_channel
@@ -15,15 +18,16 @@
   [_channel
    _metadata
    components
-   {:keys [category-id purchase-list-id]} :- wires.in.purchase-category-events/PurchaseCategoryDeletedEvent]
-  (println category-id)
-  (println purchase-list-id))
+   {:keys [moment] :as event} :- wires.in.purchase-category-events/PurchaseCategoryDeletedEvent]
+  (-> (adapters.in.shopping-purchase-list-events/category-deleted-event->internal event moment)
+      (flows.shopping/receive-cart-event-by-list components)))
+
 
 (def subscribers
   [{:exchange :purchase-listinator/purchase-list.updated
-    :queue   :purchase-listinator/shopping-list.update
-    :handler purchase-list-event-received}
+    :queue    :purchase-listinator/shopping-list.update
+    :handler  purchase-list-event-received}
    {:exchange :purchase-listinator/purchase-list.category.deleted
-    :queue   :purchase-listinator/shopping-list.category.delete
-    :schema wires.in.purchase-category-events/PurchaseCategoryDeletedEvent
-    :handler purchase-list-category-deleted-event-received}])
+    :queue    :purchase-listinator/shopping-list.category.delete
+    :schema   wires.in.purchase-category-events/PurchaseCategoryDeletedEvent
+    :handler  purchase-list-category-deleted-event-received}])
