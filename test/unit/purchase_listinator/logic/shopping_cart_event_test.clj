@@ -88,3 +88,24 @@
             event (assoc change-item-event :price 50.30)]
         (is (= expected-shopping
                (logic.shopping-cart-event/apply-event event shopping-list)))))))
+
+(def new-category-id (random-uuid))
+(def purchase-list-category-created-event
+  {:moment           123
+   :event-type       :purchase-list-category-created
+   :name             "New category"
+   :category-id      new-category-id
+   :order-position   50
+   :color            321
+   :purchase-list-id purchase-list-id})
+
+(st/deftest apply-event-purchase-list-category-created-test
+  (testing "Should add a category in the shopping when processing a category created event"
+    (let [{:keys [categories]} (logic.shopping-cart-event/apply-event purchase-list-category-created-event shopping-list)]
+      (is (= 2 (count categories)))
+      (is (= {:name             "New category"
+              :id               new-category-id
+              :order-position   50
+              :color            321
+              :purchase-list-id purchase-list-id
+              :items            []} (last categories))))))

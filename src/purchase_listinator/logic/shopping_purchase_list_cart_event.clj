@@ -1,10 +1,11 @@
 (ns purchase-listinator.logic.shopping-purchase-list-cart-event
   (:require [schema.core :as s]
-            [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
+            [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
+            [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]))
 
-(s/defn created->category
+(s/defn created->category :- models.internal.shopping-list/ShoppingListCategory
   [{:keys [category-id] :as event} :- models.internal.shopping-cart/PurchaseListCategoryCreated]
   (-> event
       (assoc :id category-id
              :items [])
-      (dissoc :category-id)))
+      (dissoc :category-id :event-type :moment)))
