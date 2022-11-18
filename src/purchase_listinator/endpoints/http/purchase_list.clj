@@ -59,11 +59,11 @@
           misc.http/->Success))
 
 (s/defn add-purchases-lists-category
-  [{{datomic :datomic} :component
+  [{components :component
     wire               :json-params}]
   (branch (misc.either/try-right
             (let [category (adapters.in.purchase-category/wire->internal wire)]
-              (flows.purchase-category/create category datomic)))
+              (flows.purchase-category/create category components)))
           misc.http/->Error
           misc.http/->Success))
 

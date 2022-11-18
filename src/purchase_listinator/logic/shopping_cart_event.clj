@@ -1,6 +1,7 @@
 (ns purchase-listinator.logic.shopping-cart-event
   (:require [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
+            [purchase-listinator.logic.shopping-purchase-list-cart-event :as logic.shopping-purchase-list-cart-event]
             [purchase-listinator.logic.reposition :as logic.reposition]
             [schema.core :as s]))
 
@@ -105,13 +106,18 @@
       (reorder-item-same-category shopping old-category current-item-position new-position)
       (reorder-item-other-category shopping current-item old-category new-category new-position))))
 
-
 (s/defmethod ^:private apply-event :purchase-list-category-deleted :- models.internal.shopping-list/ShoppingList
   [{:keys [category-id]} :- models.internal.shopping-cart/PurchaseListCategoryDeleted
    {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
   (->> categories
        (filter #(not= (:id % category-id)))
        (assoc shopping :categories)))
+
+(s/defmethod ^:private apply-event :purchase-list-category-created :- models.internal.shopping-list/ShoppingList
+  [event :- models.internal.shopping-cart/PurchaseListCategoryCreated
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [category (logic.shopping-purchase-list-cart-event/created->category event)]
+    (assoc shopping :categories (conj categories category))))
 
 (s/defmethod ^:private apply-event :default :- models.internal.shopping-list/ShoppingList
   [{:keys [event-type]} :- models.internal.shopping-cart/CartEvent

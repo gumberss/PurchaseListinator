@@ -9,3 +9,11 @@
   {:category-id      id
    :purchase-list-id purchase-list-id
    :moment           moment})
+
+(s/defn ->CategoryCreatedEvent :- wires.out.purchase-list-caegory-events/CategoryCreatedEvent
+  [{:keys [id] :as wire} :- models.internal.purchase-category/PurchaseCategory
+   moment :- s/Num]
+  (-> wire
+      (assoc :moment moment
+             :category-id id)
+      (dissoc :id)))

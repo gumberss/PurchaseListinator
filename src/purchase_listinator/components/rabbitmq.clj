@@ -57,7 +57,8 @@
                (->rabbitmq exchange)
                ""
                (misc.content-type-parser/transform-content-to payload content-type)
-               content-type)))
+               content-type)
+   payload))
 
 (defrecord RabbitMq [config]
   component/Lifecycle

@@ -30,6 +30,15 @@
    :category-id      s/Uuid
    :purchase-list-id s/Uuid})
 
+(s/defschema PurchaseListCategoryCreated
+  {:moment           s/Num
+   :event-type       (s/eq :purchase-list-category-created)
+   :name             s/Str
+   :category-id      s/Uuid
+   :order-position   s/Int
+   :color            s/Int
+   :purchase-list-id s/Uuid})
+
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
   (= expected-event-type event-type))
@@ -37,7 +46,9 @@
 (s/defschema CartEvent
   (s/conditional
     (partial of-type :reorder-category) ReorderCategoryEvent
-    (partial of-type :reorder-item) ReorderItemEvent))
+    (partial of-type :reorder-item) ReorderItemEvent
+    (partial of-type :purchase-list-category-deleted) PurchaseListCategoryDeleted
+    (partial of-type :reorder-item) PurchaseListCategoryCreated))
 
 (def cart-skeleton
   {:shopping-id s/Uuid

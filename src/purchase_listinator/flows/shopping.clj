@@ -70,9 +70,12 @@
 (s/defn receive-cart-event-by-list
   [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent
    {:keys [redis datomic]}]
-  (some-> (datomic.shopping/get-in-progress-by-list-id purchase-list-id datomic)
-          :id
-          (redis.shopping-cart/find-cart redis)
-          (logic.shopping-cart-event/add-event event)
-          (redis.shopping-cart/upsert redis))
+  (try (some-> (datomic.shopping/get-in-progress-by-list-id purchase-list-id datomic)
+               :id
+               (redis.shopping-cart/find-cart redis)
+               (logic.shopping-cart-event/add-event event)
+               (redis.shopping-cart/upsert redis))
+       (catch Exception e
+         (println e)
+         (throw e)))
   event)
