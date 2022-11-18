@@ -2,7 +2,8 @@
   (:require [schema.core :as s]
             [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-list :as adapter.purchase-list]
-            [purchase-listinator.adapters.db.purchase-list-management-data :as adapters.db.purchase-list-management-data]))
+            [purchase-listinator.adapters.db.purchase-list-management-data :as adapters.db.purchase-list-management-data]
+            [purchase-listinator.misc.date :as misc.date]))
 
 (def schema
   [{:db/ident       :purchase-list/id
@@ -82,14 +83,18 @@
        (transact connection)))
 
 (s/defn get-management-data
-  [purchase-list-id :- s/Uuid
-   {:keys [connection]}]
-  (->> (d/q '[:find (pull ?e [* {[:purchase-category/_purchase-list :as :purchase-list/categories]
-                                 [* {[:purchase-item/_category :as :purchase-category/items] [* {:purchase-item/category [:purchase-category/id]}]
-                                     :purchase-category/purchase-list [:purchase-list/id]}]}])
-              :in $ ?id
-              :where
-              [?e :purchase-list/id ?id]]
-            (d/db connection) purchase-list-id)
-       ffirst
-       (adapters.db.purchase-list-management-data/db->categories+items-view)))
+  ([purchase-list-id :- s/Uuid
+    datomic]
+   (get-management-data purchase-list-id (misc.date/numb-now) datomic))
+  ([purchase-list-id :- s/Uuid
+    moment :- s/Num
+    {:keys [connection]}]
+   (->> (d/q '[:find (pull ?e [* {[:purchase-category/_purchase-list :as :purchase-list/categories]
+                                  [* {[:purchase-item/_category :as :purchase-category/items] [* {:purchase-item/category [:purchase-category/id]}]
+                                      :purchase-category/purchase-list                        [:purchase-list/id]}]}])
+               :in $ ?id
+               :where
+               [?e :purchase-list/id ?id]]
+             (d/as-of (d/db connection) (misc.date/numb->date moment)) purchase-list-id)
+        ffirst
+        (adapters.db.purchase-list-management-data/db->categories+items-view))))

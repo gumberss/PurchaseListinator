@@ -47,8 +47,8 @@
   [shopping-id :- s/Uuid
    {:keys [datomic redis]}]
   (let [cart (redis.shopping-cart/find-cart shopping-id redis)
-        {:keys [list-id]} (datomic.shopping/get-by-id shopping-id datomic)
-        purchase-list (dbs.datomic.purchase-list/get-management-data list-id datomic)
+        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id datomic)
+        purchase-list (dbs.datomic.purchase-list/get-management-data list-id date datomic)
         shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)]
     (logic.shopping-cart-event/apply-cart cart shopping)))
 
