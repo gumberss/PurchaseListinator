@@ -87,7 +87,7 @@
 (st/deftest apply-event-purchase-list-category-created-test
   (testing "Should add a category in the shopping when processing a category created event"
     (let [{:keys [categories]} (logic.shopping-cart-event/apply-event purchase-list-category-created-event shopping-list)]
-      (is (= 2 (count categories)))
+      (is (= 3 (count categories)))
       (is (= {:name             "New category"
               :id               new-category-id
               :order-position   50
