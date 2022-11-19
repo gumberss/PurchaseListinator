@@ -110,7 +110,7 @@
   [{:keys [category-id]} :- models.internal.shopping-cart/PurchaseListCategoryDeleted
    {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
   (->> categories
-       (filter #(not= (:id % category-id)))
+       (filter #(not= (:id %) category-id))
        (assoc shopping :categories)))
 
 (s/defmethod ^:private apply-event :purchase-list-category-created :- models.internal.shopping-list/ShoppingList
