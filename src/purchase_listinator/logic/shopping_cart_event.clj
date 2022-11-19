@@ -128,7 +128,6 @@
 (s/defn ^:private apply-events
   [[current & remaining] :- (s/maybe [models.internal.shopping-cart/CartEvent])
    shopping :- models.internal.shopping-list/ShoppingList]
-  (println current)
   (if (not current)
     shopping
     (recur remaining (apply-event current shopping))))

@@ -60,12 +60,11 @@
 
 (s/defn add-purchases-lists-category
   [{components :component
-    wire               :json-params}]
-  (branch (misc.either/try-right
-            (let [category (adapters.in.purchase-category/wire->internal wire)]
-              (flows.purchase-category/create category components)))
-          misc.http/->Error
-          misc.http/->Success))
+    wire       :json-params}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.in.purchase-category/wire->internal wire)
+          (flows.purchase-category/create components)))))
 
 (s/defn change-category-order
   [{{datomic :datomic}        :component
@@ -101,37 +100,38 @@
   [{{:keys [datomic]}         :component
     {:keys [id new-quantity]} :path-params}]
   (misc.http/default-branch (misc.either/try-right
-                    (let [new-quantity (adapters.misc/string->integer new-quantity)
-                          item-id (adapters.misc/string->uuid id)]
-                      (flows.purchase-item/change-item-quantity item-id new-quantity datomic)))))
+                              (let [new-quantity (adapters.misc/string->integer new-quantity)
+                                    item-id (adapters.misc/string->uuid id)]
+                                (flows.purchase-item/change-item-quantity item-id new-quantity datomic)))))
 
 (s/defn delete-purchases-lists-item
   [{{:keys [datomic]} :component
     {:keys [id]}      :path-params}]
   (misc.http/default-branch (misc.either/try-right
-                    (-> (adapters.misc/string->uuid id)
-                        (flows.purchase-item/delete datomic)))))
+                              (-> (adapters.misc/string->uuid id)
+                                  (flows.purchase-item/delete datomic)))))
 
 (s/defn edit-item-name
   [{{:keys [datomic]}     :component
     {:keys [id new-name]} :path-params}]
   (misc.http/default-branch (misc.either/try-right
-                    (-> (adapters.misc/string->uuid id)
-                        (flows.purchase-item/edit-name new-name datomic)))))
+                              (-> (adapters.misc/string->uuid id)
+                                  (flows.purchase-item/edit-name new-name datomic)))))
 
 (s/defn delete-purchases-lists-category
   [{{:keys [datomic rabbitmq]} :component
-    {:keys [id]}      :path-params}]
-  (misc.http/default-branch (misc.either/try-right
-                    (-> (adapters.misc/string->uuid id)
-                        (flows.purchase-category/delete datomic rabbitmq)))))
+    {:keys [id]}               :path-params}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.misc/string->uuid id)
+          (flows.purchase-category/delete datomic rabbitmq)))))
 
 (s/defn edit-category
   [{{:keys [datomic]} :component
     wire              :json-params}]
   (misc.http/default-branch (misc.either/try-right
-                    (-> (adapters.in.purchase-category/wire->internal wire)
-                        (flows.purchase-category/edit datomic)))))
+                              (-> (adapters.in.purchase-category/wire->internal wire)
+                                  (flows.purchase-category/edit datomic)))))
 
 ;todo: /lists should return only the purchase list data and /lists/:id should return items and categories too
 (def routes
