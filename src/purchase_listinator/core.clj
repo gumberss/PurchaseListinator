@@ -28,7 +28,7 @@
 (def system-config
   {:env        :prod
    :web-server {:port 5150
-                :host "192.168.1.102"}
+                :host "192.168.1.104"}
    :mongo      {:port    27017
                 :host    "localhost"
                 :db-name "monger-test"}

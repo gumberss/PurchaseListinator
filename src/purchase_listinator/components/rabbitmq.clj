@@ -8,10 +8,10 @@
             [com.stuartsierra.component :as component]
             [purchase-listinator.endpoints.queue.shopping-purchase-list-event-received :as endpoints.queue.shopping-purchase-list-event-received]
             [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
-            [cheshire.core :as cheshire]
             [schema.core :as s]
             [clojure.data.json :as json]
-            [camel-snake-kebab.core :as csk]))
+            [camel-snake-kebab.core :as csk]
+            [schema.coerce :as coerce]))
 
 (def subscribers (concat
                    endpoints.queue.shopping-purchase-list-event-received/subscribers))
@@ -22,6 +22,7 @@
 
 (s/defn consumer-base
   [components
+   schema
    consumer
    channel
    metadata
@@ -30,16 +31,18 @@
         map-data (json/read-str data :key-fn csk/->kebab-case-keyword)
         map-data (if (string? map-data)
                    (json/read-str map-data :key-fn csk/->kebab-case-keyword) ;I don't know why I need to do it the second time
-                   map-data)]
-    (consumer channel metadata components map-data)))
+                   map-data)
+        coerce-function (if schema (coerce/coercer schema coerce/json-coercion-matcher) identity)
+        coerced-data (coerce-function map-data)]
+    (consumer channel metadata components coerced-data)))
 
 (defn start-consumer
   [ch
    components
-   {:keys [exchange queue handler]}]
+   {:keys [exchange queue schema handler]}]
   (lq/declare ch (->rabbitmq queue) {:exclusive false :auto-delete false})
   (lq/bind ch (->rabbitmq queue) (->rabbitmq exchange))
-  (lc/subscribe ch (->rabbitmq queue) (partial consumer-base components handler) {:auto-ack true}))
+  (lc/subscribe ch (->rabbitmq queue) (partial consumer-base components schema handler) {:auto-ack true}))
 
 (s/defn publish
   ([channel
@@ -54,7 +57,8 @@
                (->rabbitmq exchange)
                ""
                (misc.content-type-parser/transform-content-to payload content-type)
-               content-type)))
+               content-type)
+   payload))
 
 (defrecord RabbitMq [config]
   component/Lifecycle
@@ -70,7 +74,7 @@
       (assoc this
         :connection conn
         :channel ch
-        :publish publish)))
+        :publish (partial publish ch))))
   (stop [this]
     (rmq/close (:channel this))
     (rmq/close (:connection this))

@@ -47,8 +47,8 @@
   [shopping-id :- s/Uuid
    {:keys [datomic redis]}]
   (let [cart (redis.shopping-cart/find-cart shopping-id redis)
-        {:keys [list-id]} (datomic.shopping/get-by-id shopping-id datomic)
-        purchase-list (dbs.datomic.purchase-list/get-management-data list-id datomic)
+        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id datomic)
+        purchase-list (dbs.datomic.purchase-list/get-management-data list-id date datomic)
         shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)]
     (logic.shopping-cart-event/apply-cart cart shopping)))
 
@@ -65,4 +65,17 @@
   (-> (redis.shopping-cart/find-cart shopping-id redis)
       (logic.shopping-cart-event/add-event event)
       (redis.shopping-cart/upsert redis))
+  event)
+
+(s/defn receive-cart-event-by-list
+  [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent
+   {:keys [redis datomic]}]
+  (try (some-> (datomic.shopping/get-in-progress-by-list-id purchase-list-id datomic)
+               :id
+               (redis.shopping-cart/find-cart redis)
+               (logic.shopping-cart-event/add-event event)
+               (redis.shopping-cart/upsert redis))
+       (catch Exception e
+         (println e)
+         (throw e)))
   event)

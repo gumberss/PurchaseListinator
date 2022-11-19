@@ -4,11 +4,11 @@
 (def Status (s/enum :in-progress :waiting))
 
 (def purchase-list-skeleton
-  {:id          s/Uuid
-   :name        s/Str
-   :enabled     s/Bool
-   :in-progress s/Bool
-   :status      Status})
+  {:id                      s/Uuid
+   :name                    s/Str
+   :enabled                 s/Bool
+   :in-progress             s/Bool
+   (s/optional-key :status) Status})
 
 (s/defschema PurchaseList purchase-list-skeleton)
 
