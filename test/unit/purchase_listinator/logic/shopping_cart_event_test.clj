@@ -1,8 +1,7 @@
 (ns purchase-listinator.logic.shopping-cart-event-test
   (:require [clojure.test :refer :all]
             [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
-            [schema.test :as st]
-            [schema.core :as s]))
+            [schema.test :as st]))
 
 (def purchase-list-id (random-uuid))
 (def shopping-id (random-uuid))
@@ -95,7 +94,6 @@
               :color            321
               :purchase-list-id purchase-list-id
               :items            []} (last categories))))))
-
 
 (def purchase-list-category-deleted-event
   {:moment           213
