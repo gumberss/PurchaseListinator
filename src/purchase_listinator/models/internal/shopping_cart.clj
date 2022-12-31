@@ -63,8 +63,9 @@
     (partial of-type :reorder-category) ReorderCategoryEvent
     (partial of-type :reorder-item) ReorderItemEvent
     (partial of-type :purchase-list-category-deleted) PurchaseListCategoryDeleted
-    (partial of-type :reorder-item) PurchaseListCategoryCreated
-    (partial of-type :purchase-list-category-created) PurchaseListItemCreated))
+    (partial of-type :purchase-list-category-created) PurchaseListCategoryCreated
+    (partial of-type :purchase-list-item-created) PurchaseListItemCreated
+    (partial of-type :purchase-list-item-deleted) PurchaseListItemDeleted))
 
 (def cart-skeleton
   {:shopping-id s/Uuid
