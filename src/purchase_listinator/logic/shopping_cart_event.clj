@@ -131,6 +131,15 @@
         changed-category (assoc-in category [:items] (conj items item))]
     (replace-category shopping changed-category)))
 
+(s/defmethod ^:private apply-event :purchase-list-item-deleted :- models.internal.shopping-list/ShoppingList
+  [{:keys [category-id item-id] :as event} :- models.internal.shopping-cart/PurchaseListItemDeleted
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [{:keys [items] :as category} (->> categories
+                                          (filter #(= (:id %) category-id))
+                                          (first))
+        changed-category (assoc-in category [:items] (filter #(not= (:id %) item-id) items))]
+    (replace-category shopping changed-category)))
+
 (s/defmethod ^:private apply-event :default :- models.internal.shopping-list/ShoppingList
   [{:keys [event-type]} :- models.internal.shopping-cart/CartEvent
    shopping :- models.internal.shopping-list/ShoppingList]

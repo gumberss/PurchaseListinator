@@ -40,14 +40,19 @@
    :purchase-list-id s/Uuid})
 
 (s/defschema PurchaseListItemCreated
-  {:event-type     (s/eq :purchase-list-category-created)
-   :moment         s/Num
-   :item-id        s/Uuid
-   :name           s/Str
-   :quantity       s/Int
-   :order-position s/Int
-   :category-id    s/Uuid
-   :purchase-list-id s/Uuid})
+  {:event-type       (s/eq :purchase-list-item-created)
+   :moment           s/Num
+   :item-id          s/Uuid
+   :name             s/Str
+   :quantity         s/Int
+   :order-position   s/Int
+   :category-id      s/Uuid})
+
+(s/defschema PurchaseListItemDeleted
+  {:event-type       (s/eq :purchase-list-item-deleted)
+   :moment           s/Num
+   :item-id          s/Uuid
+   :category-id      s/Uuid})
 
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]

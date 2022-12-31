@@ -2,6 +2,7 @@
   (:require [schema.core :as s]))
 
 (def reorder-skeleton
-  {:order-position   s/Int})
+  {:order-position   s/Int
+   s/Any s/Any})
 
 (s/defschema Reorder reorder-skeleton)

@@ -24,9 +24,12 @@
 
 (s/defn delete
   [item-id :- s/Uuid
-   datomic]
+   datomic
+   rabbitmq]
   (either/try-right
-    (datomic.purchase-item/delete-by-id item-id datomic)))
+    (let [item (datomic.purchase-item/get-by-id item-id datomic)]
+      (datomic.purchase-item/delete-by-id item-id datomic)
+      (publishers.purchase-list-items/item-deleted item rabbitmq))))
 
 (s/defn change-items-order-inside-same-category
   [category-id :- s/Uuid

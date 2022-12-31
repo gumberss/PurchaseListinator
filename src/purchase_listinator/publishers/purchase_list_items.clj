@@ -12,12 +12,12 @@
            (adapters.out.purchase-list-item-events/->ItemCreatedEvent item (misc.date/numb-now))))
 
 #_(s/defn item-changed
-  [item :- models.internal.purchase-item/PurchaseItem
-   {:keys [publish]}]
-  (publish :purchase-listinator/purchase-list.item.changed
-           (adapters.out.purchase-list-item-events/->ItemUpdatedEvent item (misc.date/numb-now))))
+    [item :- models.internal.purchase-item/PurchaseItem
+     {:keys [publish]}]
+    (publish :purchase-listinator/purchase-list.item.changed
+             (adapters.out.purchase-list-item-events/->ItemUpdatedEvent item (misc.date/numb-now))))
 
-#_(s/defn item-deleted
+(s/defn item-deleted
   [item :- models.internal.purchase-item/PurchaseItem
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.deleted

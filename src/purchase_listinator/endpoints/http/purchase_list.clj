@@ -105,11 +105,11 @@
                                 (flows.purchase-item/change-item-quantity item-id new-quantity datomic)))))
 
 (s/defn delete-purchases-lists-item
-  [{{:keys [datomic]} :component
+  [{{:keys [datomic rabbitmq]} :component
     {:keys [id]}      :path-params}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid id)
-                                  (flows.purchase-item/delete datomic)))))
+                                  (flows.purchase-item/delete datomic rabbitmq)))))
 
 (s/defn edit-item-name
   [{{:keys [datomic]}     :component
