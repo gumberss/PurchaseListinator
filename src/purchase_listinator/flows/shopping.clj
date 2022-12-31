@@ -79,3 +79,16 @@
          (println e)
          (throw e)))
   event)
+
+(s/defn receive-cart-event-by-category
+  [{:keys [category-id] :as event} :- models.internal.shopping-cart/CartEvent
+   {:keys [redis datomic]}]
+  (try (some-> (datomic.shopping/get-in-progress-by-category-id category-id datomic)
+               :id
+               (redis.shopping-cart/find-cart redis)
+               (logic.shopping-cart-event/add-event event)
+               (redis.shopping-cart/upsert redis))
+       (catch Exception e
+         (println e)
+         (throw e)))
+  event)

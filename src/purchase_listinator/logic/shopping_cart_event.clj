@@ -109,15 +109,36 @@
 (s/defmethod ^:private apply-event :purchase-list-category-deleted :- models.internal.shopping-list/ShoppingList
   [{:keys [category-id]} :- models.internal.shopping-cart/PurchaseListCategoryDeleted
    {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
-  (->> categories
-       (filter #(not= (:id %) category-id))
-       (assoc shopping :categories)))
+
+  (let [{:keys [order-position]} (filter #(= (:id %) category-id) categories)
+        reposition-category (partial logic.reposition/decrement-if-after order-position)]
+    (->> categories
+         (filter #(not= (:id %) category-id))
+         (map reposition-category)
+         (assoc shopping :categories))))
 
 (s/defmethod ^:private apply-event :purchase-list-category-created :- models.internal.shopping-list/ShoppingList
   [event :- models.internal.shopping-cart/PurchaseListCategoryCreated
    {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
   (let [category (logic.shopping-purchase-list-cart-event/created->category event)]
     (assoc shopping :categories (conj categories category))))
+
+(s/defmethod ^:private apply-event :purchase-list-item-created :- models.internal.shopping-list/ShoppingList
+  [{:keys [category-id] :as event} :- models.internal.shopping-cart/PurchaseListItemCreated
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [{:keys [items] :as category} (first (filter #(= (:id %) category-id) categories))
+        item (logic.shopping-purchase-list-cart-event/created->item event)
+        changed-category (assoc-in category [:items] (conj items item))]
+    (replace-category shopping changed-category)))
+
+(s/defmethod ^:private apply-event :purchase-list-item-deleted :- models.internal.shopping-list/ShoppingList
+  [{:keys [category-id item-id] :as event} :- models.internal.shopping-cart/PurchaseListItemDeleted
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [{:keys [items] :as category} (->> categories
+                                          (filter #(= (:id %) category-id))
+                                          (first))
+        changed-category (assoc-in category [:items] (filter #(not= (:id %) item-id) items))]
+    (replace-category shopping changed-category)))
 
 (s/defmethod ^:private apply-event :default :- models.internal.shopping-list/ShoppingList
   [{:keys [event-type]} :- models.internal.shopping-cart/CartEvent
