@@ -109,9 +109,13 @@
 (s/defmethod ^:private apply-event :purchase-list-category-deleted :- models.internal.shopping-list/ShoppingList
   [{:keys [category-id]} :- models.internal.shopping-cart/PurchaseListCategoryDeleted
    {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
-  (->> categories
-       (filter #(not= (:id %) category-id))
-       (assoc shopping :categories)))
+
+  (let [{:keys [order-position]} (filter #(= (:id %) category-id) categories)
+        reposition-category (partial logic.reposition/decrement-if-after order-position)]
+    (->> categories
+         (filter #(not= (:id %) category-id))
+         (map reposition-category)
+         (assoc shopping :categories))))
 
 (s/defmethod ^:private apply-event :purchase-list-category-created :- models.internal.shopping-list/ShoppingList
   [event :- models.internal.shopping-cart/PurchaseListCategoryCreated
