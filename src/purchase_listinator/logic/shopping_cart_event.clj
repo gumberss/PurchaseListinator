@@ -123,6 +123,14 @@
   (let [category (logic.shopping-purchase-list-cart-event/created->category event)]
     (assoc shopping :categories (conj categories category))))
 
+(s/defmethod ^:private apply-event :purchase-list-item-created :- models.internal.shopping-list/ShoppingList
+  [{:keys [category-id] :as event} :- models.internal.shopping-cart/PurchaseListItemCreated
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [{:keys [items] :as category} (first (filter #(= (:id %) category-id) categories))
+        item (logic.shopping-purchase-list-cart-event/created->item event)
+        changed-category (assoc-in category [:items] (conj items item))]
+    (replace-category shopping changed-category)))
+
 (s/defmethod ^:private apply-event :default :- models.internal.shopping-list/ShoppingList
   [{:keys [event-type]} :- models.internal.shopping-cart/CartEvent
    shopping :- models.internal.shopping-list/ShoppingList]

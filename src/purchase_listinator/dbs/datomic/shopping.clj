@@ -49,6 +49,20 @@
        ffirst
        adapter.shopping/db->internal))
 
+(s/defn get-in-progress-by-category-id :- models.internal.shopping/Shopping
+  [category-id :- s/Uuid
+   {:keys [connection]}]
+  (->> (d/q '[:find (pull ?s [* {:shopping/list [:purchase-list/id]}])
+              :in $ ?c-id
+              :where
+              [?c :purchase-category/id ?c-id]
+              [?c :purchase-category/purchase-list ?l]
+              [?s :shopping/list ?l]
+              [?s :shopping/status :in-progress]]
+            (d/db connection) category-id)
+       ffirst
+       adapter.shopping/db->internal))
+
 (s/defn get-by-id :- models.internal.shopping/Shopping
   [id :- s/Uuid
    {:keys [connection]}]

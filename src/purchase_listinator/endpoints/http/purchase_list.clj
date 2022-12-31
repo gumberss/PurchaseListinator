@@ -50,11 +50,11 @@
           misc.http/->Success))
 
 (s/defn add-purchases-lists-item
-  [{{datomic :datomic} :component
-    wire               :json-params}]
+  [{{:keys [datomic rabbitmq]} :component
+    wire                       :json-params}]
   (branch (misc.either/try-right
             (let [internal-item (adapters.in.purchase-item/wire->internal wire)]
-              (flows.purchase-item/create internal-item datomic)))
+              (flows.purchase-item/create internal-item datomic rabbitmq)))
           misc.http/->Error
           misc.http/->Success))
 

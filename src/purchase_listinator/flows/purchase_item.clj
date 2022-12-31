@@ -5,11 +5,13 @@
             [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]
             [purchase-listinator.logic.purchase-item :as logic.purchase-item]
             [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]
-            [purchase-listinator.logic.reposition :as logic.reposition]))
+            [purchase-listinator.logic.reposition :as logic.reposition]
+            [purchase-listinator.publishers.purchase-list-items :as publishers.purchase-list-items]))
 
 (s/defn create
   [{:keys [name category-id] :as item} :- models.internal.purchase-item/PurchaseItem
-   datomic]
+   datomic
+   rabbitmq]
   (either/try-right
     (if-let [existent-item (datomic.purchase-item/get-by-name name category-id datomic)]
       (do (println existent-item)
@@ -17,7 +19,8 @@
                  :error  {:message "[[ITEM_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}}))
       (-> (datomic.purchase-item/items-count category-id datomic)
           (logic.purchase-item/change-order-position item)
-          (datomic.purchase-item/upsert datomic)))))
+          (datomic.purchase-item/upsert datomic)
+          (publishers.purchase-list-items/item-created rabbitmq)))))
 
 (s/defn delete
   [item-id :- s/Uuid
