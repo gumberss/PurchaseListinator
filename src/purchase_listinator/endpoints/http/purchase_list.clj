@@ -97,26 +97,26 @@
           misc.http/->Success))
 
 (s/defn change-item-quantity
-  [{{:keys [datomic]}         :component
-    {:keys [id new-quantity]} :path-params}]
+  [{{:keys [datomic rabbitmq]} :component
+    {:keys [id new-quantity]}  :path-params}]
   (misc.http/default-branch (misc.either/try-right
                               (let [new-quantity (adapters.misc/string->integer new-quantity)
                                     item-id (adapters.misc/string->uuid id)]
-                                (flows.purchase-item/change-item-quantity item-id new-quantity datomic)))))
+                                (flows.purchase-item/change-item-quantity item-id new-quantity datomic rabbitmq)))))
 
 (s/defn delete-purchases-lists-item
   [{{:keys [datomic rabbitmq]} :component
-    {:keys [id]}      :path-params}]
+    {:keys [id]}               :path-params}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid id)
                                   (flows.purchase-item/delete datomic rabbitmq)))))
 
 (s/defn edit-item-name
-  [{{:keys [datomic]}     :component
-    {:keys [id new-name]} :path-params}]
+  [{{:keys [datomic rabbitmq]} :component
+    {:keys [id new-name]}      :path-params}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid id)
-                                  (flows.purchase-item/edit-name new-name datomic)))))
+                                  (flows.purchase-item/edit-name new-name datomic rabbitmq)))))
 
 (s/defn delete-purchases-lists-category
   [{{:keys [datomic rabbitmq]} :component

@@ -5,4 +5,3 @@
   {:place s/Str
    :type  s/Str})
 (s/defschema ShoppingInitiationData shopping-initiation-data-skeleton)
-

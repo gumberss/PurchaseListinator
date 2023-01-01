@@ -18,3 +18,10 @@
              :item-id id)
       (dissoc :id)))
 
+(s/defn ->ItemChangedEvent :- wires.out.purchase-list-item-events/ItemChangedEvent
+  [{:keys [id] :as wire} :- models.internal.purchase-item/PurchaseItem
+   moment :- s/Num]
+  (-> wire
+      (assoc :moment moment
+             :item-id id)
+      (dissoc :id)))

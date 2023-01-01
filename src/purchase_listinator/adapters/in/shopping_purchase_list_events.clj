@@ -19,3 +19,7 @@
 (s/defn item-deleted-event->internal :- models.internal.shopping-cart/PurchaseListItemDeleted
   [wire :- wires.in.purchase-item-events/PurchaseItemDeletedEvent]
   (assoc wire :event-type :purchase-list-item-deleted))
+
+(s/defn item-changed-event->internal :- models.internal.shopping-cart/PurchaseListItemChanged
+  [wire :- wires.in.purchase-item-events/PurchaseItemChangedEvent]
+  (assoc wire :event-type :purchase-list-item-changed))

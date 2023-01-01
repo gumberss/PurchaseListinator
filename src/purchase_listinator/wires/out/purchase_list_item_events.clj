@@ -5,16 +5,18 @@
   {:category-id      s/Uuid
    :purchase-list-id s/Uuid
    :moment           s/Num})
-
 (s/defschema ItemDeletedEvent purchase-item-deleted-event-skeleton)
 
 (def purchase-item-created-event-skeleton
-  {:name             s/Str
-   :category-id      s/Uuid
-   :order-position   s/Int
-   :color            s/Int
-   :purchase-list-id s/Uuid
-   :moment           s/Num})
-
+  {:item-id        s/Uuid
+   :name           s/Str
+   :category-id    s/Uuid
+   :order-position s/Int
+   :quantity       s/Int
+   :moment         s/Num})
 (s/defschema ItemCreatedEvent purchase-item-created-event-skeleton)
 
+(def purchase-item-changed-event-skeleton
+  (select-keys purchase-item-created-event-skeleton
+               [:item-id :quantity :name :category-id :order-position :moment]))
+(s/defschema ItemChangedEvent purchase-item-changed-event-skeleton)

@@ -17,3 +17,15 @@
    purchase-list :- purchase-list-management-data/ManagementData]
   (assoc purchase-list :shopping-id shopping-id))
 
+(s/defn ^:private sort-items
+  [items :- [models.internal.shopping-list/ShoppingItem]]
+  (sort-by :order-position items))
+
+(s/defn ^:private sort-categories
+  [categories :- [models.internal.shopping-list/ShoppingListCategory]]
+  (->> (map #(update % :items sort-items) categories)
+       (sort-by :order-position)))
+
+(s/defn sort-shopping-data :- models.internal.shopping-list/ShoppingList
+  [shopping :- models.internal.shopping-list/ShoppingList]
+  (update shopping :categories sort-categories))

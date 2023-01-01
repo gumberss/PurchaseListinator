@@ -16,3 +16,7 @@
    :category-id    s/Uuid})
 (s/defschema PurchaseItemCreatedEvent purchase-item-created-event-skeleton)
 
+(def purchase-item-updated-event-skeleton
+  (select-keys purchase-item-created-event-skeleton
+               [:item-id :quantity :name :category-id :order-position :moment]))
+(s/defschema PurchaseItemChangedEvent purchase-item-updated-event-skeleton)

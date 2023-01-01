@@ -3,6 +3,7 @@
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
             [purchase-listinator.logic.shopping-purchase-list-cart-event :as logic.shopping-purchase-list-cart-event]
             [purchase-listinator.logic.reposition :as logic.reposition]
+            [purchase-listinator.logic.shopping :as logic.shopping]
             [schema.core :as s]))
 
 (defmulti apply-event (fn [{:keys [event-type]} _] event-type))
@@ -131,8 +132,19 @@
         changed-category (assoc-in category [:items] (conj items item))]
     (replace-category shopping changed-category)))
 
+(s/defmethod ^:private apply-event :purchase-list-item-changed :- models.internal.shopping-list/ShoppingList
+  [{:keys [item-id quantity name]} :- models.internal.shopping-cart/PurchaseListItemChanged
+   {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
+  (let [{:keys [category-id] :as item} (->> (mapcat :items categories)
+                                            (filter #(= item-id (:id %)))
+                                            first)
+        category (first (filter #(= category-id (:id %)) categories))
+        changed-item (assoc item :quantity quantity :name name)
+        changed-category (replace-item category changed-item)]
+    (replace-category shopping changed-category)))
+
 (s/defmethod ^:private apply-event :purchase-list-item-deleted :- models.internal.shopping-list/ShoppingList
-  [{:keys [category-id item-id] :as event} :- models.internal.shopping-cart/PurchaseListItemDeleted
+  [{:keys [category-id item-id]} :- models.internal.shopping-cart/PurchaseListItemDeleted
    {:keys [categories] :as shopping} :- models.internal.shopping-list/ShoppingList]
   (let [{:keys [items] :as category} (->> categories
                                           (filter #(= (:id %) category-id))
@@ -156,7 +168,8 @@
 (s/defn apply-cart :- models.internal.shopping-list/ShoppingList
   [{:keys [events]} :- (s/maybe models.internal.shopping-cart/Cart)
    shopping :- models.internal.shopping-list/ShoppingList]
-  (apply-events (sort-by :moment events) shopping))
+  (-> (apply-events (sort-by :moment events) shopping)
+      logic.shopping/sort-shopping-data))
 
 (s/defn add-event :- models.internal.shopping-cart/Cart
   [{:keys [events] :as cart} :- models.internal.shopping-cart/Cart

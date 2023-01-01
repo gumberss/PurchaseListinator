@@ -74,21 +74,25 @@
 (s/defn edit-name
   [item-id :- s/Uuid
    new-name :- s/Str
-   datomic]
+   datomic
+   rabbitmq]
   (either/try-right
     (let [{:keys [name] :as item} (datomic.purchase-item/get-by-id item-id datomic)]
       (if (not= new-name name)
         (-> (assoc item :name new-name)
-            (datomic.purchase-item/upsert datomic))))))
+            (datomic.purchase-item/upsert datomic)
+            (publishers.purchase-list-items/item-changed rabbitmq))))))
 
 (s/defn change-item-quantity
   [item-id :- s/Uuid
    new-quantity :- s/Num
-   datomic]
+   datomic
+   rabbitmq]
   (either/try-right
     (let [{:keys [quantity] :as item} (datomic.purchase-item/get-by-id item-id datomic)]
       (if (= quantity new-quantity)
         item
         (-> (assoc item :quantity new-quantity)
-            (datomic.purchase-item/upsert datomic))))))
+            (datomic.purchase-item/upsert datomic)
+            (publishers.purchase-list-items/item-changed rabbitmq))))))
 

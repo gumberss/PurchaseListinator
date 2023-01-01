@@ -48,6 +48,15 @@
    :order-position   s/Int
    :category-id      s/Uuid})
 
+(s/defschema PurchaseListItemChanged
+  {:event-type       (s/eq :purchase-list-item-changed)
+   :moment           s/Num
+   :item-id          s/Uuid
+   :name             s/Str
+   :quantity         s/Int
+   :order-position   s/Int
+   :category-id      s/Uuid})
+
 (s/defschema PurchaseListItemDeleted
   {:event-type       (s/eq :purchase-list-item-deleted)
    :moment           s/Num
@@ -65,6 +74,7 @@
     (partial of-type :purchase-list-category-deleted) PurchaseListCategoryDeleted
     (partial of-type :purchase-list-category-created) PurchaseListCategoryCreated
     (partial of-type :purchase-list-item-created) PurchaseListItemCreated
+    (partial of-type :purchase-list-item-changed) PurchaseListItemChanged
     (partial of-type :purchase-list-item-deleted) PurchaseListItemDeleted))
 
 (def cart-skeleton
