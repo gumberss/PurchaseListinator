@@ -20,6 +20,3 @@
   (select-keys purchase-item-created-event-skeleton
                [:item-id :quantity :name :category-id :order-position :moment]))
 (s/defschema PurchaseItemChangedEvent purchase-item-updated-event-skeleton)
-
-
-

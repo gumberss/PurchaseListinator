@@ -25,6 +25,3 @@
       (assoc :moment moment
              :item-id id)
       (dissoc :id)))
-
-
-
