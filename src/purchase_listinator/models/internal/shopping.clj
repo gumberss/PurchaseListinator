@@ -5,13 +5,14 @@
 (s/defschema Status status)
 
 (def shopping-skeleton
-  {:id       s/Uuid
-   :place    s/Str
-   :type     s/Str
-   :title    s/Str
-   :date     s/Num
-   :list-id  s/Uuid
-   :status   Status
-   (s/optional-key :duration) s/Num})
+  {:id                        s/Uuid
+   :place                     s/Str
+   :type                      s/Str
+   :title                     s/Str
+   :date                      s/Num
+   :list-id                   s/Uuid
+   :status                    Status
+   (s/optional-key :duration) s/Num
+   :items []})
 (s/defschema Shopping shopping-skeleton)
 

@@ -7,7 +7,8 @@
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.redis :as redis]
             [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]))
+            [purchase-listinator.components.rabbitmq :as rabbitmq]
+            [schema.core :as s]))
 
 (defn new-system
   [config]
@@ -42,6 +43,5 @@
               :username "guest"
               :password "guest"
               :vhost "/"}})
-
 
 (set-init (constantly (new-system system-config)))
