@@ -7,8 +7,7 @@
   {:id                      s/Uuid
    :name                    s/Str
    :enabled                 s/Bool
-   :in-progress             s/Bool
-   (s/optional-key :status) Status})
+   :in-progress             s/Bool})
 
 (s/defschema PurchaseList purchase-list-skeleton)
 
