@@ -16,7 +16,8 @@
             [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
             [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]
             [purchase-listinator.logic.shopping-cart :as logic.shopping-cart]
-            [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
+            [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
+            [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]))
 
 (s/defn init-shopping
   [shopping-initiation :- models.internal.shopping-initiation/ShoppingInitiation
@@ -70,11 +71,12 @@
 (s/defn receive-cart-event-by-list
   [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent
    {:keys [redis datomic]}]
-  (try (some-> (datomic.shopping/get-in-progress-by-list-id purchase-list-id datomic)
-               :id
-               (redis.shopping-cart/find-cart redis)
-               (logic.shopping-cart-event/add-event event)
-               (redis.shopping-cart/upsert redis))
+  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-list-id purchase-list-id datomic))
+             event+shopping-id (assoc event :shopping-id shopping-id)]
+         (some-> shopping-id
+                 (redis.shopping-cart/find-cart redis)
+                 (logic.shopping-cart-event/add-event event+shopping-id)
+                 (redis.shopping-cart/upsert redis)))
        (catch Exception e
          (println e)
          (throw e)))
@@ -83,12 +85,27 @@
 (s/defn receive-cart-event-by-category
   [{:keys [category-id] :as event} :- models.internal.shopping-cart/CartEvent
    {:keys [redis datomic]}]
-  (try (some-> (datomic.shopping/get-in-progress-by-category-id category-id datomic)
-               :id
-               (redis.shopping-cart/find-cart redis)
-               (logic.shopping-cart-event/add-event event)
-               (redis.shopping-cart/upsert redis))
+  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-category-id category-id datomic))
+             event+shopping-id (assoc event :shopping-id shopping-id)]
+         (some-> shopping-id
+                 (redis.shopping-cart/find-cart redis)
+                 (logic.shopping-cart-event/add-event event+shopping-id)
+                 (redis.shopping-cart/upsert redis)))
        (catch Exception e
          (println e)
          (throw e)))
   event)
+
+(s/defn finish
+  [shopping-id :- s/Uuid
+   {:keys [redis datomic]}]
+  (let [{:keys [events] :as cart} (redis.shopping-cart/find-cart shopping-id redis)
+        {:keys [list-id date] :as shopping} (datomic.shopping/get-by-id shopping-id datomic)
+        purchase-list (dbs.datomic.purchase-list/get-management-data list-id date datomic)
+        shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
+        shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)
+                      :categories
+                      (logic.shopping/fill-shopping-categories shopping)
+                      (logic.shopping/finish))]
+    (dbs.datomic.shopping-events/upsert events datomic)))
+

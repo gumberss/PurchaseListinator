@@ -29,3 +29,12 @@
 (s/defn sort-shopping-data :- models.internal.shopping-list/ShoppingList
   [shopping :- models.internal.shopping-list/ShoppingList]
   (update shopping :categories sort-categories))
+
+(s/defn fill-shopping-categories :- models.internal.shopping/Shopping
+  [shopping :- models.internal.shopping/Shopping
+   categories :- models.internal.shopping/ShoppingCategory]
+  (assoc shopping :categories categories))
+
+(s/defn finish :- models.internal.shopping/Shopping
+  [shopping :- models.internal.shopping/Shopping]
+  (assoc shopping :status :done))

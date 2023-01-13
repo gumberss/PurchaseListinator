@@ -7,26 +7,29 @@
 (defmulti wire->internal (fn [{:keys [event-type]} _] (keyword event-type)))
 
 (s/defmethod wire->internal :reorder-category :- models.internal.shopping-cart/ReorderCategoryEvent
-  [{:keys [event-type shopping-id category-id] :as wire} :- wires.in.shopping-cart/ReorderCategoryEvent
+  [{:keys [event-type shopping-id category-id event-id] :as wire} :- wires.in.shopping-cart/ReorderCategoryEvent
    moment :- s/Num]
   (assoc wire :event-type (keyword event-type)
               :shopping-id (adapters.misc/string->uuid shopping-id)
               :category-id (adapters.misc/string->uuid category-id)
+              :event-id (adapters.misc/string->uuid event-id)
               :moment moment))
 
 (s/defmethod wire->internal :reorder-item :- models.internal.shopping-cart/ReorderItemEvent
-  [{:keys [event-type shopping-id new-category-id item-id] :as wire} :- wires.in.shopping-cart/ReorderItemEvent
+  [{:keys [event-type shopping-id new-category-id item-id event-id] :as wire} :- wires.in.shopping-cart/ReorderItemEvent
    moment :- s/Num]
   (assoc wire :event-type (keyword event-type)
               :shopping-id (adapters.misc/string->uuid shopping-id)
               :item-id (adapters.misc/string->uuid item-id)
               :new-category-id (adapters.misc/string->uuid new-category-id)
+              :event-id (adapters.misc/string->uuid event-id)
               :moment moment))
 
 (s/defmethod wire->internal :change-item :- models.internal.shopping-cart/ChangeItemEvent
-  [{:keys [event-type shopping-id item-id] :as wire} :- wires.in.shopping-cart/ChangeItemEvent
+  [{:keys [event-type shopping-id item-id event-id] :as wire} :- wires.in.shopping-cart/ChangeItemEvent
    moment :- s/Num]
   (assoc wire :event-type (keyword event-type)
               :shopping-id (adapters.misc/string->uuid shopping-id)
               :item-id (adapters.misc/string->uuid item-id)
+              :event-id (adapters.misc/string->uuid event-id)
               :moment moment))

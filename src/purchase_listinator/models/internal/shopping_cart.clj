@@ -2,14 +2,16 @@
   (:require [schema.core :as s]))
 
 (s/defschema ReorderCategoryEvent
-  {:moment       s/Num
+  {:id           s/Uuid
+   :moment       s/Num
    :event-type   (s/eq :reorder-category)
    :shopping-id  s/Uuid
    :category-id  s/Uuid
    :new-position s/Int})
 
 (s/defschema ReorderItemEvent
-  {:moment          s/Num
+  {:id              s/Uuid
+   :moment          s/Num
    :event-type      (s/eq :reorder-item)
    :shopping-id     s/Uuid
    :item-id         s/Uuid
@@ -17,7 +19,8 @@
    :new-category-id s/Uuid})
 
 (s/defschema ChangeItemEvent
-  {:moment           s/Num
+  {:id               s/Uuid
+   :moment           s/Num
    :event-type       (s/eq :change-item)
    :shopping-id      s/Uuid
    :item-id          s/Uuid
@@ -25,14 +28,18 @@
    :quantity-changed s/Int})
 
 (s/defschema PurchaseListCategoryDeleted
-  {:moment           s/Num
+  {:id               s/Uuid
+   :moment           s/Num
    :event-type       (s/eq :purchase-list-category-deleted)
+   :shopping-id      s/Uuid
    :category-id      s/Uuid
    :purchase-list-id s/Uuid})
 
 (s/defschema PurchaseListCategoryCreated
-  {:moment           s/Num
+  {:id               s/Uuid
+   :moment           s/Num
    :event-type       (s/eq :purchase-list-category-created)
+   :shopping-id      s/Uuid
    :name             s/Str
    :category-id      s/Uuid
    :order-position   s/Int
@@ -40,28 +47,34 @@
    :purchase-list-id s/Uuid})
 
 (s/defschema PurchaseListItemCreated
-  {:event-type       (s/eq :purchase-list-item-created)
-   :moment           s/Num
-   :item-id          s/Uuid
-   :name             s/Str
-   :quantity         s/Int
-   :order-position   s/Int
-   :category-id      s/Uuid})
+  {:id             s/Uuid
+   :event-type     (s/eq :purchase-list-item-created)
+   :moment         s/Num
+   :item-id        s/Uuid
+   :shopping-id    s/Uuid
+   :name           s/Str
+   :quantity       s/Int
+   :order-position s/Int
+   :category-id    s/Uuid})
 
 (s/defschema PurchaseListItemChanged
-  {:event-type       (s/eq :purchase-list-item-changed)
-   :moment           s/Num
-   :item-id          s/Uuid
-   :name             s/Str
-   :quantity         s/Int
-   :order-position   s/Int
-   :category-id      s/Uuid})
+  {:id             s/Uuid
+   :event-type     (s/eq :purchase-list-item-changed)
+   :moment         s/Num
+   :shopping-id    s/Uuid
+   :item-id        s/Uuid
+   :name           s/Str
+   :quantity       s/Int
+   :order-position s/Int
+   :category-id    s/Uuid})
 
 (s/defschema PurchaseListItemDeleted
-  {:event-type       (s/eq :purchase-list-item-deleted)
-   :moment           s/Num
-   :item-id          s/Uuid
-   :category-id      s/Uuid})
+  {:id          s/Uuid
+   :event-type  (s/eq :purchase-list-item-deleted)
+   :moment      s/Num
+   :shopping-id s/Uuid
+   :item-id     s/Uuid
+   :category-id s/Uuid})
 
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
