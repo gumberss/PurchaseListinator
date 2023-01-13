@@ -10,7 +10,7 @@
 
 (s/defn get-lists
   [datomic]
-  (either/try-right (datomic.purchase-list/get-enabled datomic)))
+  (datomic.purchase-list/get-enabled datomic))
 
 (s/defn create
   [{:keys [name]}

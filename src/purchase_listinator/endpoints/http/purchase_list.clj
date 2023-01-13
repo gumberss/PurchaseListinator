@@ -3,6 +3,7 @@
             [purchase-listinator.wires.out.purchase-list :as out.purchases-lists]
             [purchase-listinator.flows.purchase-list :as flows.purchase-list]
             [purchase-listinator.adapters.in.purchase-list :as adapters.in.purchase-list]
+            [purchase-listinator.adapters.out.purchase-list :as adapters.out.purchase-list]
             [purchase-listinator.adapters.misc :as adapters.misc]
             [purchase-listinator.adapters.in.purchase-category :as adapters.in.purchase-category]
             [purchase-listinator.adapters.in.purchase-item :as adapters.in.purchase-item]
@@ -14,9 +15,11 @@
 
 
 (s/defn get-purchase-lists :- {:status s/Int
-                               :body   out.purchases-lists/PurchaseList}
+                               :body   [out.purchases-lists/PurchaseList]}
   [{{:keys [datomic]} :component}]
-  (branch (flows.purchase-list/get-lists datomic)
+  (branch (misc.either/try-right
+            (->> (flows.purchase-list/get-lists datomic)
+                 (map adapters.out.purchase-list/internal->wire)))
           misc.http/->Error
           misc.http/->Success))
 

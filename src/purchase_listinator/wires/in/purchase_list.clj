@@ -6,8 +6,7 @@
   {:name        s/Str
    :id          s/Str
    :enabled     s/Bool
-   :in-progress s/Bool
-   :status      models.internal.purchase-list/Status})
+   :in-progress s/Bool})
 
 (s/defschema PurchaseList purchase-list-skeleton)
 
