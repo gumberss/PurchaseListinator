@@ -9,8 +9,7 @@
   (misc.general/namespace-keys internal :shopping-event))
 
 (s/defn db->internal :- models.internal.shopping-cart/CartEvent
-  [{:cart-event/keys [id] :as db-wire}]
+  [db-wire]
   (when (not-empty db-wire)
     (-> (misc.datomic/datomic->entity db-wire)
-        (misc.general/unnamespace-keys)
-        (assoc :event-id id))))
+        (misc.general/unnamespace-keys))))
