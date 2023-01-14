@@ -48,9 +48,18 @@
             cart-event (adapters.in.shopping-cart-event/wire->internal wire now)]
         (flows.shopping/receive-cart-event cart-event component)))))
 
+(s/defn finish-shopping
+  [{component :component
+    {:keys [shopping-id]} :path-params}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.misc/string->uuid shopping-id)
+          (flows.shopping/finish component)))))
+
 (def routes
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
     ["/api/shopping/list/:shopping-id" :get [get-shopping-list] :route-name :get-in-progress]
-    ["/api/shopping/cart/events" :post [receive-events] :route-name :receive-shopping-list-events]})
+    ["/api/shopping/cart/events" :post [receive-events] :route-name :receive-shopping-list-events]
+    ["/api/shopping/finish/:shopping-id" :post [finish-shopping] :route-name :finish-shopping]})

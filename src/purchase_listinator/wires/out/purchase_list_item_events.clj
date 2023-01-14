@@ -2,13 +2,15 @@
   (:require [schema.core :as s]))
 
 (def purchase-item-deleted-event-skeleton
-  {:category-id      s/Uuid
+  {:event-id         s/Uuid
+   :category-id      s/Uuid
    :purchase-list-id s/Uuid
    :moment           s/Num})
 (s/defschema ItemDeletedEvent purchase-item-deleted-event-skeleton)
 
 (def purchase-item-created-event-skeleton
-  {:item-id        s/Uuid
+  {:event-id       s/Uuid
+   :item-id        s/Uuid
    :name           s/Str
    :category-id    s/Uuid
    :order-position s/Int
@@ -18,5 +20,5 @@
 
 (def purchase-item-changed-event-skeleton
   (select-keys purchase-item-created-event-skeleton
-               [:item-id :quantity :name :category-id :order-position :moment]))
+               [:item-id :quantity :name :category-id :order-position :moment :event-id]))
 (s/defschema ItemChangedEvent purchase-item-changed-event-skeleton)

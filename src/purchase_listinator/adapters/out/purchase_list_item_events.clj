@@ -5,23 +5,29 @@
 
 (s/defn ->ItemDeletedEvent :- wires.out.purchase-list-item-events/ItemDeletedEvent
   [{:keys [id category-id]} :- models.internal.purchase-item/PurchaseItem
-   moment :- s/Num]
+   moment :- s/Num
+   event-id :- s/Uuid]
   {:item-id     id
    :category-id category-id
-   :moment      moment})
+   :moment      moment
+   :event-id    event-id})
 
 (s/defn ->ItemCreatedEvent :- wires.out.purchase-list-item-events/ItemCreatedEvent
   [{:keys [id] :as wire} :- models.internal.purchase-item/PurchaseItem
-   moment :- s/Num]
+   moment :- s/Num
+   event-id :- s/Uuid]
   (-> wire
       (assoc :moment moment
-             :item-id id)
+             :item-id id
+             :event-id event-id)
       (dissoc :id)))
 
 (s/defn ->ItemChangedEvent :- wires.out.purchase-list-item-events/ItemChangedEvent
   [{:keys [id] :as wire} :- models.internal.purchase-item/PurchaseItem
-   moment :- s/Num]
+   moment :- s/Num
+   event-id :- s/Uuid]
   (-> wire
       (assoc :moment moment
-             :item-id id)
+             :item-id id
+             :event-id event-id)
       (dissoc :id)))
