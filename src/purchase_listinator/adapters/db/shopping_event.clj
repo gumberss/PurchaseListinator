@@ -5,11 +5,8 @@
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
 
 (s/defn internal->db
-  [{:keys [event-id] :as internal} :- models.internal.shopping-cart/CartEvent]
-  (-> internal
-      (assoc :id event-id)
-      (dissoc :event-id)
-      (misc.general/namespace-keys :shopping-event)))
+  [internal :- models.internal.shopping-cart/CartEvent]
+  (misc.general/namespace-keys internal :shopping-event))
 
 (s/defn db->internal :- models.internal.shopping-cart/CartEvent
   [{:cart-event/keys [id] :as db-wire}]

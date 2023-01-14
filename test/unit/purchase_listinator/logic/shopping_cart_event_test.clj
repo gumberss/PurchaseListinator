@@ -1,7 +1,8 @@
 (ns purchase-listinator.logic.shopping-cart-event-test
   (:require [clojure.test :refer :all]
             [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
-            [schema.test :as st]))
+            [schema.test :as st]
+            [nrepl.misc :as misc]))
 
 (def purchase-list-id (random-uuid))
 (def shopping-id (random-uuid))
@@ -38,7 +39,8 @@
    :categories       [category1 category2]})
 
 (def change-item-event
-  {:moment           123
+  {:id               (random-uuid)
+   :moment           123
    :event-type       :change-item
    :shopping-id      shopping-id
    :item-id          item-id
@@ -46,7 +48,8 @@
    :quantity-changed 10})
 
 (def change-item-removing-event
-  {:moment           123
+  {:id               (random-uuid)
+   :moment           123
    :event-type       :change-item
    :shopping-id      shopping-id
    :item-id          item-id
@@ -76,9 +79,11 @@
 
 (def new-category-id (random-uuid))
 (def purchase-list-category-created-event
-  {:moment           123
+  {:id               (random-uuid)
+   :moment           123
    :event-type       :purchase-list-category-created
    :name             "New category"
+   :shopping-id      shopping-id
    :category-id      new-category-id
    :order-position   50
    :color            321
@@ -96,8 +101,10 @@
               :items            []} (last categories))))))
 
 (def purchase-list-category-deleted-event
-  {:moment           213
+  {:id               (random-uuid)
+   :moment           213
    :event-type       :purchase-list-category-deleted
+   :shopping-id      shopping-id
    :category-id      category-id
    :purchase-list-id purchase-list-id})
 

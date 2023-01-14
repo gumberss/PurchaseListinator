@@ -33,7 +33,7 @@
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one}
    {:db/ident       :shopping-event/price
-    :db/valueType   :db.type/bigdec
+    :db/valueType   :db.type/float
     :db/cardinality :db.cardinality/one}
    {:db/ident       :shopping-event/quantity-changed
     :db/valueType   :db.type/long
@@ -52,4 +52,5 @@
   [cart-events :- [models.internal.shopping-cart/CartEvent]
    {:keys [connection]}]
   (->> (map adapters.db.shopping-event/internal->db cart-events)
-       (apply misc.datomic/transact connection)))
+       (apply misc.datomic/transact connection))
+  cart-events)
