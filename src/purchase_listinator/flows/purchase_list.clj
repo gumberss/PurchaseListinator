@@ -6,7 +6,8 @@
             [purchase-listinator.logic.purchase-category :as logic.purchase-category]
             [cats.monad.either :refer [left right]]
             [purchase-listinator.misc.either :as either]
-            [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]))
+            [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]
+            [purchase-listinator.models.internal.purchase-list.shopping :as models.internal.purchase-list.shopping]))
 
 (s/defn get-lists
   [datomic]

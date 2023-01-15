@@ -7,6 +7,7 @@
             [langohr.basic :as lb]
             [com.stuartsierra.component :as component]
             [purchase-listinator.endpoints.queue.shopping-purchase-list-event-received :as endpoints.queue.shopping-purchase-list-event-received]
+            [purchase-listinator.endpoints.queue.purchase-list-shopping-event-received :as endpoints.queue.purchase-list-shopping-event-received]
             [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
             [schema.core :as s]
             [clojure.data.json :as json]
@@ -14,7 +15,8 @@
             [schema.coerce :as coerce]))
 
 (def subscribers (concat
-                   endpoints.queue.shopping-purchase-list-event-received/subscribers))
+                   endpoints.queue.shopping-purchase-list-event-received/subscribers
+                   endpoints.queue.purchase-list-shopping-event-received/subscribers))
 
 (s/defn ->rabbitmq :- s/Str
   [key :- s/Keyword]

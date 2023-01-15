@@ -1,4 +1,4 @@
-(ns purchase-listinator.adapters.in.purchase-item
+(ns purchase-listinator.adapters.purchase-list.in.purchase-item
   (:require [schema.core :as s]
             [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]
             [purchase-listinator.wires.purchase-list.in.purchase-item :as wires.in.purchase-item]

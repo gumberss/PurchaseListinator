@@ -6,7 +6,8 @@
             [purchase-listinator.logic.purchase-item :as logic.purchase-item]
             [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]
             [purchase-listinator.logic.reposition :as logic.reposition]
-            [purchase-listinator.publishers.purchase-list-items :as publishers.purchase-list-items]))
+            [purchase-listinator.publishers.purchase-list-items :as publishers.purchase-list-items]
+            [purchase-listinator.models.internal.purchase-list.shopping :as models.internal.purchase-list.shopping]))
 
 (s/defn create
   [{:keys [name category-id] :as item} :- models.internal.purchase-item/PurchaseItem
@@ -96,3 +97,7 @@
             (datomic.purchase-item/upsert datomic)
             (publishers.purchase-list-items/item-changed rabbitmq))))))
 
+(s/defn receive-shopping-finished
+  [{:keys [categories]} :- models.internal.purchase-list.shopping/Shopping
+   datomic]
+  (println "pong"))

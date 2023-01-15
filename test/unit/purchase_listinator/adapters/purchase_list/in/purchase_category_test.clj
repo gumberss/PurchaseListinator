@@ -1,7 +1,7 @@
-(ns purchase-listinator.adapters.in.purchase-category-test
+(ns purchase-listinator.adapters.purchase-list.in.purchase-category-test
   (:require [clojure.test :refer :all]
             [schema.test :as s]
-            [purchase-listinator.adapters.in.purchase-category :as adapters.in.purchase-category]))
+            [purchase-listinator.adapters.purchase-list.in.purchase-category :as adapters.in.purchase-category]))
 
 (def wire-purchase-category
   {:name             "Lorem ipsum dolor sit amet"
