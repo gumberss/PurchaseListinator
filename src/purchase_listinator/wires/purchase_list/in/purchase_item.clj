@@ -1,4 +1,4 @@
-(ns purchase-listinator.wires.in.purchase-item
+(ns purchase-listinator.wires.purchase-list.in.purchase-item
   (:require [schema.core :as s]))
 
 (def purchase-item-skeleton

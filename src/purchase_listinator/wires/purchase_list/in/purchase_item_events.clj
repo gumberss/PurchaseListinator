@@ -1,4 +1,4 @@
-(ns purchase-listinator.wires.in.purchase-item-events
+(ns purchase-listinator.wires.purchase-list.in.purchase-item-events
   (:require [schema.core :as s]))
 
 (def purchase-item-deleted-event-skeleton

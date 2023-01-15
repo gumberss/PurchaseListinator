@@ -1,8 +1,8 @@
 (ns purchase-listinator.endpoints.queue.shopping-purchase-list-event-received
-  (:require [purchase-listinator.wires.in.purchase-category-events :as wires.in.purchase-category-events]
+  (:require [purchase-listinator.wires.purchase-list.in.purchase-category-events :as wires.in.purchase-category-events]
             [purchase-listinator.adapters.in.shopping-purchase-list-events :as adapters.in.shopping-purchase-list-events]
             [schema.core :as s]
-            [purchase-listinator.wires.in.purchase-item-events :as wires.in.purchase-item-events]
+            [purchase-listinator.wires.purchase-list.in.purchase-item-events :as wires.in.purchase-item-events]
             [purchase-listinator.flows.shopping :as flows.shopping]))
 
 (defn purchase-list-event-received

@@ -1,6 +1,6 @@
 (ns purchase-listinator.endpoints.http.purchase-list
   (:require [schema.core :as s]
-            [purchase-listinator.wires.out.purchase-list :as out.purchases-lists]
+            [purchase-listinator.wires.purchase-list.out.purchase-list :as out.purchases-lists]
             [purchase-listinator.flows.purchase-list :as flows.purchase-list]
             [purchase-listinator.adapters.in.purchase-list :as adapters.in.purchase-list]
             [purchase-listinator.adapters.out.purchase-list :as adapters.out.purchase-list]

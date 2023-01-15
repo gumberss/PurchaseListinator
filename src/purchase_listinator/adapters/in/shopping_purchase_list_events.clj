@@ -1,8 +1,8 @@
 (ns purchase-listinator.adapters.in.shopping-purchase-list-events
   (:require [schema.core :as s]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
-            [purchase-listinator.wires.in.purchase-category-events :as wires.in.purchase-category-events]
-            [purchase-listinator.wires.in.purchase-item-events :as wires.in.purchase-item-events]))
+            [purchase-listinator.wires.purchase-list.in.purchase-category-events :as wires.in.purchase-category-events]
+            [purchase-listinator.wires.purchase-list.in.purchase-item-events :as wires.in.purchase-item-events]))
 
 (s/defn category-deleted-event->internal :- models.internal.shopping-cart/PurchaseListCategoryDeleted
   [wire :- wires.in.purchase-category-events/PurchaseCategoryDeletedEvent]

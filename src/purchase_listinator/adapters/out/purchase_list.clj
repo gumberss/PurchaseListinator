@@ -1,6 +1,6 @@
 (ns purchase-listinator.adapters.out.purchase-list
   (:require [purchase-listinator.models.internal.purchase-list :as models.internal.purchase-list]
-            [purchase-listinator.wires.out.purchase-list :as wires.out.purchase-list]
+            [purchase-listinator.wires.purchase-list.out.purchase-list :as wires.out.purchase-list]
             [schema.core :as s]))
 
 (s/defn internal->wire :- wires.out.purchase-list/PurchaseList
