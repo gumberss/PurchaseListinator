@@ -1,4 +1,4 @@
-(ns purchase-listinator.models.internal.purchase-list
+(ns purchase-listinator.models.internal.purchase-list.purchase-list
   (:require [schema.core :as s]))
 
 (def Status (s/enum :in-progress :waiting))

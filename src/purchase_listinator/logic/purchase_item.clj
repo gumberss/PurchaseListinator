@@ -1,5 +1,5 @@
 (ns purchase-listinator.logic.purchase-item
-  (:require [purchase-listinator.models.internal.purchase-item :as internal.purchase-item]
+  (:require [purchase-listinator.models.internal.purchase-list.purchase-item :as internal.purchase-item]
             [schema.core :as s]))
 
 (s/defn change-order-position :- internal.purchase-item/PurchaseItem

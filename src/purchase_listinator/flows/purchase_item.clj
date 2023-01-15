@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [cats.monad.either :refer [left]]
             [purchase-listinator.misc.either :as either]
-            [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]
+            [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]
             [purchase-listinator.logic.purchase-item :as logic.purchase-item]
             [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]
             [purchase-listinator.logic.reposition :as logic.reposition]

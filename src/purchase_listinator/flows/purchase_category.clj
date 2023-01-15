@@ -3,7 +3,7 @@
             [purchase-listinator.dbs.datomic.purchase-category :as datomic.purchase-category]
             [cats.monad.either :refer [left]]
             [purchase-listinator.misc.either :as either]
-            [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]
+            [purchase-listinator.models.internal.purchase-list.purchase-category :as models.internal.purchase-category]
             [purchase-listinator.logic.purchase-category :as logic.purchase-category]
             [purchase-listinator.logic.reposition :as logic.reposition]
             [purchase-listinator.publishers.purchase-list-category :as publishers.purchase-list-category]))

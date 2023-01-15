@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [purchase-listinator.misc.general :as misc.general]
             [purchase-listinator.misc.datomic :as misc.datomic]
-            [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]))
+            [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]))
 
 (s/defn internal->db
   [{:keys [category-id] :as internal} :- models.internal.purchase-item/PurchaseItem]

@@ -1,6 +1,6 @@
 (ns purchase-listinator.adapters.out.purchase-list-item-events
   (:require [schema.core :as s]
-            [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]
+            [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]
             [purchase-listinator.wires.purchase-list.out.purchase-list-item-events :as wires.out.purchase-list-item-events]))
 
 (s/defn ->ItemDeletedEvent :- wires.out.purchase-list-item-events/ItemDeletedEvent

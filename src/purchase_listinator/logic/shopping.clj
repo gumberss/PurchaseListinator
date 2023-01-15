@@ -1,7 +1,7 @@
 (ns purchase-listinator.logic.shopping
   (:require [schema.core :as s]
             [purchase-listinator.models.internal.shopping :as models.internal.shopping]
-            [purchase-listinator.models.internal.purchase-list-management-data :as purchase-list-management-data]
+            [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as purchase-list-management-data]
             [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
             [purchase-listinator.models.internal.shopping-initiation :as models.internal.shopping-initiation]
             [purchase-listinator.models.internal.shopping-category :as models.internal.shopping-category]))

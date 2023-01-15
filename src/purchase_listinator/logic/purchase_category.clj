@@ -1,5 +1,5 @@
 (ns purchase-listinator.logic.purchase-category
-  (:require [purchase-listinator.models.internal.purchase-list-management-data :as internal.purchase-list-management-data]
+  (:require [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]
             [schema.core :as s]))
 
 (s/defn sort-items-by-position :- internal.purchase-list-management-data/ManagementCategory
