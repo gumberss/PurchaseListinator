@@ -7,8 +7,7 @@
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.redis :as redis]
             [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]
-            [schema.core :as s]))
+            [purchase-listinator.components.rabbitmq :as rabbitmq]))
 
 (defn new-system
   [config]
@@ -17,7 +16,7 @@
     :service-map {:env         (:env config)
                   ::http/type  :jetty
                   ::http/port  (get-in config [:web-server :port])
-                  ::http/host (get-in config [:web-server :host])
+                  ::http/host  (get-in config [:web-server :host])
                   ::http/join? false}
     :redis (component/using (redis/new-Redis) [:config])
     :mongo (component/using (mongo/new-mongo) [:config])
@@ -38,10 +37,10 @@
                 :port     6379
                 :password "pass"
                 :timeout  6000}
-   :rabbitmq {:host "localhost"
-              :port 5672
-              :username "guest"
-              :password "guest"
-              :vhost "/"}})
+   :rabbitmq   {:host     "localhost"
+                :port     5672
+                :username "guest"
+                :password "guest"
+                :vhost    "/"}})
 
 (set-init (constantly (new-system system-config)))

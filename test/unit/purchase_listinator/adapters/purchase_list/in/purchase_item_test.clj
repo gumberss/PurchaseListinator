@@ -1,6 +1,6 @@
-(ns purchase-listinator.adapters.in.purchase-item-test
+(ns purchase-listinator.adapters.purchase-list.in.purchase-item-test
   (:require [clojure.test :refer :all]
-            [purchase-listinator.adapters.in.purchase-item :as adapters.in.purchase-item]
+            [purchase-listinator.adapters.purchase-list.in.purchase-item :as adapters.in.purchase-item]
             [schema.test :as s]))
 
 (def wire-purchase-item

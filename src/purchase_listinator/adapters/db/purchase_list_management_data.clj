@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [purchase-listinator.misc.general :as misc.general]
             [purchase-listinator.misc.datomic :as misc.datomic]
-            [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]
+            [purchase-listinator.models.internal.purchase-list.purchase-category :as models.internal.purchase-category]
             [purchase-listinator.adapters.db.purchase-category :as adapters.db.purchase-category]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]))
 

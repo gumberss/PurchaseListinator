@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-category :as adapters.db.purchase-category]
-            [purchase-listinator.models.internal.purchase-category :as models.internal.purchase-category]))
+            [purchase-listinator.models.internal.purchase-list.purchase-category :as models.internal.purchase-category]))
 
 (def schema
   [{:db/ident       :purchase-category/id

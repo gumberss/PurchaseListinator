@@ -1,4 +1,4 @@
-(ns purchase-listinator.models.internal.purchase-list-management-data
+(ns purchase-listinator.models.internal.purchase-list.purchase-list-management-data
   (:require [schema.core :as s]))
 
 (def management-item-skeleton

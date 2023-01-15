@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]
-            [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]
+            [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]
             [purchase-listinator.misc.datomic :as misc.datomic]))
 
 (def schema

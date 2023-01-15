@@ -23,3 +23,9 @@
         (car/set shopping-id cart))
   cart)
 
+(s/defn delete :- models.internal.shopping-cart/Cart
+  [shopping-id :- s/Uuid
+   {:keys [connection]}]
+  (wcar connection
+        (car/del shopping-id)))
+

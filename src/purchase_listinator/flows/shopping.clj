@@ -18,7 +18,9 @@
             [purchase-listinator.logic.shopping-cart :as logic.shopping-cart]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
             [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]
-            [purchase-listinator.logic.shopping-category :as logic.shopping-category]))
+            [purchase-listinator.logic.shopping-category :as logic.shopping-category]
+            [purchase-listinator.dbs.redis.shopping-cart :as dbs.redis.shopping-cart]
+            [purchase-listinator.publishers.shopping :as publishers.shopping]))
 
 (s/defn init-shopping
   [shopping-initiation :- models.internal.shopping-initiation/ShoppingInitiation
@@ -99,7 +101,7 @@
 
 (s/defn finish
   [shopping-id :- s/Uuid
-   {:keys [redis datomic]}]
+   {:keys [redis datomic rabbitmq]}]
   (let [{:keys [events] :as cart} (redis.shopping-cart/find-cart shopping-id redis)
         {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id date datomic)
@@ -110,5 +112,7 @@
                       (logic.shopping/fill-shopping-categories shopping)
                       (logic.shopping/finish))]
     (dbs.datomic.shopping-events/upsert events datomic)
-    (datomic.shopping/upsert shopping datomic)))
+    (datomic.shopping/upsert shopping datomic)
+    (dbs.redis.shopping-cart/delete id redis)
+    (publishers.shopping/shopping-finished shopping rabbitmq)))
 
