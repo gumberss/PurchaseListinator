@@ -69,6 +69,17 @@
        ffirst
        adapters.db.purchase-item/db->internal))
 
+(s/defn get-by-ids :- [models.internal.purchase-item/PurchaseItem]
+  [item-ids :- [s/Uuid]
+   {:keys [connection]}]
+  (->> (d/q '[:find (pull ?i [* {:purchase-item/category [:purchase-category/id]}])
+              :in $ [?i-id ...]
+              :where
+              [?i :purchase-item/id ?i-id]]
+            (d/db connection) item-ids)
+       flatten
+       (map adapters.db.purchase-item/db->internal)))
+
 (s/defn get-by-position-range :- models.internal.purchase-item/PurchaseItems
   [category-id :- s/Uuid
    start-range :- s/Num
@@ -119,3 +130,19 @@
        (map adapters.db.purchase-item/internal->db)
        (apply misc.datomic/transact connection))
   purchase-items)
+
+(s/defn build-cas [id prop old-value new-value]
+  [:db/cas [:purchase-item/id id] prop old-value new-value])
+
+(s/defn build-cas-by-items-pair
+  [[old-entity new-entity] :- [models.internal.purchase-item/PurchaseItem]]
+  (when (= (:id old-entity) (:id new-entity))
+    (build-cas (:id new-entity) :purchase-item/quantity (:quantity old-entity) (:quantity new-entity))))
+
+(s/defn update-item-quantity :- [[models.internal.purchase-item/PurchaseItem]]
+  [purchase-items-pair :- [[models.internal.purchase-item/PurchaseItem]]
+   {:keys [connection]}]
+  (->> (map build-cas-by-items-pair purchase-items-pair)
+       (filter identity)
+       (apply misc.datomic/transact connection))
+  purchase-items-pair)

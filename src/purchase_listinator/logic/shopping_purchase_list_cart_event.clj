@@ -14,5 +14,5 @@
   [{:keys [item-id] :as event} :- models.internal.shopping-cart/PurchaseListItemCreated]
   (-> event
       (assoc :id item-id)
-      (dissoc :item-id :event-type :moment)))
+      (dissoc :item-id :event-type :moment :shopping-id)))
 

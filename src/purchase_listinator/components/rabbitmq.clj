@@ -29,14 +29,18 @@
    channel
    metadata
    ^bytes payload]
-  (let [data (String. payload "UTF-8")
-        map-data (json/read-str data :key-fn csk/->kebab-case-keyword)
-        map-data (if (string? map-data)
-                   (json/read-str map-data :key-fn csk/->kebab-case-keyword) ;I don't know why I need to do it the second time
-                   map-data)
-        coerce-function (if schema (coerce/coercer schema coerce/json-coercion-matcher) identity)
-        coerced-data (coerce-function map-data)]
-    (consumer channel metadata components coerced-data)))
+  (try (let [data (String. payload "UTF-8")
+             map-data (json/read-str data :key-fn csk/->kebab-case-keyword)
+             map-data (if (string? map-data)
+                        (json/read-str map-data :key-fn csk/->kebab-case-keyword) ;I don't know why I need to do it the second time
+                        map-data)
+             coerce-function (if schema
+                               (coerce/coercer schema coerce/json-coercion-matcher) identity)
+             coerced-data (coerce-function map-data)]
+         (consumer channel metadata components coerced-data))
+       (catch Exception e
+         (clojure.pprint/pprint e)
+         (throw e))))
 
 (defn start-consumer
   [ch

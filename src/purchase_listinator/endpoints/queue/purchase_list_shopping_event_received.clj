@@ -8,7 +8,7 @@
    _metadata
    components
    event :- wires.purchase-list.in.shopping/ShoppingFinishedEvent]
-  (flows.purchase-item/receive-shopping-finished event components))
+  (flows.purchase-item/receive-shopping-finished (:shopping event) components))
 
 (def subscribers
   [{:exchange :purchase-listinator/shopping.finished

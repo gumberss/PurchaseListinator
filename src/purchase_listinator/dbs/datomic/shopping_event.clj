@@ -20,6 +20,9 @@
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one}
    ; non default values
+   {:db/ident       :shopping-event/name
+    :db/valueType   :db.type/string
+    :db/cardinality :db.cardinality/one}
    {:db/ident       :shopping-event/category-id
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one}
@@ -45,6 +48,9 @@
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one}
    {:db/ident       :shopping-event/quantity
+    :db/valueType   :db.type/long
+    :db/cardinality :db.cardinality/one}
+   {:db/ident       :shopping-event/order-position
     :db/valueType   :db.type/long
     :db/cardinality :db.cardinality/one}])
 
