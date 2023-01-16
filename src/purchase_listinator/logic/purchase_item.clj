@@ -21,11 +21,6 @@
 (s/defn find-by-shopping-item :- models.internal.purchase-item/PurchaseItem
   [purchase-items :- [models.internal.purchase-item/PurchaseItem]
    {:keys [id]} :- models.internal.purchase-list.shopping/ShoppingItem]
-  (when (nil? (-> (filter #(= (:id %) id) purchase-items)
-                first))
-    (do (clojure.pprint/pprint id)
-        (clojure.pprint/pprint purchase-items)))
-
   (-> (filter #(= (:id %) id) purchase-items)
       first))
 
