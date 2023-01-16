@@ -37,6 +37,7 @@
   (let [items (map adapters.db.shopping-item/internal->db (mapcat :items categories))
         categories (map adapters.db.shopping-category/internal->db categories)
         shopping (adapter.shopping/internal->db shopping)]
+
     (->> (concat [shopping] categories items)
          (apply misc.datomic/transact connection)))
   shopping)
