@@ -42,7 +42,6 @@
    _metadata
    components
    event :- wires.in.purchase-item-events/PurchaseItemChangedEvent]
-  (println event)
   (-> (adapters.in.shopping-purchase-list-events/item-changed-event->internal event)
       (flows.shopping/receive-cart-event-by-category components)))
 
