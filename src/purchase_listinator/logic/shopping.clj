@@ -37,11 +37,11 @@
    categories :- [models.internal.shopping-category/ShoppingCategory]]
   (assoc shopping :categories categories))
 
-(s/defn fill-quantity-in-cart-empty
+(s/defn fill-quantity-in-cart-empty :- models.internal.shopping-item/ShoppingItem
   [{:keys [quantity-in-cart] :as item} :- models.internal.shopping-item/ShoppingItem]
   (assoc item :quantity-in-cart (or quantity-in-cart 0)))
 
-(s/defn fill-item-quantity-in-cart-empty
+(s/defn fill-item-quantity-in-cart-empty :- models.internal.shopping-category/ShoppingCategory
   [{:keys [items] :as category} :- models.internal.shopping-category/ShoppingCategory]
   (assoc category :items (map fill-quantity-in-cart-empty items)))
 
