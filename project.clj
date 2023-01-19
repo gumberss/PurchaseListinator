@@ -21,6 +21,7 @@
                  [org.clojure/core.async "1.5.648"]
                  [clj-time "0.15.2"]
                  [funcool/cats "2.2.0"]
-                 [nubank/matcher-combinators "3.5.0"]]
+                 [nubank/matcher-combinators "3.5.0"]
+                 [lein-cloverage "1.2.4"]]
   :test-paths ["test/unit"]
   :repl-options {:init-ns purchase-listinator.core})
