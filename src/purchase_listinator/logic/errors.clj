@@ -2,7 +2,7 @@
   (:require [schema.core :as s]))
 
 (s/defn build
-        [status :- s/Int
-         error :- s/Str]
-        {:status status
-         :error error})
+  [status :- s/Int
+   error :- s/Str]
+  {:status status
+   :error  error})
