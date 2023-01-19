@@ -4,7 +4,8 @@
             [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as purchase-list-management-data]
             [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
             [purchase-listinator.models.internal.shopping-initiation :as models.internal.shopping-initiation]
-            [purchase-listinator.models.internal.shopping-category :as models.internal.shopping-category]))
+            [purchase-listinator.models.internal.shopping-category :as models.internal.shopping-category]
+            [purchase-listinator.models.internal.shopping-item :as models.internal.shopping-item]))
 
 (s/defn initiation->shopping :- models.internal.shopping/Shopping
   [shopping :- models.internal.shopping-initiation/ShoppingInitiation
@@ -33,8 +34,20 @@
 
 (s/defn fill-shopping-categories :- models.internal.shopping/Shopping
   [shopping :- models.internal.shopping/Shopping
-   categories :- models.internal.shopping-category/ShoppingCategory]
+   categories :- [models.internal.shopping-category/ShoppingCategory]]
   (assoc shopping :categories categories))
+
+(s/defn fill-quantity-in-cart-empty :- models.internal.shopping-item/ShoppingItem
+  [{:keys [quantity-in-cart] :as item} :- models.internal.shopping-item/ShoppingItem]
+  (assoc item :quantity-in-cart (or quantity-in-cart 0)))
+
+(s/defn fill-item-quantity-in-cart-empty :- models.internal.shopping-category/ShoppingCategory
+  [{:keys [items] :as category} :- models.internal.shopping-category/ShoppingCategory]
+  (assoc category :items (map fill-quantity-in-cart-empty items)))
+
+(s/defn fill-items-empty-quantity-in-cart :- models.internal.shopping/Shopping
+  [categories :- [models.internal.shopping-category/ShoppingCategory]]
+  (map fill-item-quantity-in-cart-empty categories))
 
 (s/defn finish :- models.internal.shopping/Shopping
   [shopping :- models.internal.shopping/Shopping]

@@ -109,9 +109,9 @@
         shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)
                       :categories
                       (map (partial logic.shopping-category/->shopping-category id))
+                      (logic.shopping/fill-items-empty-quantity-in-cart)
                       (logic.shopping/fill-shopping-categories shopping)
                       (logic.shopping/finish))]
-
     (dbs.datomic.shopping-events/upsert events datomic)
     (datomic.shopping/upsert shopping datomic)
     (dbs.redis.shopping-cart/delete id redis)
