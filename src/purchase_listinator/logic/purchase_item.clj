@@ -24,7 +24,7 @@
   (-> (filter #(= (:id %) id) purchase-items)
       first))
 
-(s/defn find-item-and-update :- models.internal.purchase-item/PurchaseItem
+(s/defn find-item-and-update-item-quantity :- models.internal.purchase-item/PurchaseItem
   [purchase-items :- [models.internal.purchase-item/PurchaseItem]
    shopping-item :- models.internal.purchase-list.shopping/ShoppingItem]
   (-> (find-by-shopping-item purchase-items shopping-item)

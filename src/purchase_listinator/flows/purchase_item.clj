@@ -102,6 +102,6 @@
    {:keys [datomic]}]
   (let [shopping-items (mapcat :items categories)
         purchase-items (datomic.purchase-item/get-by-ids (map :id shopping-items) datomic)
-        new-purchase-items (map (partial logic.purchase-item/find-item-and-update purchase-items) shopping-items)
+        new-purchase-items (map (partial logic.purchase-item/find-item-and-update-item-quantity purchase-items) shopping-items)
         items-pair (logic.purchase-item/build-items-pair purchase-items new-purchase-items)]
     (datomic.purchase-item/update-item-quantity items-pair datomic)))

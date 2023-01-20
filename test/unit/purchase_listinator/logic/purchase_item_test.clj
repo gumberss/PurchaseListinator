@@ -23,7 +23,6 @@
   {:id               (:id first-item)
    :quantity-in-cart 10})
 
-
 (def item-position-changed
   (assoc first-item :order-position 1))
 
@@ -46,3 +45,10 @@
 (s/deftest find-by-shopping-item-test
   (testing "Should find the item by the shopping item"
     (is (= first-item (logic.purchase-item/find-by-shopping-item [third-item second-item first-item] shopping-item)))))
+
+(s/deftest find-item-and-update-test
+  (testing "Should find and update the item by shopping"
+    (is (= (assoc first-item :quantity -9)
+           (logic.purchase-item/find-item-and-update-item-quantity [third-item second-item first-item] shopping-item)))))
+
+
