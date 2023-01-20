@@ -30,7 +30,7 @@
   (-> (find-by-shopping-item purchase-items shopping-item)
       (update-quantity-by-shopping-item shopping-item)))
 
-(s/defn build-items-pair :- [models.internal.purchase-item/PurchaseItem]
+(s/defn build-items-pair :- [[models.internal.purchase-item/PurchaseItem]]
   [old-items :- [models.internal.purchase-item/PurchaseItem]
    new-items :- [models.internal.purchase-item/PurchaseItem]]
   (->> (concat old-items new-items)

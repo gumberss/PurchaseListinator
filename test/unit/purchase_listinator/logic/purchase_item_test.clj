@@ -51,4 +51,27 @@
     (is (= (assoc first-item :quantity -9)
            (logic.purchase-item/find-item-and-update-item-quantity [third-item second-item first-item] shopping-item)))))
 
+(def new-first-item
+  (assoc first-item :quantity 5))
+
+(def new-second-item
+  (assoc second-item :quantity 3))
+
+(def new-third-item
+  (assoc third-item :quantity 2))
+
+(def old-items
+  [first-item second-item third-item])
+
+(def new-items
+  [new-first-item new-second-item new-third-item])
+
+(s/deftest build-items-pair-test
+  (testing "Should build the item pairs"
+    (is (= [[first-item new-first-item]
+            [second-item new-second-item]
+            [third-item new-third-item]]
+           (logic.purchase-item/build-items-pair old-items new-items)))))
+
+
 
