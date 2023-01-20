@@ -5,9 +5,9 @@
             [purchase-listinator.models.internal.purchase-list.shopping :as models.internal.purchase-list.shopping]))
 
 (s/defn change-order-position :- internal.purchase-item/PurchaseItem
-  [order-position :- s/Int
-   category :- internal.purchase-item/PurchaseItem]
-  (assoc category :order-position (or order-position 0)))
+  [order-position :- (s/maybe s/Int)
+   item :- internal.purchase-item/PurchaseItem]
+  (assoc item :order-position (or order-position 0)))
 
 (s/defn sort-by-position :- internal.purchase-item/PurchaseItems
   [categories :- internal.purchase-item/PurchaseItems]
