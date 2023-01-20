@@ -12,11 +12,15 @@
    :order-position 0
    :category-id    category-id})
 
-(def second-item (assoc first-item :order-position 1))
-(def third-item (assoc first-item :order-position 2))
+(def second-item
+  (assoc first-item :order-position 1
+                    :id (random-uuid)))
+(def third-item
+  (assoc first-item :order-position 2
+                    :id (random-uuid)))
 
 (def shopping-item
-  {:id               (random-uuid)
+  {:id               (:id first-item)
    :quantity-in-cart 10})
 
 
@@ -39,4 +43,6 @@
     (is (= -9 (-> (logic.purchase-item/update-quantity-by-shopping-item first-item shopping-item)
                   :quantity)))))
 
-
+(s/deftest find-by-shopping-item-test
+  (testing "Should find the item by the shopping item"
+    (is (= first-item (logic.purchase-item/find-by-shopping-item [third-item second-item first-item] shopping-item)))))
