@@ -10,8 +10,8 @@
   (assoc item :order-position (or order-position 0)))
 
 (s/defn sort-by-position :- internal.purchase-item/PurchaseItems
-  [categories :- internal.purchase-item/PurchaseItems]
-  (sort-by :order-position categories))
+  [items :- internal.purchase-item/PurchaseItems]
+  (sort-by :order-position items))
 
 (s/defn update-quantity :- models.internal.purchase-item/PurchaseItem
   [{:keys [quantity] :as purchase-item} :- models.internal.purchase-item/PurchaseItem

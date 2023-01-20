@@ -23,3 +23,9 @@
     (is (= item-position-changed (logic.purchase-item/change-order-position 1 first-item))))
   (testing "Should set a default value when order position is not provided"
     (= first-item (logic.purchase-item/change-order-position nil item-position-changed))))
+
+(s/deftest sort-by-position-test
+  (testing "Should sort the items bu order position"
+    (= [first-item second-item third-item]
+       (logic.purchase-item/sort-by-position [second-item third-item first-item]))))
+
