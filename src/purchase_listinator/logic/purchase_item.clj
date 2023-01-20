@@ -13,7 +13,7 @@
   [items :- internal.purchase-item/PurchaseItems]
   (sort-by :order-position items))
 
-(s/defn update-quantity :- models.internal.purchase-item/PurchaseItem
+(s/defn update-quantity-by-shopping-item :- models.internal.purchase-item/PurchaseItem
   [{:keys [quantity] :as purchase-item} :- models.internal.purchase-item/PurchaseItem
    {:keys [quantity-in-cart]} :- models.internal.purchase-list.shopping/ShoppingItem]
   (assoc purchase-item :quantity (- quantity quantity-in-cart)))
@@ -28,7 +28,7 @@
   [purchase-items :- [models.internal.purchase-item/PurchaseItem]
    shopping-item :- models.internal.purchase-list.shopping/ShoppingItem]
   (-> (find-by-shopping-item purchase-items shopping-item)
-      (update-quantity shopping-item)))
+      (update-quantity-by-shopping-item shopping-item)))
 
 (s/defn build-items-pair :- [models.internal.purchase-item/PurchaseItem]
   [old-items :- [models.internal.purchase-item/PurchaseItem]

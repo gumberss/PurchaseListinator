@@ -15,6 +15,11 @@
 (def second-item (assoc first-item :order-position 1))
 (def third-item (assoc first-item :order-position 2))
 
+(def shopping-item
+  {:id               (random-uuid)
+   :quantity-in-cart 10})
+
+
 (def item-position-changed
   (assoc first-item :order-position 1))
 
@@ -26,6 +31,12 @@
 
 (s/deftest sort-by-position-test
   (testing "Should sort the items bu order position"
-    (= [first-item second-item third-item]
-       (logic.purchase-item/sort-by-position [second-item third-item first-item]))))
+    (is (= [first-item second-item third-item]
+           (logic.purchase-item/sort-by-position [second-item third-item first-item])))))
+
+(s/deftest update-quantity-test
+  (testing "Should update the item quantity"
+    (is (= -9 (-> (logic.purchase-item/update-quantity-by-shopping-item first-item shopping-item)
+                  :quantity)))))
+
 
