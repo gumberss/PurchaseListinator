@@ -20,8 +20,10 @@
                  [camel-snake-kebab "0.4.3"]
                  [org.clojure/core.async "1.5.648"]
                  [clj-time "0.15.2"]
-                 [funcool/cats "2.2.0"]
+                 [funcool/cats "2.4.2"]
                  [nubank/matcher-combinators "3.5.0"]
-                 [lein-cloverage "1.2.4"]]
-  :test-paths ["test/unit"]
+                 [lein-cloverage "1.2.4"]
+                 [nubank/state-flow "5.14.4"]
+                 [clj-http "3.12.3"]]
+  :test-paths ["test/unit" "test/integration"]
   :repl-options {:init-ns purchase-listinator.core})

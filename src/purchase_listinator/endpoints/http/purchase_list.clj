@@ -37,7 +37,6 @@
                                    :body   {}}
   [{{:keys [datomic]} :component
     {id :id}          :path-params}]
-
   (branch (-> (adapters.misc/string->uuid id)
               (flows.purchase-list/disable datomic))
           misc.http/->Error

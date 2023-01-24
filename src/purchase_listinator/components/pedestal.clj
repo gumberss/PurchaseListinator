@@ -6,9 +6,22 @@
             [io.pedestal.http.body-params :as body-params]
             [purchase-listinator.misc.pedestal :as misc.pedestal]
             [camel-snake-kebab.core :as csk]))
+(defn version [_]
+  {:status 200
+   :body   {:lala :po}})
+
+(defn lala [a]
+  (clojure.pprint/pprint a)
+  {:status 200
+   :body   {:lala :lolo}})
+
+(def default-routes
+  #{["/api/version" :get [version] :route-name :api-version]
+    ["/api/version/:lala" :get [lala] :route-name :api-version-lala]})
 
 (def all-routes
-  (set (concat http.purchase-list/routes
+  (set (concat default-routes
+               http.purchase-list/routes
                http.shopping/routes)))
 
 (defn test?

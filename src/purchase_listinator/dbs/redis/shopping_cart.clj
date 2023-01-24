@@ -3,6 +3,11 @@
             [schema.core :as s]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
 
+
+(s/defn create-cart[conn]
+  (wcar conn
+        (car/set "shopping" "lala")))
+
 (s/defn init-cart :- models.internal.shopping-cart/Cart
   [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
    {:keys [connection]}]
@@ -14,6 +19,7 @@
 (s/defn find-cart :- (s/maybe models.internal.shopping-cart/Cart)
   [id :- s/Uuid
    {:keys [connection]}]
+  (clojure.pprint/pprint connection)
   (wcar connection (car/get id)))
 
 (s/defn upsert :- models.internal.shopping-cart/Cart

@@ -11,8 +11,6 @@
 
 (def db-uri "datomic:free://localhost:4334/datomic-component?password=datomic")
 
-(d/create-database db-uri)
-
 (def schema (concat datomic.purchase-list/schema
                     datomic.purchase-category/schema
                     datomic.purchase-item/schema
@@ -24,11 +22,12 @@
 (defn create-schema [conn]
   @(d/transact conn schema))
 
-(defrecord Datomic []
+(defrecord Datomic [service-map]
   component/Lifecycle
 
   (start [component]
-    (let [conn (d/connect db-uri)]
+    (d/create-database (:db-uri service-map))
+    (let [conn (d/connect (:db-uri service-map))]
       (create-schema conn)
       (assoc component :connection conn)))
 
@@ -37,3 +36,19 @@
 
 (defn new-datomic []
   (map->Datomic {}))
+
+
+(defrecord DatomicMock [config]
+  component/Lifecycle
+
+  (start [component]
+    (d/create-database (-> config :datomic :db-uri))
+    (let [conn (d/connect (-> config :datomic :db-uri))]
+      (create-schema conn)
+      (assoc component :connection conn)))
+
+  (stop [component]
+    (dissoc component :connection)))
+
+(defn new-datomic-mock []
+  (map->DatomicMock {}))
