@@ -6,13 +6,14 @@
             [com.stuartsierra.component :as component]
             [purchase-listinator.core :as core]
             [clojure.test :refer :all]
-            [cheshire.core :as json]
-            [clojure.string :as string]
             [io.pedestal.test :as pt]
             [state-flow.api :as state-flow.api]
-            [state-flow.core :as state-flow :refer [flow]]
+            [state-flow.cljtest :as state-flow.cljtest]
+            [state-flow.core :as state-flow :refer [flow run*]]
             [state-flow.api :refer [defflow]]
-            [state-flow.assertions.matcher-combinators :refer [match?]]))
+            [state-flow.assertions.matcher-combinators :refer [match?]]
+            [schema.core :as s]
+            [state-flow.api :as flow]))
 
 (defn url-for
   ([url]
@@ -24,17 +25,13 @@
      (url-for url :headers headers
               :params params))))
 
-(defn service-fn
-  [system]
-  (get-in system [:pedestal :service ::http/service-fn]))
+(defn get-component
+  [system & component-path]
+  (get-in system (flatten component-path)))
 
-(defmacro with-system
-  [[bound-var binding-expr] & body]
-  `(let [~bound-var (component/start ~binding-expr)]
-     (try
-       ~@body
-       (finally
-         (component/stop ~bound-var)))))
+(defn service-fn
+  [pedestal]
+  (get-component pedestal [:service ::http/service-fn]))
 
 (def system-config
   {:env        :test
@@ -42,12 +39,35 @@
                 :host "192.168.1.104"}
    :datomic    {:db-uri (str "datomic:mem://" (random-uuid))}})
 
-(defflow greeting-test
-  (with-system [sut (core/new-system-test system-config)]
-    (flow "lala"
-          (let [service (service-fn sut)
-                {:keys [status body]} (response-for service :delete (url-for :disable-purchases-lists
-                                                                             {:id (str (random-uuid))}
-                                                                             {"Content-Type" "application/json"}))]
-            (match? 200 status)))))
 
+(defn run-now
+  [flow state]
+  (s/with-fn-validation (state-flow/run flow state)))
+
+(defn start-system
+  []
+  (-> (core/new-system-test system-config)
+      component/start))
+
+(defmacro my-defflow
+  [name & flows]
+  `(state-flow.cljtest/defflow ~name {:init   start-system
+                                      :runner run-now}
+                               ~@flows))
+
+(defn request!
+  [{:keys [method endpoint params]}]
+  (flow (str "Requesting -" method " - " endpoint)
+        [service (state-flow.api/get-state :pedestal)]
+        (let [service (service-fn service)
+              outcome (response-for service method (url-for endpoint params))]
+
+          (flow/return outcome))))
+
+(my-defflow first-test
+            (flow "first test"
+                  (let [{:keys [status body] :as a} (request! {:method   :get
+                                                               :endpoint :api-version
+                                                               :params   {:id (str (random-uuid))}})]
+
+                    (match? {:status 200} a))))
