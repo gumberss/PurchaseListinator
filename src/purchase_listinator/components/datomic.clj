@@ -38,19 +38,3 @@
 
 (defn new-datomic []
   (map->Datomic {}))
-
-
-#_(defrecord DatomicMock [config]
-  component/Lifecycle
-
-  (start [component]
-    (d/create-database (-> config :datomic :db-uri))
-    (let [conn (d/connect (-> config :datomic :db-uri))]
-      (create-schema conn)
-      (assoc component :connection conn)))
-
-  (stop [component]
-    (dissoc component :connection)))
-
-#_(defn new-datomic-mock []
-  (map->DatomicMock {}))
