@@ -14,7 +14,6 @@
 (s/defn find-cart :- (s/maybe models.internal.shopping-cart/Cart)
   [id :- s/Uuid
    {:keys [connection]}]
-  (clojure.pprint/pprint connection)
   (wcar connection (car/get id)))
 
 (s/defn upsert :- models.internal.shopping-cart/Cart

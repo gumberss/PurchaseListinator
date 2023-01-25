@@ -14,10 +14,9 @@
    datomic
    rabbitmq]
   (either/try-right
-    (if-let [existent-item (datomic.purchase-item/get-by-name name category-id datomic)]
-      (do (println existent-item)
-          (left {:status 400
-                 :error  {:message "[[ITEM_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}}))
+    (if-let [_existent-item (datomic.purchase-item/get-by-name name category-id datomic)]
+      (left {:status 400
+             :error  {:message "[[ITEM_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
       (-> (datomic.purchase-item/items-count category-id datomic)
           (logic.purchase-item/change-order-position item)
           (datomic.purchase-item/upsert datomic)

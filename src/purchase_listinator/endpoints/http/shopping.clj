@@ -28,7 +28,6 @@
 (s/defn existent-shopping
   [{component         :component
     {:keys [list-id]} :path-params}]
-  (println "oi")
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid list-id)
                                   (flows.shopping/find-existent component)))))
@@ -36,7 +35,6 @@
 (s/defn get-shopping-list
   [{component             :component
     {:keys [shopping-id]} :path-params}]
-  (println "q")
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid shopping-id)
                                   (flows.shopping/get-in-progress-list component)))))
