@@ -33,8 +33,6 @@
                   :password   "password"}}
           socket (Socket.)
           connection (Connection. socket "mock" 1 2)]
-      (purchase-listinator.dbs.redis.shopping-cart/create-cart conn)
-
       (assoc this
         :connection conn)))
   (stop [this]

@@ -3,11 +3,6 @@
             [schema.core :as s]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
 
-
-(s/defn create-cart[conn]
-  (wcar conn
-        (car/set "shopping" "lala")))
-
 (s/defn init-cart :- models.internal.shopping-cart/Cart
   [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
    {:keys [connection]}]
