@@ -29,10 +29,10 @@
    (flow (str "Requesting -" method " - " endpoint)
      [service (state-flow.api/get-state :pedestal)]
      (let [service (service-fn service)
-           outcome (response-for service method (url-for endpoint params headers)
+           {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params headers)
                                  :headers headers
-                                 :body (parsee body "application/json"))]
-       (clojure.pprint/pprint outcome)
+                                 :body (parsee body "application/json"))
+           outcome (assoc json-outcome :body (parsee body "application/edn"))]
        (flow/return outcome)))))
 
 (integration-test first-test

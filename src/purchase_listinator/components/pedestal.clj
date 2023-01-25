@@ -57,7 +57,7 @@
               (not (test? service-map)) http/start
               true ((partial assoc this :service)))))
   (stop [this]
-    (when (and service (not (test? service-map)))
+    (when (and service #_(not (test? service-map)))
       (http/stop service))
     (assoc this :service nil)))
 

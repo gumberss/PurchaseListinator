@@ -4,7 +4,7 @@
 
 (def purchase-list-skeleton
   {:name        s/Str
-   :id          s/Str
+   :id          s/Uuid
    :enabled     s/Bool
    :in-progress s/Bool})
 

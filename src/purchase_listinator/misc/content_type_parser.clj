@@ -7,5 +7,5 @@
   (case content-type
     "text/html" body
     "text/plain" body
-    "application/edn" (pr-str body)
+    "application/edn" (json/read-str body :key-fn csk/->kebab-case-keyword)
     "application/json" (json/write-str body :key-fn csk/->camelCaseString)))

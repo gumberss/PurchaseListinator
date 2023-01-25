@@ -25,8 +25,6 @@
 (defrecord RedisMock [config]
   component/Lifecycle
   (start [this]
-    (clojure.pprint/pprint config)
-
     (let [conn {:pool (NonPooledConnectionPool.)
            :spec {:host       "host"
                   :port       "port"
