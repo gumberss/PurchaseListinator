@@ -13,7 +13,6 @@
             [purchase-listinator.misc.http :as misc.http]
             [cats.monad.either :refer :all]))
 
-
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   [out.purchases-lists/PurchaseList]}
   [{{:keys [datomic]} :component}]
