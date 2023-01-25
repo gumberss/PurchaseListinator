@@ -1,10 +1,9 @@
 (ns purchase-listinator.wires.purchase-list.in.purchase-list
-  (:require [schema.core :as s]
-            [purchase-listinator.models.internal.purchase-list.purchase-list :as models.internal.purchase-list]))
+  (:require [schema.core :as s]))
 
 (def purchase-list-skeleton
   {:name        s/Str
-   :id          s/Uuid
+   :id          s/Str
    :enabled     s/Bool
    :in-progress s/Bool})
 
