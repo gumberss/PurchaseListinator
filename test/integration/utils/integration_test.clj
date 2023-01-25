@@ -3,7 +3,8 @@
             [schema.core :as s]
             [state-flow.core :as state-flow]
             [purchase-listinator.core :as core]
-            [com.stuartsierra.component :as component]))
+            [com.stuartsierra.component :as component]
+            [state-flow.cljtest :as cljtest]))
 
 (def system-test-config
   {:env        :test
@@ -20,12 +21,17 @@
   (-> (core/new-system-test system-test-config)
       component/start))
 
+(defn stop-system
+  [system]
+  (component/stop system))
+
 (defn custom-runner
   [flow state]
   (s/with-fn-validation (state-flow/run flow state)))
 
 (defmacro integration-test
   [name & flows]
-  `(state-flow.cljtest/defflow ~name {:init   start-system
-                                      :runner custom-runner}
-                               ~@flows))
+  `(cljtest/defflow ~name {:init    start-system
+                           :cleanup stop-system
+                           :runner  custom-runner}
+                    ~@flows))

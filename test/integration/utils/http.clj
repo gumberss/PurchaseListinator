@@ -8,30 +8,32 @@
             [state-flow.core :refer [flow]]
             [state-flow.assertions.matcher-combinators :refer [match?]]
             [state-flow.api :as flow]
-            [utils.integration-test :refer [integration-test]]))
+            [utils.integration-test :refer [integration-test]]
+            [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]))
 
 (defn url-for
-  ([url]
-   (url-for url nil))
-  ([url params]
-   (url-for url params {"Content-Type" "application/json"}))
   ([url params headers]
    (let [url-for (route/url-for-routes (route/expand-routes components.pedestal/all-routes))]
-     (url-for url :headers headers
-              :params params))))
+     (url-for url :params params))))
 
 (defn service-fn
   [pedestal]
   (utils.integration-test/get-component pedestal [:service ::http/service-fn]))
 
-(defn request!
-  [{:keys [method endpoint params]}]
-  (flow (str "Requesting -" method " - " endpoint)
-    [service (state-flow.api/get-state :pedestal)]
-    (let [service (service-fn service)
-          outcome (response-for service method (url-for endpoint params))]
+(defn parsee
+  [body cn]
+  (misc.content-type-parser/transform-content-to body cn))
 
-      (flow/return outcome))))
+(defn request!
+  ([{:keys [method endpoint params body headers] :or {headers {"Content-Type" "application/json"}}}]
+   (flow (str "Requesting -" method " - " endpoint)
+     [service (state-flow.api/get-state :pedestal)]
+     (let [service (service-fn service)
+           outcome (response-for service method (url-for endpoint params headers)
+                                 :headers headers
+                                 :body (parsee body "application/json"))]
+       (clojure.pprint/pprint outcome)
+       (flow/return outcome)))))
 
 (integration-test first-test
   (flow "first test"

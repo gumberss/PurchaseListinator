@@ -1,5 +1,6 @@
 (ns purchase-listinator.misc.pedestal
-  (:require [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]))
+  (:require [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
+            [io.pedestal.interceptor.error :as pedestal.interceptor.error]))
 
 (defn accepted-type
   [context]
@@ -18,3 +19,9 @@
      (cond-> context
              (nil? (get-in context [:response :headers "Content-Type"]))
              (update-in [:response] coerce-response-to (accepted-type context))))})
+
+
+(def service-error-handler
+  (pedestal.interceptor.error/error-dispatch [ctx ex]
+    :else (do (clojure.pprint/pprint ex)
+              (assoc ctx :io.pedestal.interceptor.chain/error ex))))

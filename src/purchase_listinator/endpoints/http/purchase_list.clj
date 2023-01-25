@@ -11,6 +11,7 @@
             [purchase-listinator.flows.purchase-item :as flows.purchase-item]
             [purchase-listinator.misc.either :as misc.either]
             [purchase-listinator.misc.http :as misc.http]
+            [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
             [cats.monad.either :refer :all]))
 
 (s/defn get-purchase-lists :- {:status s/Int
@@ -23,7 +24,7 @@
           misc.http/->Success))
 
 (s/defn post-purchase-lists :- {:status s/Int
-                                :body   {}}
+                                :body  {}}
   [{{datomic :datomic} :component
     wire               :json-params}]
   (branch (misc.either/try-right

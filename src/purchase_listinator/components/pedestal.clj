@@ -31,7 +31,8 @@
    :enter (partial assoc-component component)})
 
 (defn interceptors [components]
-  [(body-params/body-params
+  [misc.pedestal/service-error-handler
+   (body-params/body-params
      (body-params/default-parser-map :json-options {:key-fn csk/->kebab-case-keyword}))
    misc.pedestal/coerce-body-content-type
    (inject-component components)])
