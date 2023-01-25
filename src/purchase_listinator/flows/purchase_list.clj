@@ -14,7 +14,7 @@
   (datomic.purchase-list/get-enabled datomic))
 
 (s/defn create
-  [{:keys [name]}
+  [name
    datomic]
   (either/try-right
     (if (datomic.purchase-list/get-by-name name datomic)

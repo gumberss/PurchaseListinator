@@ -33,7 +33,7 @@
                   ::http/port  (get-in config [:web-server :port])
                   ::http/host  (get-in config [:web-server :host])
                   ::http/join? false}
-    :datomic (component/using (datomic/new-datomic-mock) [:config])
+    :datomic (component/using (datomic/new-datomic) [:config :service-map])
     :redis (component/using (redis/new-redis-mock) [:config])
     :pedestal (component/using (pedestal/new-pedestal) [:service-map :datomic :redis])))
 

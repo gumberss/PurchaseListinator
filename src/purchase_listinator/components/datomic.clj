@@ -9,7 +9,7 @@
             [purchase-listinator.dbs.datomic.shopping-category :as dbs.datomic.shopping-category]
             [purchase-listinator.dbs.datomic.shopping-item :as dbs.datomic.shopping-item]))
 
-(def db-uri "datomic:free://localhost:4334/datomic-component?password=datomic")
+#_(def db-uri "datomic:free://localhost:4334/datomic-component?password=datomic")
 
 (def schema (concat datomic.purchase-list/schema
                     datomic.purchase-category/schema
@@ -22,33 +22,19 @@
 (defn create-schema [conn]
   @(d/transact conn schema))
 
-(defrecord Datomic [service-map]
+(defrecord Datomic [config]
   component/Lifecycle
 
   (start [component]
-    (d/create-database (:db-uri service-map))
-    (let [conn (d/connect (:db-uri service-map))]
-      (create-schema conn)
-      (assoc component :connection conn)))
-
-  (stop [component]
-    (dissoc component :connection)))
-
-(defn new-datomic []
-  (map->Datomic {}))
-
-
-(defrecord DatomicMock [config]
-  component/Lifecycle
-
-  (start [component]
+    (println  (-> config :datomic :db-uri))
     (d/create-database (-> config :datomic :db-uri))
     (let [conn (d/connect (-> config :datomic :db-uri))]
       (create-schema conn)
       (assoc component :connection conn)))
 
   (stop [component]
+    (d/release (:connection component))
     (dissoc component :connection)))
 
-(defn new-datomic-mock []
-  (map->DatomicMock {}))
+(defn new-datomic []
+  (map->Datomic {}))

@@ -31,7 +31,8 @@
    :enter (partial assoc-component component)})
 
 (defn interceptors [components]
-  [(body-params/body-params
+  [misc.pedestal/service-error-handler
+   (body-params/body-params
      (body-params/default-parser-map :json-options {:key-fn csk/->kebab-case-keyword}))
    misc.pedestal/coerce-body-content-type
    (inject-component components)])
@@ -56,7 +57,7 @@
               (not (test? service-map)) http/start
               true ((partial assoc this :service)))))
   (stop [this]
-    (when (and service (not (test? service-map)))
+    (when (and service #_(not (test? service-map)))
       (http/stop service))
     (assoc this :service nil)))
 

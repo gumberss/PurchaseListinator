@@ -11,6 +11,7 @@
             [purchase-listinator.flows.purchase-item :as flows.purchase-item]
             [purchase-listinator.misc.either :as misc.either]
             [purchase-listinator.misc.http :as misc.http]
+            [purchase-listinator.wires.purchase-list.out.purchase-list :as wires.purchase-list.out.purchase-list]
             [cats.monad.either :refer :all]))
 
 (s/defn get-purchase-lists :- {:status s/Int
@@ -23,12 +24,11 @@
           misc.http/->Success))
 
 (s/defn post-purchase-lists :- {:status s/Int
-                                :body   {}}
+                                :body   wires.purchase-list.out.purchase-list/PurchaseList}
   [{{datomic :datomic} :component
-    wire               :json-params}]
+    {:keys [name]}               :json-params}]
   (branch (misc.either/try-right
-            (-> (adapters.in.purchase-list/wire->internal wire)
-                (flows.purchase-list/create datomic)))
+            (flows.purchase-list/create name datomic))
           misc.http/->Error
           misc.http/->Success))
 
