@@ -20,9 +20,23 @@
                   ::http/join? false}
     :redis (component/using (redis/new-Redis) [:config])
     :mongo (component/using (mongo/new-mongo) [:config])
-    :datomic (component/using (datomic/new-datomic) [:config])
+    :datomic (component/using (datomic/new-datomic) [:config :service-map])
     :pedestal (component/using (pedestal/new-pedestal) [:service-map :redis :mongo :datomic :rabbitmq])
     :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config :redis :mongo :datomic])))
+
+(defn new-system-test
+  [config]
+  (component/system-map
+    :config config
+    :service-map {:env         (:env config)
+                  ::http/type  :jetty
+                  ::http/port  (get-in config [:web-server :port])
+                  ::http/host  (get-in config [:web-server :host])
+                  ::http/join? false}
+    :datomic (component/using (datomic/new-datomic-mock) [:config])
+    :redis (component/using (redis/new-redis-mock) [:config])
+    :pedestal (component/using (pedestal/new-pedestal) [:service-map :datomic :redis])))
+
 
 ; Put this configs in the .env file
 (def system-config
@@ -43,4 +57,4 @@
                 :password "guest"
                 :vhost    "/"}})
 
-(set-init (constantly (new-system system-config)))
+;(set-init (constantly (new-system system-config)))
