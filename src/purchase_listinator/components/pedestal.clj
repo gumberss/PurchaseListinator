@@ -8,16 +8,11 @@
             [camel-snake-kebab.core :as csk]))
 (defn version [_]
   {:status 200
-   :body   {:lala :po}})
+   :body   {:version :v1}})
 
-(defn lala [a]
-  (clojure.pprint/pprint a)
-  {:status 200
-   :body   {:lala :lolo}})
 
 (def default-routes
-  #{["/api/version" :get [version] :route-name :api-version]
-    ["/api/version/:lala" :get [lala] :route-name :api-version-lala]})
+  #{["/api/version" :get [version] :route-name :api-version]})
 
 (def all-routes
   (set (concat default-routes
