@@ -57,4 +57,4 @@
                 :password "guest"
                 :vhost    "/"}})
 
-;(set-init (constantly (new-system system-config)))
+(set-init (constantly (new-system system-config)))
