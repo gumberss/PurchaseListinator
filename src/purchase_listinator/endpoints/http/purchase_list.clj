@@ -90,7 +90,6 @@
 (s/defn purchases-lists-management-data
   [{{datomic :datomic} :component
     {id :id}           :path-params}]
-  (println id)
   (branch (misc.either/try-right
             (-> (adapters.misc/string->uuid id)
                 (flows.purchase-list/management-data datomic)))
