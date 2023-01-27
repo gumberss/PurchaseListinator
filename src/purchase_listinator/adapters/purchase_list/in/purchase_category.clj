@@ -8,3 +8,8 @@
   [{:keys [id purchase-list-id] :as wire} :- wires.in.purchase-category/PurchaseCategory]
   (assoc wire :id (adapters.misc/string->uuid id)
               :purchase-list-id (adapters.misc/string->uuid purchase-list-id)))
+
+(s/defn creation-wire->internal :- models.internal.purchase-category/PurchaseCategoryCreation
+  [{:keys [id purchase-list-id] :as wire} :- wires.in.purchase-category/PurchaseCategoryCreation]
+  (assoc wire :id (adapters.misc/string->uuid id)
+              :purchase-list-id (adapters.misc/string->uuid purchase-list-id)))

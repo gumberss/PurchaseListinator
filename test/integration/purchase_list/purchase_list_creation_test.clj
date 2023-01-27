@@ -6,7 +6,6 @@
             [utils.http :as utils.http]
             [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]))
 
-
 (def list-id "5215075f-9a24-47e9-91fb-8485adb410f4")
 
 (integration-test purchase-list-creation-test

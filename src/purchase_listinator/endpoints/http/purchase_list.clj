@@ -3,7 +3,6 @@
             [purchase-listinator.wires.purchase-list.out.purchase-list :as out.purchases-lists]
             [purchase-listinator.flows.purchase-list :as flows.purchase-list]
             [purchase-listinator.adapters.purchase-list.in.purchase-list :as adapters.in.purchase-list]
-            [purchase-listinator.adapters.out.purchase-list :as adapters.out.purchase-list]
             [purchase-listinator.adapters.misc :as adapters.misc]
             [purchase-listinator.adapters.purchase-list.in.purchase-category :as adapters.in.purchase-category]
             [purchase-listinator.adapters.purchase-list.in.purchase-item :as adapters.in.purchase-item]
@@ -63,7 +62,7 @@
     wire       :json-params}]
   (misc.http/default-branch
     (misc.either/try-right
-      (-> (adapters.in.purchase-category/wire->internal wire)
+      (-> (adapters.in.purchase-category/creation-wire->internal wire)
           (flows.purchase-category/create components)))))
 
 (s/defn change-category-order

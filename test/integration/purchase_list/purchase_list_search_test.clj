@@ -5,7 +5,6 @@
             [state-flow.assertions.matcher-combinators :refer [match?]]
             [utils.http :as utils.http]))
 
-
 (def list-id "5215075f-9a24-47e9-91fb-8485adb410f4")
 
 (integration-test get-purchase-lists-test

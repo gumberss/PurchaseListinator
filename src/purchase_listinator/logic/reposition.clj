@@ -4,8 +4,8 @@
             [clojure.set :as c.set]))
 
 (s/defn change-order-position :- models.logic.reposition/Reorder
-  [order-position :- s/Int
-   reorder :- models.logic.reposition/Reorder]
+  [order-position :- (s/maybe s/Int)
+   reorder :- models.logic.reposition/ReorderMaybePosition]
   (assoc reorder :order-position (or order-position 0)))
 
 (s/defn increment-order :- models.logic.reposition/Reorder
