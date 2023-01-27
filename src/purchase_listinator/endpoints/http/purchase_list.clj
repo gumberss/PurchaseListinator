@@ -18,8 +18,7 @@
                                :body   [out.purchases-lists/PurchaseList]}
   [{{:keys [datomic]} :component}]
   (branch (misc.either/try-right
-            (->> (flows.purchase-list/get-lists datomic)
-                 (map adapters.out.purchase-list/internal->wire)))
+            (flows.purchase-list/get-lists datomic))
           misc.http/->Error
           misc.http/->Success))
 
