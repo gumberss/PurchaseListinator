@@ -26,7 +26,6 @@
   component/Lifecycle
 
   (start [component]
-    (println  (-> config :datomic :db-uri))
     (d/create-database (-> config :datomic :db-uri))
     (let [conn (d/connect (-> config :datomic :db-uri))]
       (create-schema conn)
