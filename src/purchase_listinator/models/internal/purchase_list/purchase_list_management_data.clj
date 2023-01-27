@@ -19,6 +19,6 @@
 (s/defschema ManagementCategory management-categories-skeleton)
 
 (def purchase-list-management-data-skeleton
-  {:purchase-list-id s/Uuid
+  {:id s/Uuid
    :categories [ManagementCategory]})
 (s/defschema ManagementData purchase-list-management-data-skeleton)

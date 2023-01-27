@@ -12,7 +12,7 @@
             [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]))
 
 (defn url-for
-  ([url params headers]
+  ([url params]
    (let [url-for (route/url-for-routes (route/expand-routes components.pedestal/all-routes))]
      (url-for url :params params))))
 
@@ -29,9 +29,9 @@
    (flow (str "Requesting -" method " - " endpoint)
      [service (state-flow.api/get-state :pedestal)]
      (let [service (service-fn service)
-           {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params headers)
-                                 :headers headers
-                                 :body (parsee body "application/json"))
+           {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params)
+                                                         :headers headers
+                                                         :body (parsee body "application/json"))
            outcome (assoc json-outcome :body (parsee body "application/edn"))]
        (flow/return outcome)))))
 
