@@ -97,6 +97,9 @@
 
 (def exchanges-mock (atom {}))
 
+(defn first-event [exchange]
+  (first (exchange @exchanges-mock)))
+
 (s/defn publish
   ([exchange :- s/Keyword
     payload :- {s/Any s/Any}]

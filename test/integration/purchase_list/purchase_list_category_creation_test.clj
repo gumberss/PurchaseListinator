@@ -4,7 +4,8 @@
             [utils.integration-test :refer [integration-test]]
             [state-flow.assertions.matcher-combinators :refer [match?]]
             [utils.http :as utils.http]
-            [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]))
+            [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]
+            [purchase-listinator.components.rabbitmq :as components.rabbitmq]))
 
 (def category-id "718060b1-53e5-4d80-9b25-a03f5f87119d")
 (def list-id "5215075f-9a24-47e9-91fb-8485adb410f4")
@@ -13,13 +14,21 @@
   (flow "Should create a new purchase list"
     [{:keys [body] :as response} (utils.http/request! {:method   :post
                                                        :endpoint :add-purchases-lists-category
-                                                       :body      {:name             "A category"
-                                                                   :id               category-id
-                                                                   :color            1321
-                                                                   :purchase-list-id list-id}})]
+                                                       :body     {:name             "A category"
+                                                                  :id               category-id
+                                                                  :color            1321
+                                                                  :purchase-list-id list-id}})]
     (match? {:status 200
              :body   {:name             "A category"
                       :id               category-id
                       :order-position   0
                       :color            1321
-                      :purchase-list-id list-id}} response)))
+                      :purchase-list-id list-id}} response)
+    (match? {:event-id         uuid?
+             :name             "A category"
+             :category-id      (parse-uuid category-id)
+             :order-position   0
+             :color            1321
+             :purchase-list-id (parse-uuid list-id)
+             :moment           number?}
+            (components.rabbitmq/first-event :purchase-listinator/purchase-list.category.created))))
