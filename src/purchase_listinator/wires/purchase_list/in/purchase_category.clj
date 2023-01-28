@@ -8,4 +8,6 @@
    :color            s/Int
    :purchase-list-id s/Str})
 (s/defschema PurchaseCategory purchase-category-skeleton)
-(s/defschema PurchaseCategories [PurchaseCategory])
+
+(s/defschema PurchaseCategoryCreation
+  (dissoc purchase-category-skeleton :order-position))

@@ -10,7 +10,7 @@
       (assoc :purchase-list {:purchase-list/id purchase-list-id})
       (misc.general/namespace-keys :purchase-category)))
 
-(s/defn db->internal :- models.internal.purchase-category/PurchaseCategory
+(s/defn db->internal :- (s/maybe models.internal.purchase-category/PurchaseCategory)
   [db-wire]
   (when (not-empty db-wire)
     (let [{:keys [purchase-list] :as internal} (-> (misc.datomic/datomic->entity db-wire)

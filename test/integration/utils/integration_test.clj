@@ -5,7 +5,6 @@
             [purchase-listinator.core :as core]
             [com.stuartsierra.component :as component]
             [state-flow.cljtest :as cljtest]))
-
 (def system-test-config
   {:env        :test
    :web-server {:port 5150

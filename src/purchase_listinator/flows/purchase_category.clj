@@ -9,7 +9,7 @@
             [purchase-listinator.publishers.purchase-list-category :as publishers.purchase-list-category]))
 
 (s/defn create
-  [{:keys [name purchase-list-id] :as category} :- models.internal.purchase-category/PurchaseCategory
+  [{:keys [name purchase-list-id] :as category} :- models.internal.purchase-category/PurchaseCategoryCreation
    {:keys [datomic rabbitmq]}]
   (either/try-right
     (if (datomic.purchase-category/get-by-name purchase-list-id name datomic)

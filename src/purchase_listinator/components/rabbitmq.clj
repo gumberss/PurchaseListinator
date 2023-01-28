@@ -12,7 +12,8 @@
             [schema.core :as s]
             [clojure.data.json :as json]
             [camel-snake-kebab.core :as csk]
-            [schema.coerce :as coerce]))
+            [schema.coerce :as coerce])
+  (:import (clojure.lang PersistentQueue)))
 
 (def subscribers (concat
                    endpoints.queue.shopping-purchase-list-event-received/subscribers
@@ -89,3 +90,32 @@
 (defn new-rabbit-mq
   []
   (map->RabbitMq {}))
+
+(defn new-queue [] (PersistentQueue/EMPTY))
+
+(def exchanges-mock (atom {}))
+
+(defn first-event [exchange]
+  (first (exchange @exchanges-mock)))
+
+(s/defn publish
+  ([exchange :- s/Keyword
+    payload :- {s/Any s/Any}]
+   (publish exchange payload {:content-type "application/json"}))
+  ([exchange :- s/Keyword
+    payload :- {s/Any s/Any}
+    _]
+   (swap! exchanges-mock update-in [exchange] (fn [data] (conj (or data (new-queue)) payload)))
+   payload))
+
+(defrecord RabbitMqFake [config]
+  component/Lifecycle
+  (start [this]
+    (assoc this :publish publish))
+  (stop [this]
+    (dissoc this :publish)))
+
+(defn new-rabbit-mq-fake
+  []
+  (map->RabbitMqFake {}))
+

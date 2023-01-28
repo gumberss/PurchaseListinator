@@ -45,7 +45,7 @@
            (d/db connection) purchase-list-id)
       ffirst))
 
-(s/defn get-by-name :- models.internal.purchase-category/PurchaseCategory
+(s/defn get-by-name :- (s/maybe models.internal.purchase-category/PurchaseCategory)
   [purchase-list-id :- s/Uuid
    name :- s/Str
    {:keys [connection]}]
