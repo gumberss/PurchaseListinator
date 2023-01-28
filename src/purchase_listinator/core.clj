@@ -36,8 +36,7 @@
     :datomic (component/using (datomic/new-datomic) [:config :service-map])
     :redis (component/using (redis/new-redis-mock) [:config])
     :pedestal (component/using (pedestal/new-pedestal) [:service-map :datomic :redis :rabbitmq])
-    :rabbitmq (component/using (rabbitmq/new-rabbit-mq-fake) [])
-))
+    :rabbitmq (component/using (rabbitmq/new-rabbit-mq-fake) [])))
 
 ; Put this configs in the .env file
 (def system-config

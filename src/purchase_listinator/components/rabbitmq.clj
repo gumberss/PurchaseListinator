@@ -91,8 +91,6 @@
   []
   (map->RabbitMq {}))
 
-
-
 (defn new-queue [] (PersistentQueue/EMPTY))
 
 (def exchanges-mock (atom {}))
@@ -113,11 +111,7 @@
 (defrecord RabbitMqFake [config]
   component/Lifecycle
   (start [this]
-    (let []
-
-      (assoc this
-
-        :publish publish)))
+    (assoc this :publish publish))
   (stop [this]
     (dissoc this :publish)))
 
