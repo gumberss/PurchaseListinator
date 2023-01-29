@@ -26,4 +26,8 @@
                  [nubank/state-flow "5.14.4"]
                  [clj-http "3.12.3"]]
   :test-paths ["test/unit" "test/integration"]
+  :main purchase-listinator.core
+  :aot [purchase-listinator.core]
+  :profiles {:uberjar {:aot [purchase-listinator.core]}}
+  :uberjar-name "purchase-listinator.jar"
   :repl-options {:init-ns purchase-listinator.core})

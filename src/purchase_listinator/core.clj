@@ -7,7 +7,8 @@
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.redis :as redis]
             [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]))
+            [purchase-listinator.components.rabbitmq :as rabbitmq])
+  (:gen-class))
 
 (defn new-system
   [config]
@@ -41,20 +42,27 @@
 ; Put this configs in the .env file
 (def system-config
   {:env        :prod
-   :web-server {:port 5150
-                :host "192.168.1.104"}
+   :web-server {:port 3000
+                :host "localhost"}
    :mongo      {:port    27017
-                :host    "localhost"
+                :host    "127.0.0.1"
                 :db-name "monger-test"}
-   :datomic    {:db-uri "datomic:free://localhost:4334/datomic-component?password=datomic"}
+   :datomic    {:db-uri "datomic:free://127.0.0.1:4334/datomic-component?password=datomic"}
    :redis      {:host     "127.0.0.1"
                 :port     6379
                 :password "pass"
                 :timeout  6000}
-   :rabbitmq   {:host     "localhost"
+   :rabbitmq   {:host     "127.0.0.1"
                 :port     5672
                 :username "guest"
                 :password "guest"
                 :vhost    "/"}})
 
-(set-init (constantly (new-system system-config)))
+(println "going!")
+(defn -main
+  "The entry-point for 'lein run'"
+  [& args]
+  (println "go!")
+  (component/start (new-system system-config)))
+
+#_(set-init (constantly (new-system system-config)))
