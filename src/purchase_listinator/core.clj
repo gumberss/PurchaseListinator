@@ -46,11 +46,13 @@
                 :host "localhost"}
    :mongo      {:port    27017
                 :host    "127.0.0.1"
-                :db-name "monger-test"}
+                :db-name "purchase-listinator"
+                :uri     (or (System/getenv "MONGODB_URI") nil)}
    :datomic    {:db-uri "datomic:free://127.0.0.1:4334/datomic-component?password=datomic"}
-   :redis      {:host     "127.0.0.1"
-                :port     6379
-                :password "pass"
+   :redis      {:host     (or (System/getenv "REDIS_HOST") "127.0.0.1")
+                :port     (or (System/getenv "REDIS_PORT") 6379)
+                :username (or (System/getenv "REDIS_USERNAME") nil)
+                :password (or (System/getenv "REDIS_PASSWORD") "pass")
                 :timeout  6000}
    :rabbitmq   {:host     "127.0.0.1"
                 :port     5672
