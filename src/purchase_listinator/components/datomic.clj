@@ -1,6 +1,6 @@
 (ns purchase-listinator.components.datomic
   (:require [com.stuartsierra.component :as component]
-            [datomic.api :as d]
+           [datahike.api :as d]
             [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
             [purchase-listinator.dbs.datomic.purchase-category :as datomic.purchase-category]
             [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]
@@ -26,8 +26,9 @@
   component/Lifecycle
 
   (start [component]
-    (d/create-database (-> config :datomic :db-uri))
-    (let [conn (d/connect (-> config :datomic :db-uri))]
+    (println config)
+    (d/create-database (-> config :datomic))
+    (let [conn (d/connect (-> config :datomic))]
       (create-schema conn)
       (assoc component :connection conn)))
 

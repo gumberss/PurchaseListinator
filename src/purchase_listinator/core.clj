@@ -48,7 +48,7 @@
                 :host    "127.0.0.1"
                 :db-name "purchase-listinator"
                 :uri     (or (System/getenv "MONGODB_URI") nil)}
-   :datomic    {:db-uri "datomic:free://127.0.0.1:4334/datomic-component?password=datomic"}
+   :datomic    {:store {:backend :file :path "src/app/"}}
    :redis      {:host     (or (System/getenv "REDIS_HOST") "127.0.0.1")
                 :port     (or (System/getenv "REDIS_PORT") 6379)
                 :username (or (System/getenv "REDIS_USERNAME") nil)
@@ -60,7 +60,6 @@
                 :password "guest"
                 :vhost    "/"}})
 
-(println "going!")
 (defn -main
   "The entry-point for 'lein run'"
   [& args]

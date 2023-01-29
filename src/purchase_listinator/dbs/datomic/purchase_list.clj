@@ -1,6 +1,6 @@
 (ns purchase-listinator.dbs.datomic.purchase-list
   (:require [schema.core :as s]
-            [datomic.api :as d]
+            [datahike.api :as d]
             [purchase-listinator.adapters.db.purchase-list :as adapter.purchase-list]
             [purchase-listinator.adapters.db.purchase-list-management-data :as adapters.db.purchase-list-management-data]
             [purchase-listinator.misc.date :as misc.date]))

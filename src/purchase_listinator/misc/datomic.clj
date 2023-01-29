@@ -1,7 +1,7 @@
 (ns purchase-listinator.misc.datomic
   (:require [clojure.walk :as walk]
             [schema.core :as s]
-            [datomic.api :as d]))
+            [datahike.api :as d]))
 
 (defn dissoc-db-key
   [entity]

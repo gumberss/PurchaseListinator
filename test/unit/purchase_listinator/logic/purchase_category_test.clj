@@ -1,12 +1,13 @@
 (ns purchase-listinator.logic.purchase-category-test
   (:require [clojure.test :refer :all]
             [schema.test :as s]
-            [purchase-listinator.logic.purchase-category :as logic.purchase-category]))
+            [purchase-listinator.logic.purchase-category :as logic.purchase-category]
+            [purchase-listinator.misc.general :as misc.general]))
 
-(def category-id (random-uuid))
+(def category-id (misc.general/squuid))
 
 (def first-item
-  {:id             (random-uuid)
+  {:id             (misc.general/squuid)
    :name           "Last"
    :quantity       1
    :order-position 0
@@ -20,7 +21,7 @@
    :id               category-id
    :order-position   0
    :color            123
-   :purchase-list-id (random-uuid)
+   :purchase-list-id (misc.general/squuid)
    :items            [third-item second-item first-item]})
 
 (def second-category
