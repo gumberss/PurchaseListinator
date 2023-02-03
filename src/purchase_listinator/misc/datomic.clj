@@ -1,7 +1,7 @@
 (ns purchase-listinator.misc.datomic
   (:require [clojure.walk :as walk]
             [schema.core :as s]
-            [datomic.api :as d]))
+            [datahike.api :as d]))
 
 (defn dissoc-db-key
   [entity]
@@ -14,12 +14,12 @@
 
 (s/defn transact
   [connection & data]
-  @(d/transact connection data))
+  (d/transact connection data))
 
 
 (s/defn retract
   [id-key connection & data]
-  @(d/transact connection (mapv #(vector :db.fn/retractEntity [id-key %]) data)))
+  (d/transact connection (mapv #(vector :db.fn/retractEntity [id-key %]) data)))
 
 (s/defn upsert
   [data
