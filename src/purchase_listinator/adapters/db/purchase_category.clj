@@ -5,10 +5,9 @@
             [purchase-listinator.models.internal.purchase-list.purchase-category :as models.internal.purchase-category]))
 
 (s/defn internal->db
-  [{:keys [purchase-list-id order-position] :as internal} :- models.internal.purchase-category/PurchaseCategory]
+  [{:keys [purchase-list-id] :as internal} :- models.internal.purchase-category/PurchaseCategory]
   (-> (dissoc internal :purchase-list-id)
-      (assoc :purchase-list {:purchase-list/id purchase-list-id}
-             :order-position (long order-position))
+      (assoc :purchase-list {:purchase-list/id purchase-list-id})
       (misc.general/namespace-keys :purchase-category)))
 
 (s/defn db->internal :- (s/maybe models.internal.purchase-category/PurchaseCategory)

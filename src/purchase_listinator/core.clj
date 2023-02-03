@@ -43,7 +43,7 @@
 (def system-config
   {:env        :prod
    :web-server {:port 5150
-                :host "192.168.1.100"}
+                :host "192.168.1.104"}
    :mongo      {:port    27017
                 :host    "127.0.0.1"
                 :db-name "purchase-listinator"
