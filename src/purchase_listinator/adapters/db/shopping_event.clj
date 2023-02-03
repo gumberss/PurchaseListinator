@@ -5,8 +5,13 @@
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
 
 (s/defn internal->db
-  [internal :- models.internal.shopping-cart/CartEvent]
-  (misc.general/namespace-keys internal :shopping-event))
+  [{:keys [quantity quantity-changed new-position order-position] :as internal} :- models.internal.shopping-cart/CartEvent]
+  (-> (misc.general/assoc-some internal
+                               :quantity (some-> quantity long)
+                               :quantity-changed (some-> quantity-changed long)
+                               :new-position (some-> new-position long)
+                               :order-position (some-> order-position long))
+      (misc.general/namespace-keys :shopping-event)))
 
 (s/defn db->internal :- models.internal.shopping-cart/CartEvent
   [db-wire]
