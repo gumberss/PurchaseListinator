@@ -1,6 +1,6 @@
 (ns purchase-listinator.dbs.datomic.shopping-category
   (:require [schema.core :as s]
-            [datomic.api :as d]
+            [datahike.api :as d]
             [purchase-listinator.adapters.db.shopping-category :as adapters.db.shopping-category]
             [purchase-listinator.models.internal.shopping-category :as models.internal.shopping-category]))
 
@@ -28,7 +28,7 @@
 
 (s/defn ^:private transact
         [connection & purchases-categories]
-        @(d/transact connection purchases-categories))
+        (d/transact connection purchases-categories))
 
 (s/defn upsert :- models.internal.shopping-category/ShoppingCategory
         [shopping-category :- models.internal.shopping-category/ShoppingCategory

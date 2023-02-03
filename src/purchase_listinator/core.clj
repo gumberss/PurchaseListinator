@@ -42,8 +42,8 @@
 ; Put this configs in the .env file
 (def system-config
   {:env        :prod
-   :web-server {:port 3000
-                :host "localhost"}
+   :web-server {:port 5150
+                :host "192.168.1.100"}
    :mongo      {:port    27017
                 :host    "127.0.0.1"
                 :db-name "purchase-listinator"
@@ -54,7 +54,7 @@
                 :username (or (System/getenv "REDIS_USERNAME") nil)
                 :password (or (System/getenv "REDIS_PASSWORD") "pass")
                 :timeout  6000}
-   :rabbitmq   {:host     "127.0.0.1"
+   :rabbitmq   {:host     "localhost"
                 :port     5672
                 :username "guest"
                 :password "guest"
