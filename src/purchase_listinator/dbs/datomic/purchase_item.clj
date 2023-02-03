@@ -1,6 +1,6 @@
 (ns purchase-listinator.dbs.datomic.purchase-item
   (:require [schema.core :as s]
-            [datahike.api :as d]
+            [datomic.api :as d]
             [purchase-listinator.adapters.db.purchase-item :as adapters.db.purchase-item]
             [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]
             [purchase-listinator.misc.datomic :as misc.datomic]))
@@ -29,7 +29,7 @@
 
 (s/defn ^:private retract
   [connection & purchases-items-ids]
-  (d/transact connection (mapv #(vector :db.fn/retractEntity [:purchase-item/id %]) purchases-items-ids)))
+  @(d/transact connection (mapv #(vector :db.fn/retractEntity [:purchase-item/id %]) purchases-items-ids)))
 
 (s/defn items-count
   [purchase-category-id :- s/Uuid

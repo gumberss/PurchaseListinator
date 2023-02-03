@@ -98,7 +98,7 @@
 (defn first-event [exchange]
   (first (exchange @exchanges-mock)))
 
-(s/defn publish-mock
+(s/defn publish
   ([exchange :- s/Keyword
     payload :- {s/Any s/Any}]
    (publish exchange payload {:content-type "application/json"}))
@@ -111,7 +111,7 @@
 (defrecord RabbitMqFake [config]
   component/Lifecycle
   (start [this]
-    (assoc this :publish publish-mock))
+    (assoc this :publish publish))
   (stop [this]
     (dissoc this :publish)))
 
