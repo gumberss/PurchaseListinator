@@ -11,19 +11,16 @@
   [item :- models.internal.purchase-item/PurchaseItem
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.created
-           (adapters.out.purchase-list-item-events/->ItemCreatedEvent item (misc.date/numb-now) (misc.general/squuid)))
-  item)
+           (adapters.out.purchase-list-item-events/->ItemCreatedEvent item (misc.date/numb-now) (misc.general/squuid))))
 
 (s/defn item-changed :- wires.out.purchase-list-item-events/ItemChangedEvent
   [item :- models.internal.purchase-item/PurchaseItem
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.changed
-           (adapters.out.purchase-list-item-events/->ItemChangedEvent item (misc.date/numb-now) (misc.general/squuid)))
-  item)
+           (adapters.out.purchase-list-item-events/->ItemChangedEvent item (misc.date/numb-now) (misc.general/squuid))))
 
 (s/defn item-deleted :- wires.out.purchase-list-item-events/ItemDeletedEvent
   [item :- models.internal.purchase-item/PurchaseItem
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.deleted
-           (adapters.out.purchase-list-item-events/->ItemDeletedEvent item (misc.date/numb-now) (misc.general/squuid)))
-  item)
+           (adapters.out.purchase-list-item-events/->ItemDeletedEvent item (misc.date/numb-now) (misc.general/squuid))))

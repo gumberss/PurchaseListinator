@@ -1,6 +1,6 @@
 (ns purchase-listinator.dbs.datomic.shopping-item
   (:require [schema.core :as s]
-            [datahike.api :as d]
+            [datomic.api :as d]
             [purchase-listinator.adapters.db.shopping-item :as adapters.db.shopping-item]
             [purchase-listinator.models.internal.shopping-item :as models.internal.shopping-item]
             [purchase-listinator.misc.datomic :as misc.datomic]))
