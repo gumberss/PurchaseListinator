@@ -5,11 +5,13 @@
             [purchase-listinator.core :as core]
             [com.stuartsierra.component :as component]
             [state-flow.cljtest :as cljtest]))
-(def system-test-config
+(defn system-test-config
+  []
   {:env        :test
    :web-server {:port 5150
                 :host "192.168.1.104"}
-   :datomic    {:db-uri (str "datomic:mem://" (random-uuid))}})
+   :datomic    {:store {:backend :mem
+                        :id      (str (random-uuid))}}})
 
 (defn get-component
   [system & component-path]
@@ -17,7 +19,7 @@
 
 (defn start-system
   []
-  (-> (core/new-system-test system-test-config)
+  (-> (core/new-system-test (system-test-config))
       component/start))
 
 (defn stop-system

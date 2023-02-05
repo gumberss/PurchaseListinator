@@ -17,9 +17,6 @@
                     dbs.datomic.shopping-item/schema
                     dbs.datomic.shopping-category/schema))
 
-(def cfg {:store {:backend :mem
-                  :id      "default"}})
-
 (defn create-schema [conn]
   (d/transact conn schema))
 
@@ -27,9 +24,9 @@
   component/Lifecycle
 
   (start [component]
-    (try (d/create-database cfg)
+    (try (d/create-database (-> config :datomic))
          (catch Exception _))
-    (let [conn (d/connect cfg)]
+    (let [conn (d/connect (-> config :datomic))]
       (create-schema conn)
       (assoc component :connection conn)))
 

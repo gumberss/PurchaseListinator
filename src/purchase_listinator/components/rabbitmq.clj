@@ -101,7 +101,7 @@
 (s/defn publish-mock
   ([exchange :- s/Keyword
     payload :- {s/Any s/Any}]
-   (publish exchange payload {:content-type "application/json"}))
+   (publish-mock exchange payload {:content-type "application/json"}))
   ([exchange :- s/Keyword
     payload :- {s/Any s/Any}
     _]
