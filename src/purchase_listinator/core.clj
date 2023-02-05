@@ -48,8 +48,8 @@
                 :host    "127.0.0.1"
                 :db-name "purchase-listinator"
                 :uri     (or (System/getenv "MONGODB_URI") nil)}
-   :datomic    {:store {:backend :mem
-                        :id      "default"}}
+   :datomic    {:store {:backend :file
+                        :path "/src/datahike"}}
    :redis      {:host     (or (System/getenv "REDIS_HOST") "127.0.0.1")
                 :port     (or (System/getenv "REDIS_PORT") 6379)
                 :username (or (System/getenv "REDIS_USERNAME") nil)
@@ -61,11 +61,9 @@
                 :password "guest"
                 :vhost    "/"}})
 
-(println "going!")
 (defn -main
   "The entry-point for 'lein run'"
   [& args]
-  (println "go!")
   (component/start (new-system system-config)))
 
 #_(set-init (constantly (new-system system-config)))
