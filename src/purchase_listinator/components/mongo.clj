@@ -7,9 +7,10 @@
 (defrecord Mongo [config]
   component/Lifecycle
   (start [this]
-    (let [{{:keys [host port db-name]} :mongo} config
-          conn (mg/connect {:host host :port port})
-          db (mg/get-db conn db-name)]
+    (let [{{:keys [host port db-name uri]} :mongo} config
+          {:keys [conn db]} (if uri (mg/connect-via-uri uri)
+                                    (mg/connect {:host host :port port}))
+          db (if uri db (mg/get-db conn db-name))]
       (doseq [db-indexes indexes]
         (db-indexes db))
       (assoc this

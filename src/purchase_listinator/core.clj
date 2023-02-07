@@ -7,7 +7,10 @@
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.redis :as redis]
             [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]))
+            [purchase-listinator.components.rabbitmq :as rabbitmq]
+            [clojure.java.io :as io])
+  (:gen-class)
+  (:import (java.nio.file Path)))
 
 (defn new-system
   [config]
@@ -41,15 +44,18 @@
 ; Put this configs in the .env file
 (def system-config
   {:env        :prod
-   :web-server {:port 5150
-                :host "192.168.1.104"}
+   :web-server {:port (or (System/getenv "WEBSERVER_PORT") 3000)
+                :host (or (System/getenv "WEBSERVER_URL") "192.168.1.100")}
    :mongo      {:port    27017
-                :host    "localhost"
-                :db-name "monger-test"}
-   :datomic    {:db-uri "datomic:free://localhost:4334/datomic-component?password=datomic"}
-   :redis      {:host     "127.0.0.1"
-                :port     6379
-                :password "pass"
+                :host    "127.0.0.1"
+                :db-name "purchase-listinator"
+                :uri     (or (System/getenv "MONGODB_URI") nil)}
+   :datomic    {:store {:backend :file
+                        :path    "/usr/purchaselistinator/database"}}
+   :redis      {:host     (or (System/getenv "REDIS_HOST") "127.0.0.1")
+                :port     (or (System/getenv "REDIS_PORT") 6379)
+                :username (or (System/getenv "REDIS_USERNAME") nil)
+                :password (or (System/getenv "REDIS_PASSWORD") "pass")
                 :timeout  6000}
    :rabbitmq   {:host     "localhost"
                 :port     5672
@@ -57,4 +63,14 @@
                 :password "guest"
                 :vhost    "/"}})
 
-(set-init (constantly (new-system system-config)))
+(defn -main
+  "The entry-point for 'lein run'"
+  [& args]
+  (component/start (new-system system-config)))
+
+(defn -stop
+  "The entry-point for 'lein run'"
+  [system]
+  (component/stop system))
+
+#_(set-init (constantly (new-system system-config)))

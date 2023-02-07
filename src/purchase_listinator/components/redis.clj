@@ -6,10 +6,11 @@
 (defrecord Redis [config]
   component/Lifecycle
   (start [this]
-    (let [{{:keys [password host port timeout]} :redis} config
+    (let [{{:keys [username password host port timeout]} :redis} config
           conn {:pool {}
                 :spec {:host       host
                        :port       port
+                       :username   username
                        :password   password
                        :timeout-ms timeout}}]
       (assoc this
@@ -26,9 +27,9 @@
   component/Lifecycle
   (start [this]
     (let [conn {:pool (NonPooledConnectionPool.)
-           :spec {:host       "host"
-                  :port       "port"
-                  :password   "password"}}
+                :spec {:host     "host"
+                       :port     "port"
+                       :password "password"}}
           socket (Socket.)
           connection (Connection. socket "mock" 1 2)]
       (assoc this
