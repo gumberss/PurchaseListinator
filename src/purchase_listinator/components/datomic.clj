@@ -25,7 +25,8 @@
 
   (start [component]
     (try (d/create-database (-> config :datomic))
-         (catch Exception _))
+         (catch Exception e
+           (println e)))
     (let [conn (d/connect (-> config :datomic))]
       (create-schema conn)
       (assoc component :connection conn)))

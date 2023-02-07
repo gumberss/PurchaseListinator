@@ -24,7 +24,7 @@
     <orderEntry type="library" name="Leiningen: clj-http:3.12.3" level="project" />
     <orderEntry type="library" name="Leiningen: clj-time:0.15.2" level="project" />
     <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
-    <orderEntry type="library" name="Leiningen: clojurewerkz/support:1.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: clojurewerkz/support:1.5.0" level="project" />
     <orderEntry type="library" name="Leiningen: colorize:0.1.1" level="project" />
     <orderEntry type="library" name="Leiningen: com.cognitect/transit-clj:0.8.313" level="project" />
     <orderEntry type="library" name="Leiningen: com.cognitect/transit-cljs:0.8.269" level="project" />
@@ -34,10 +34,10 @@
     <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.dataformat/jackson-dataformat-cbor:2.9.9" level="project" />
     <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.dataformat/jackson-dataformat-smile:2.9.9" level="project" />
     <orderEntry type="library" name="Leiningen: com.github.pkpkpk/cljs-node-io:2.0.332" level="project" />
-    <orderEntry type="library" name="Leiningen: com.google.guava/guava:18.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.google.guava/guava:21.0" level="project" />
     <orderEntry type="library" name="Leiningen: com.googlecode.json-simple/json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="Leiningen: com.novemberain/langohr:5.1.0" level="project" />
-    <orderEntry type="library" name="Leiningen: com.novemberain/monger:3.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: com.novemberain/monger:3.6.0" level="project" />
     <orderEntry type="library" name="Leiningen: com.rabbitmq/amqp-client:5.5.2" level="project" />
     <orderEntry type="library" name="Leiningen: com.rpl/specter:1.0.5" level="project" />
     <orderEntry type="library" name="Leiningen: com.stuartsierra/component.repl:1.0.0" level="project" />
@@ -146,9 +146,9 @@
     <orderEntry type="library" name="Leiningen: org.iq80.snappy/snappy:0.4" level="project" />
     <orderEntry type="library" name="Leiningen: org.javassist/javassist:3.18.1-GA" level="project" />
     <orderEntry type="library" name="Leiningen: org.lz4/lz4-java:1.7.1" level="project" />
-    <orderEntry type="library" name="Leiningen: org.mongodb/bson:3.3.0" level="project" />
-    <orderEntry type="library" name="Leiningen: org.mongodb/mongodb-driver-core:3.3.0" level="project" />
-    <orderEntry type="library" name="Leiningen: org.mongodb/mongodb-driver:3.3.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.mongodb/bson:3.12.11" level="project" />
+    <orderEntry type="library" name="Leiningen: org.mongodb/mongodb-driver-core:3.12.11" level="project" />
+    <orderEntry type="library" name="Leiningen: org.mongodb/mongodb-driver:3.12.11" level="project" />
     <orderEntry type="library" name="Leiningen: org.msgpack/msgpack:0.6.12" level="project" />
     <orderEntry type="library" name="Leiningen: org.nrepl/incomplete:0.1.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-all:4.2" level="project" />
