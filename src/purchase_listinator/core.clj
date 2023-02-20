@@ -24,8 +24,8 @@
     :redis (component/using (redis/new-Redis) [:config])
     :mongo (component/using (mongo/new-mongo) [:config])
     :datomic (component/using (datomic/new-datomic) [:config :service-map])
-    :pedestal (component/using (pedestal/new-pedestal) [:service-map :redis :mongo :datomic :rabbitmq])
-    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config :redis :mongo :datomic])))
+    :pedestal (component/using (pedestal/new-pedestal) [:service-map :mongo :rabbitmq :redis :datomic])
+    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config :mongo :redis :datomic])))
 
 (defn new-system-test
   [config]
@@ -45,19 +45,19 @@
 (def system-config
   {:env        :prod
    :web-server {:port (or (System/getenv "WEBSERVER_PORT") 3000)
-                :host (or (System/getenv "WEBSERVER_URL") "192.168.1.100")}
+                :host (or (System/getenv "WEBSERVER_URL") "0.0.0.0")}
    :mongo      {:port    27017
-                :host    "127.0.0.1"
+                :host     (or (System/getenv "MONGODB_HOST") "localhost")
                 :db-name "purchase-listinator"
                 :uri     (or (System/getenv "MONGODB_URI") nil)}
    :datomic    {:store {:backend :file
                         :path    "/usr/purchaselistinator/database"}}
-   :redis      {:host     (or (System/getenv "REDIS_HOST") "127.0.0.1")
+   :redis      {:host     (or (System/getenv "REDIS_HOST") "localhost")
                 :port     (or (System/getenv "REDIS_PORT") 6379)
                 :username (or (System/getenv "REDIS_USERNAME") nil)
                 :password (or (System/getenv "REDIS_PASSWORD") "pass")
                 :timeout  6000}
-   :rabbitmq   {:host     "localhost"
+   :rabbitmq   {:host     (or (System/getenv "RABBITMQ_HOST") "localhost")
                 :port     5672
                 :username "guest"
                 :password "guest"
@@ -73,4 +73,4 @@
   [system]
   (component/stop system))
 
-#_(set-init (constantly (new-system system-config)))
+(set-init (constantly (new-system system-config)))

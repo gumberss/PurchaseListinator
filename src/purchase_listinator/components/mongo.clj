@@ -8,9 +8,9 @@
   component/Lifecycle
   (start [this]
     (let [{{:keys [host port db-name uri]} :mongo} config
-          {:keys [conn db]} (if uri (mg/connect-via-uri uri)
-                                    (mg/connect {:host host :port port}))
-          db (if uri db (mg/get-db conn db-name))]
+          conn  (mg/connect {:host host :port port})#_(if uri (mg/connect-via-uri uri)
+                                    )
+          db (mg/get-db conn db-name) #_(if uri db )]
       (doseq [db-indexes indexes]
         (db-indexes db))
       (assoc this
