@@ -4,13 +4,26 @@
 
 (def indexes (vector purchase-listinator.dbs.mongo.shopping-location/indexes))
 
+(defn connect-by-uri
+  [uri]
+  (mg/connect-via-uri uri))
+
+(defn connect-by-uri-host-port
+  [host port db-name]
+  (let [conn (mg/connect {:host host :port port})
+        db (mg/get-db conn db-name)]
+    {:conn conn
+     :db   db}))
+
 (defrecord Mongo [config]
   component/Lifecycle
   (start [this]
     (let [{{:keys [host port db-name uri]} :mongo} config
-          conn  (mg/connect {:host host :port port})#_(if uri (mg/connect-via-uri uri)
-                                    )
-          db (mg/get-db conn db-name) #_(if uri db )]
+          conn (mg/connect {:host host :port port})
+          db (mg/get-db conn db-name)]
+      (if uri
+        (connect-by-uri uri)
+        (connect-by-uri-host-port host port db-name))
       (doseq [db-indexes indexes]
         (db-indexes db))
       (assoc this

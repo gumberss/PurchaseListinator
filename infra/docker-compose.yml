@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  purchase_listinator_server:
+    container_name: purchase_listinator_server
+    restart: always
+    build: "../"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./datahike-db:/usr/purchaselistinator/database
+    depends_on:
+      - redis
+      - mongodb
+      - rabbitmq
+    environment:
+      - REDIS_HOST=redis
+      - MONGODB_HOST=mongodb
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+      - purchaseListinator
+  redis:
+    container_name: redis
+    image: redis:alpine
+    restart: always
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_HOST_PASSWORD"
+    environment:
+      - REDIS_HOST_PASSWORD=pass
+    ports:
+      - '6379:6379'
+    networks:
+      - purchaseListinator
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    volumes:
+      - './mongodb-data:/data/db'
+    ports:
+      - '27017:27017'
+    networks:
+      - purchaseListinator
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    volumes:
+      - './rabbitmq-data:/var/lib/rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - purchaseListinator
+
+networks:
+  purchaseListinator:
+    driver: bridge
