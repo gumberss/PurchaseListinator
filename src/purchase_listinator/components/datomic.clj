@@ -24,7 +24,7 @@
   component/Lifecycle
 
   (start [component]
-    #_(try (d/create-database (-> config :datomic))
+    (try (d/create-database (-> config :datomic))
          (catch Exception e
            (println e)))
     (let [conn (d/connect (-> config :datomic))]
