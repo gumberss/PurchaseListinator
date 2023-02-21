@@ -3,7 +3,7 @@ services:
   purchase_listinator_server:
     container_name: purchase_listinator_server
     restart: always
-    build: "../"
+    image: gumberss/purchase-listinator:v1
     ports:
       - "3000:3000"
     volumes:
@@ -25,8 +25,6 @@ services:
     command: /bin/sh -c "redis-server --requirepass $$REDIS_HOST_PASSWORD"
     environment:
       - REDIS_HOST_PASSWORD=pass
-    ports:
-      - '6379:6379'
     networks:
       - purchaseListinator
   mongodb:
@@ -34,8 +32,6 @@ services:
     image: mongo
     volumes:
       - './mongodb-data:/data/db'
-    ports:
-      - '27017:27017'
     networks:
       - purchaseListinator
   rabbitmq:
@@ -44,7 +40,6 @@ services:
     volumes:
       - './rabbitmq-data:/var/lib/rabbitmq'
     ports:
-      - "5672:5672"
       - "15672:15672"
     networks:
       - purchaseListinator
