@@ -15,7 +15,9 @@
 
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   [out.purchases-lists/PurchaseList]}
-  [{{:keys [datomic]} :component}]
+  [{{:keys [datomic]} :component
+    headers            :headers}]
+
   (branch (misc.either/try-right
             (flows.purchase-list/get-lists datomic))
           misc.http/->Error
@@ -24,7 +26,7 @@
 (s/defn post-purchase-lists :- {:status s/Int
                                 :body   wires.purchase-list.out.purchase-list/PurchaseList}
   [{{datomic :datomic} :component
-    {:keys [name]}               :json-params}]
+    {:keys [name]}     :json-params}]
   (branch (misc.either/try-right
             (flows.purchase-list/create name datomic))
           misc.http/->Error

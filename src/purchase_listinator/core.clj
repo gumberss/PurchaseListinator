@@ -11,7 +11,6 @@
             [clojure.java.io :as io])
   (:gen-class)
   (:import (java.nio.file Path)))
-
 (defn new-system
   [config]
   (component/system-map
@@ -47,11 +46,14 @@
    :web-server {:port (or (System/getenv "WEBSERVER_PORT") 3000)
                 :host (or (System/getenv "WEBSERVER_URL") "0.0.0.0")}
    :mongo      {:port    27017
-                :host     (or (System/getenv "MONGODB_HOST") "localhost")
+                :host    (or (System/getenv "MONGODB_HOST") "localhost")
                 :db-name "purchase-listinator"
                 :uri     (or (System/getenv "MONGODB_URI") nil)}
-   :datomic    {:store {:backend :file
-                        :path    "/usr/purchaselistinator/database"}}
+   :datomic    {:store (if (System/getenv "DATAHIKE_PATH")
+                         {:backend :file
+                          :path    (or (System/getenv "DATAHIKE_PATH") "")}
+                         {:backend :mem
+                          :id      "default"})}
    :redis      {:host     (or (System/getenv "REDIS_HOST") "localhost")
                 :port     (or (System/getenv "REDIS_PORT") 6379)
                 :username (or (System/getenv "REDIS_USERNAME") nil)

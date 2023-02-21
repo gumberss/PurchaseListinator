@@ -26,8 +26,4 @@
                  [clj-http "3.12.3"]
                  [io.replikativ/datahike "0.6.1531" :exclusions [com.cognitect/transit-clj com.cognitect/transit-java org.clojure/clojurescript com.google.guava/guava com.taoensso/encore fress org.lz4/lz4-java com.taoensso/timbre]]]
   :test-paths ["test/unit" "test/integration"]
-  :main purchase-listinator.core
-  :aot [purchase-listinator.core]
-  :profiles {:uberjar {:aot [purchase-listinator.core]}}
-  :uberjar-name "purchase-listinator.jar"
-  :repl-options {:init-ns purchase-listinator.core})
+  )
