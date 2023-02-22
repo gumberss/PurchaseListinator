@@ -5,6 +5,7 @@
   {:id           s/Uuid
    :moment       s/Num
    :event-type   (s/eq :reorder-category)
+   :user-id s/Uuid
    :shopping-id  s/Uuid
    :category-id  s/Uuid
    :new-position s/Int})
@@ -13,6 +14,7 @@
   {:id              s/Uuid
    :moment          s/Num
    :event-type      (s/eq :reorder-item)
+   :user-id s/Uuid
    :shopping-id     s/Uuid
    :item-id         s/Uuid
    :new-position    s/Int
@@ -22,6 +24,7 @@
   {:id               s/Uuid
    :moment           s/Num
    :event-type       (s/eq :change-item)
+   :user-id s/Uuid
    :shopping-id      s/Uuid
    :item-id          s/Uuid
    :price            s/Num
@@ -31,6 +34,7 @@
   {:id               s/Uuid
    :moment           s/Num
    :event-type       (s/eq :purchase-list-category-deleted)
+   :user-id s/Uuid
    :shopping-id      s/Uuid
    :category-id      s/Uuid
    :purchase-list-id s/Uuid})
@@ -39,6 +43,7 @@
   {:id               s/Uuid
    :moment           s/Num
    :event-type       (s/eq :purchase-list-category-created)
+   :user-id s/Uuid
    :shopping-id      s/Uuid
    :name             s/Str
    :category-id      s/Uuid
@@ -49,6 +54,7 @@
 (s/defschema PurchaseListItemCreated
   {:id             s/Uuid
    :event-type     (s/eq :purchase-list-item-created)
+   :user-id s/Uuid
    :moment         s/Num
    :item-id        s/Uuid
    :shopping-id    s/Uuid
@@ -60,6 +66,7 @@
 (s/defschema PurchaseListItemChanged
   {:id             s/Uuid
    :event-type     (s/eq :purchase-list-item-changed)
+   :user-id s/Uuid
    :moment         s/Num
    :shopping-id    s/Uuid
    :item-id        s/Uuid
@@ -71,6 +78,7 @@
 (s/defschema PurchaseListItemDeleted
   {:id          s/Uuid
    :event-type  (s/eq :purchase-list-item-deleted)
+   :user-id s/Uuid
    :moment      s/Num
    :shopping-id s/Uuid
    :item-id     s/Uuid

@@ -24,10 +24,12 @@
 
 (s/defn init-shopping
   [shopping-initiation :- models.internal.shopping-initiation/ShoppingInitiation
+   user-id :- s/Uuid
    {:keys [datomic mongo redis]}]
   (either/try-right
     (let [now (misc.date/numb-now)
-          {:keys [id] :as shopping} (logic.shopping/initiation->shopping shopping-initiation now)]
+          {:keys [id] :as shopping} (-> (logic.shopping/initiation->shopping shopping-initiation now)
+                                        (logic.shopping/link-with-user user-id))]
       (->> [(go (-> (logic.shopping-cart/init id)
                     (redis.shopping-cart/init-cart redis)))
             (go (-> (logic.shopping-location/initiation->shopping-location shopping-initiation (misc.general/squuid))
@@ -39,27 +41,30 @@
 
 (s/defn get-initial-data
   [{:keys [latitude longitude]} :- models.internal.shopping-initiation-data-request/ShoppingInitiationDataRequest
+   user-id :- s/Uuid
    {:keys [mongo datomic]}]
   (let [near-places (mongo.shopping-location/find-by-location latitude longitude mongo)
         first-near-shopping (and (seq near-places)
-                                 (datomic.shopping/get-by-id (-> near-places first :shopping-id) datomic))]
+                                 (datomic.shopping/get-by-id (-> near-places first :shopping-id)  user-id datomic))]
     (if first-near-shopping
       first-near-shopping
       (left {:status 404 :data "not-found"}))))
 
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
+   user-id :- s/Uuid
    {:keys [datomic redis]}]
   (let [cart (redis.shopping-cart/find-cart shopping-id redis)
-        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id datomic)
+        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id user-id datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id date datomic)
         shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)]
     (logic.shopping-cart-event/apply-cart cart shopping)))
 
 (s/defn find-existent
   [list-id :- s/Uuid
+   user-id :- s/Uuid
    {:keys [datomic]}]
-  (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id datomic)]
+  (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id user-id datomic)]
     existent
     (left (logic.errors/build 404 nil))))
 
@@ -73,8 +78,9 @@
 
 (s/defn receive-cart-event-by-list
   [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent
+   user-id :- s/Uuid
    {:keys [redis datomic]}]
-  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-list-id purchase-list-id datomic))
+  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-list-id purchase-list-id user-id datomic))
              event+shopping-id (assoc event :shopping-id shopping-id)]
          (some-> shopping-id
                  (redis.shopping-cart/find-cart redis)
@@ -86,9 +92,9 @@
   event)
 
 (s/defn receive-cart-event-by-category
-  [{:keys [category-id] :as event} :- models.internal.shopping-cart/CartEvent
+  [{:keys [category-id user-id] :as event} :- models.internal.shopping-cart/CartEvent
    {:keys [redis datomic]}]
-  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-category-id category-id datomic))
+  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-category-id category-id user-id datomic))
              event+shopping-id (assoc event :shopping-id shopping-id)]
          (some-> shopping-id
                  (redis.shopping-cart/find-cart redis)
@@ -101,9 +107,10 @@
 
 (s/defn finish
   [shopping-id :- s/Uuid
+   user-id :- s/Uuid
    {:keys [redis datomic rabbitmq]}]
   (let [{:keys [events] :as cart} (redis.shopping-cart/find-cart shopping-id redis)
-        {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id datomic)
+        {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id user-id datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id date datomic)
         shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
         shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)

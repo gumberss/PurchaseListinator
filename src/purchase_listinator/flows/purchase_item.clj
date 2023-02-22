@@ -30,7 +30,7 @@
    datomic
    rabbitmq]
   (either/try-right
-    (if-let [item (datomic.purchase-item/get-by-id item-id user-id datomic)]
+    (when-let [item (datomic.purchase-item/get-by-id item-id user-id datomic)]
       (datomic.purchase-item/delete-by-id item-id datomic)
       (publishers.purchase-list-items/item-deleted item rabbitmq))))
 
