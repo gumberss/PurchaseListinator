@@ -16,37 +16,42 @@
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   [out.purchases-lists/PurchaseList]}
   [{{:keys [datomic]} :component
-    :keys [user-id]}]
-(println user-id)
+    user-id :user-id}]
   (branch (misc.either/try-right
-            (flows.purchase-list/get-lists datomic))
+            (let [user-id (adapters.misc/string->uuid user-id)]
+              (flows.purchase-list/get-lists user-id datomic)))
           misc.http/->Error
           misc.http/->Success))
 
 (s/defn post-purchase-lists :- {:status s/Int
                                 :body   wires.purchase-list.out.purchase-list/PurchaseList}
   [{{datomic :datomic} :component
-    {:keys [name]}     :json-params}]
+    {:keys [name]}     :json-params
+    user-id :user-id}]
   (branch (misc.either/try-right
-            (flows.purchase-list/create name datomic))
+            (let [user-id (adapters.misc/string->uuid user-id)]
+              (flows.purchase-list/create name user-id datomic)))
           misc.http/->Error
           misc.http/->Success))
 
 (s/defn disable-purchase-lists :- {:status s/Int
                                    :body   {}}
   [{{:keys [datomic]} :component
-    {id :id}          :path-params}]
-  (branch (-> (adapters.misc/string->uuid id)
-              (flows.purchase-list/disable datomic))
+    {id :id}          :path-params
+    user-id :user-id}]
+  (branch (misc.either/try-right (-> (adapters.misc/string->uuid id)
+                                     (flows.purchase-list/disable (adapters.misc/string->uuid user-id) datomic)))
           misc.http/->Error
           misc.http/->Success))
 
 (s/defn edit-purchase-lists :- {:status s/Int
                                 :body   {}}
   [{{datomic :datomic} :component
-    wire               :json-params}]
-  (branch (-> (adapters.in.purchase-list/wire->internal wire)
-              (flows.purchase-list/edit datomic))
+    wire               :json-params
+    user-id            :user-id}]
+  (branch (let [user-id (adapters.misc/string->uuid user-id)]
+            (-> (adapters.in.purchase-list/wire->internal wire)
+                (flows.purchase-list/edit user-id datomic)))
           misc.http/->Error
           misc.http/->Success))
 
@@ -90,10 +95,11 @@
 
 (s/defn purchases-lists-management-data
   [{{datomic :datomic} :component
-    {id :id}           :path-params}]
+    {id :id}           :path-params
+    user-id            :user-id}]
   (branch (misc.either/try-right
             (-> (adapters.misc/string->uuid id)
-                (flows.purchase-list/management-data datomic)))
+                (flows.purchase-list/management-data (adapters.misc/string->uuid user-id) datomic)))
           misc.http/->Error
           misc.http/->Success))
 

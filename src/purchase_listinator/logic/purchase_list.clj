@@ -4,11 +4,13 @@
             [purchase-listinator.models.internal.purchase-list.purchase-list :as internal.purchase-list]))
 
 (s/defn generate-new :- internal.purchase-list/PurchaseList
-  [name :- s/Str]
+  [name :- s/Str
+   user-id :- s/Uuid]
   {:id          (misc.general/squuid)
    :enabled     true
    :in-progress false
-   :name        name})
+   :name        name
+   :user-id user-id})
 
 (s/defn changed?
   [existent :- internal.purchase-list/PurchaseList

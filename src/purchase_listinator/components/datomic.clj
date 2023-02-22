@@ -7,9 +7,11 @@
             [purchase-listinator.dbs.datomic.shopping :as datomic.shopping]
             [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]
             [purchase-listinator.dbs.datomic.shopping-category :as dbs.datomic.shopping-category]
-            [purchase-listinator.dbs.datomic.shopping-item :as dbs.datomic.shopping-item]))
+            [purchase-listinator.dbs.datomic.shopping-item :as dbs.datomic.shopping-item]
+            [purchase-listinator.dbs.datomic.user :as dbs.datomic.user]))
 
-(def schema (concat datomic.purchase-list/schema
+(def schema (concat dbs.datomic.user/schema
+                    datomic.purchase-list/schema
                     datomic.purchase-category/schema
                     datomic.purchase-item/schema
                     datomic.shopping/schema

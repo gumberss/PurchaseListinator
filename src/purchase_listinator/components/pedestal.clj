@@ -7,6 +7,7 @@
     [purchase-listinator.endpoints.http.shopping :as http.shopping]
     [io.pedestal.http.body-params :as body-params]
     [purchase-listinator.misc.pedestal :as misc.pedestal]
+    [purchase-listinator.endpoints.http.user :as endpoints.http.user]
     [camel-snake-kebab.core :as csk]))
 (defn version [_]
   {:status 200
@@ -18,6 +19,7 @@
 
 (def all-routes
   (set (concat default-routes
+               endpoints.http.user/routes
                http.purchase-list/routes
                http.shopping/routes)))
 
