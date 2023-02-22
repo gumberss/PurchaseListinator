@@ -24,23 +24,19 @@
     :db/doc         "The shopping-category color"}
    {:db/ident       :shopping-category/shopping
     :db/cardinality :db.cardinality/one
-    :db/valueType   :db.type/ref}])
+    :db/valueType   :db.type/ref}
+   {:db/ident       :shopping-category/user-id
+    :db/valueType   :db.type/uuid
+    :db/cardinality :db.cardinality/one
+    :db/doc         "user id"}])
 
 (s/defn ^:private transact
-        [connection & purchases-categories]
-        (d/transact connection purchases-categories))
+  [connection & purchases-categories]
+  (d/transact connection purchases-categories))
 
 (s/defn upsert :- models.internal.shopping-category/ShoppingCategory
-        [shopping-category :- models.internal.shopping-category/ShoppingCategory
-         {:keys [connection]}]
-        (->> (adapters.db.shopping-category/internal->db shopping-category)
-             (transact connection))
-        shopping-category)
-
-(s/defn upsert-many :- [models.internal.shopping-category/ShoppingCategory]
-        [purchase-categories :- [models.internal.shopping-category/ShoppingCategory]
-         {:keys [connection]}]
-        (->> purchase-categories
-             (mapv adapters.db.shopping-category/internal->db)
-             (apply transact connection))
-        purchase-categories)
+  [shopping-category :- models.internal.shopping-category/ShoppingCategory
+   {:keys [connection]}]
+  (->> (adapters.db.shopping-category/internal->db shopping-category)
+       (transact connection))
+  shopping-category)
