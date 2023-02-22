@@ -72,7 +72,7 @@
   (misc.http/default-branch
     (misc.either/try-right
       (-> (adapters.in.purchase-category/creation-wire->internal wire)
-          (flows.purchase-category/create user-id components)))))
+          (flows.purchase-category/create (adapters.misc/string->uuid user-id) components)))))
 
 (s/defn change-category-order
   [{{datomic :datomic}        :component
@@ -93,7 +93,8 @@
   (branch (misc.either/try-right
             (let [item-id (adapters.misc/string->uuid id)
                   new-category-id (adapters.misc/string->uuid new-category-id)
-                  new-position (adapters.misc/string->integer new-position)]
+                  new-position (adapters.misc/string->integer new-position)
+                  user-id (adapters.misc/string->uuid user-id)]
               (flows.purchase-item/change-items-order item-id new-category-id new-position user-id datomic)))
           misc.http/->Error
           misc.http/->Success))

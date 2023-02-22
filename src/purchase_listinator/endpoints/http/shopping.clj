@@ -13,10 +13,11 @@
 
 (s/defn init-shopping
   [{component :component
-    wire      :json-params}]
+    wire      :json-params
+    user-id      :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.in.shopping-initiation/wire->internal wire)
-                                  (flows.shopping/init-shopping component)))))
+                                  (flows.shopping/init-shopping  (adapters.misc/string->uuid user-id) component)))))
 (s/defn get-init-shopping-data
   [{component    :component
     query-params :query-params
@@ -44,11 +45,13 @@
 
 (s/defn receive-events
   [{component :component
-    wire      :json-params}]
+    wire      :json-params
+    user-id :user-id}]
   (misc.http/default-branch
     (misc.either/try-right
       (let [now (misc.date/numb-now)
-            cart-event (adapters.in.shopping-cart-event/wire->internal wire now)]
+            user-id (adapters.misc/string->uuid user-id)
+            cart-event (adapters.in.shopping-cart-event/wire->internal wire now user-id)]
         (flows.shopping/receive-cart-event cart-event component)))))
 
 (s/defn finish-shopping

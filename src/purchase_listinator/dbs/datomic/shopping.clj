@@ -55,7 +55,7 @@
               [?l :purchase-list/id ?l-id]
               [?s :shopping/list ?l]
               [?s :shopping/status :in-progress]
-              [?i :shopping/user-id ?u-id]]
+              [?s :shopping/user-id ?u-id]]
             (d/db connection) list-id user-id)
        ffirst
        adapter.shopping/db->internal))
@@ -71,7 +71,7 @@
               [?c :purchase-category/purchase-list ?l]
               [?s :shopping/list ?l]
               [?s :shopping/status :in-progress]
-              [?i :shopping/user-id ?u-id]]
+              [?s :shopping/user-id ?u-id]]
             (d/db connection) category-id user-id)
        ffirst
        adapter.shopping/db->internal))
@@ -84,7 +84,7 @@
               :in $ ?id ?u-id
               :where
               [?s :shopping/id ?id]
-              [?i :shopping/user-id ?u-id]]
+              [?s :shopping/user-id ?u-id]]
             (d/db connection) id user-id)
        ffirst
        adapter.shopping/db->internal))

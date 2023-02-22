@@ -4,9 +4,10 @@
             [purchase-listinator.models.internal.shopping :as models.internal.shopping]))
 
 (s/defn ->ShoppingFinishedEvent :- wires.out.shopping/ShoppingFinishedEvent
-  [shopping :- models.internal.shopping/Shopping
+  [{:keys [user-id] :as shopping} :- models.internal.shopping/Shopping
    moment :- s/Num
    event-id :- s/Uuid]
   {:event-id event-id
+   :user-id user-id
    :moment   moment
    :shopping shopping})

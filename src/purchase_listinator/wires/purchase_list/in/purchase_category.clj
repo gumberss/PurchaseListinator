@@ -6,6 +6,7 @@
    :id               s/Str
    :order-position   s/Int
    :color            s/Int
+   :user-id          s/Uuid
    :purchase-list-id s/Str})
 (s/defschema PurchaseCategory purchase-category-skeleton)
 
