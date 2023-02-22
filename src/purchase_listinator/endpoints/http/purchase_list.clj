@@ -57,10 +57,11 @@
 
 (s/defn add-purchases-lists-item
   [{{:keys [datomic rabbitmq]} :component
-    wire                       :json-params}]
+    wire                       :json-params
+    user-id                    :user-id}]
   (branch (misc.either/try-right
             (let [internal-item (adapters.in.purchase-item/wire->internal wire)]
-              (flows.purchase-item/create internal-item datomic rabbitmq)))
+              (flows.purchase-item/create internal-item (adapters.misc/string->uuid user-id) datomic rabbitmq)))
           misc.http/->Error
           misc.http/->Success))
 
@@ -87,12 +88,13 @@
 
 (s/defn change-item-order
   [{{datomic :datomic}                        :component
-    {:keys [id new-category-id new-position]} :path-params}]
+    {:keys [id new-category-id new-position]} :path-params
+    user-id                                   :user-id}]
   (branch (misc.either/try-right
             (let [item-id (adapters.misc/string->uuid id)
                   new-category-id (adapters.misc/string->uuid new-category-id)
                   new-position (adapters.misc/string->integer new-position)]
-              (flows.purchase-item/change-items-order item-id new-category-id new-position datomic)))
+              (flows.purchase-item/change-items-order item-id new-category-id new-position user-id datomic)))
           misc.http/->Error
           misc.http/->Success))
 
@@ -108,25 +110,29 @@
 
 (s/defn change-item-quantity
   [{{:keys [datomic rabbitmq]} :component
-    {:keys [id new-quantity]}  :path-params}]
+    {:keys [id new-quantity]}  :path-params
+    user-id                    :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (let [new-quantity (adapters.misc/string->integer new-quantity)
-                                    item-id (adapters.misc/string->uuid id)]
-                                (flows.purchase-item/change-item-quantity item-id new-quantity datomic rabbitmq)))))
+                                    item-id (adapters.misc/string->uuid id)
+                                    user-id (adapters.misc/string->uuid user-id)]
+                                (flows.purchase-item/change-item-quantity item-id new-quantity user-id datomic rabbitmq)))))
 
 (s/defn delete-purchases-lists-item
   [{{:keys [datomic rabbitmq]} :component
-    {:keys [id]}               :path-params}]
+    {:keys [id]}               :path-params
+    user-id                    :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid id)
-                                  (flows.purchase-item/delete datomic rabbitmq)))))
+                                  (flows.purchase-item/delete (adapters.misc/string->uuid user-id) datomic rabbitmq)))))
 
 (s/defn edit-item-name
   [{{:keys [datomic rabbitmq]} :component
-    {:keys [id new-name]}      :path-params}]
+    {:keys [id new-name]}      :path-params
+    user-id                    :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid id)
-                                  (flows.purchase-item/edit-name new-name datomic rabbitmq)))))
+                                  (flows.purchase-item/edit-name new-name (adapters.misc/string->uuid user-id) datomic rabbitmq)))))
 
 (s/defn delete-purchases-lists-category
   [{{:keys [datomic rabbitmq]} :component
