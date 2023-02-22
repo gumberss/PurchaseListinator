@@ -33,17 +33,18 @@
    :enter (partial assoc-component component)})
 
 (defn assoc-identifier [{{:keys [headers]} :request :as context}]
-  (update context :request assoc :user-id (-> (get headers "authorization")
-                                              (str/replace "Bearer " ""))))
-(defn inject-user-identifier []
+  (update context :request assoc :user-id (some-> (get headers "authorization")
+                                                  (str/replace "Bearer " ""))))
+(def inject-user-identifier
   {:name  :inject-user-identifier
    :enter assoc-identifier})
 
-(defn validate-user [{:keys [user-id] :as context}]
+(defn validate-user [{{:keys [user-id]} :request :as context}]
   (if user-id
     context
-    (assoc context :response {:status 403})))
-(defn validate-user-identifier []
+    (assoc context :response {:status 403
+                              :headers {}})))
+(def validate-user-identifier
   {:name  :validate-user-identifier
    :enter validate-user})
 

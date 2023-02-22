@@ -16,8 +16,8 @@
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   [out.purchases-lists/PurchaseList]}
   [{{:keys [datomic]} :component
-    headers            :headers}]
-
+    :keys [user-id]}]
+(println user-id)
   (branch (misc.either/try-right
             (flows.purchase-list/get-lists datomic))
           misc.http/->Error
