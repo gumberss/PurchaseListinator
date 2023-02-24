@@ -25,7 +25,11 @@
     :db/doc         "The purchase-item order position"}
    {:db/ident       :purchase-item/category
     :db/cardinality :db.cardinality/one
-    :db/valueType   :db.type/ref}])
+    :db/valueType   :db.type/ref}
+   {:db/ident       :purchase-item/user-id
+    :db/valueType   :db.type/uuid
+    :db/cardinality :db.cardinality/one
+    :db/doc         "user id"}])
 
 (s/defn ^:private retract
   [connection & purchases-items-ids]
@@ -33,50 +37,58 @@
 
 (s/defn items-count
   [purchase-category-id :- s/Uuid
+   user-id :- s/Uuid
    {:keys [connection]}]
   (-> (d/q '[:find (count ?i)
-             :in $ ?purchase-category-id
+             :in $ ?purchase-category-id ?u-id
              :where
              [?c :purchase-category/id ?purchase-category-id]
-             [?i :purchase-item/category ?c]]
-           (d/db connection) purchase-category-id)
+             [?i :purchase-item/category ?c]
+             [?i :purchase-item/user-id ?u-id]]
+           (d/db connection) purchase-category-id user-id)
       ffirst))
 
 (s/defn get-by-name :- models.internal.purchase-item/PurchaseItem
   [name :- s/Str
    category-id :- s/Uuid
+   user-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?i [*])
-              :in $ ?c-id ?name
+              :in $ ?c-id ?name ?u-id
               :where
               [?c :purchase-category/id ?c-id]
               [?c :purchase-category/purchase-list ?l]
               [?all-c :purchase-category/purchase-list ?l]
               [?i :purchase-item/category ?all-c]
-              [?i :purchase-item/name ?name]]
-            (d/db connection) category-id name)
+              [?i :purchase-item/name ?name]
+              [?i :purchase-item/user-id ?u-id]]
+            (d/db connection) category-id name user-id)
        ffirst
        adapters.db.purchase-item/db->internal))
 
 (s/defn get-by-id :- models.internal.purchase-item/PurchaseItem
   [item-id :- s/Uuid
+   user-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?i [* {:purchase-item/category [:purchase-category/id]}])
-              :in $ ?i-id ?name
+              :in $ ?i-id ?name ?u-id
               :where
-              [?i :purchase-item/id ?i-id]]
-            (d/db connection) item-id name)
+              [?i :purchase-item/id ?i-id]
+              [?i :purchase-item/user-id ?u-id]]
+            (d/db connection) item-id name user-id)
        ffirst
        adapters.db.purchase-item/db->internal))
 
 (s/defn get-by-ids :- [models.internal.purchase-item/PurchaseItem]
   [item-ids :- [s/Uuid]
+   user-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?i [* {:purchase-item/category [:purchase-category/id]}])
               :in $ [?i-id ...]
               :where
-              [?i :purchase-item/id ?i-id]]
-            (d/db connection) item-ids)
+              [?i :purchase-item/id ?i-id]
+              [?i :purchase-item/user-id ?u-id]]
+            (d/db connection) item-ids user-id)
        flatten
        (map adapters.db.purchase-item/db->internal)))
 
@@ -84,30 +96,34 @@
   [category-id :- s/Uuid
    start-range :- s/Num
    end-range :- s/Num
+   user-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?i [* {:purchase-item/category [:purchase-category/id]}]) ...]
-              :in $ ?c-id ?s-range ?e-range
+              :in $ ?c-id ?s-range ?e-range ?u-id
               :where
               [?c :purchase-category/id ?c-id]
               [?i :purchase-item/category ?c]
+              [?i :purchase-item/user-id ?u-id]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]
               [(<= ?o ?e-range)]]
-            (d/db connection) category-id start-range end-range)
+            (d/db connection) category-id start-range end-range user-id)
        (map adapters.db.purchase-item/db->internal)))
 
 (s/defn get-by-position-start :- models.internal.purchase-item/PurchaseItems
   [category-id :- s/Uuid
    start-range :- s/Num
+   user-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?i [* {:purchase-item/category [:purchase-category/id]}]) ...]
-              :in $ ?c-id ?s-range
+              :in $ ?c-id ?s-range ?u-id
               :where
               [?c :purchase-category/id ?c-id]
               [?i :purchase-item/category ?c]
+              [?i :purchase-item/user-id ?u-id]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]]
-            (d/db connection) category-id start-range)
+            (d/db connection) category-id start-range user-id)
        (map adapters.db.purchase-item/db->internal)))
 
 (s/defn delete-by-id :- s/Uuid

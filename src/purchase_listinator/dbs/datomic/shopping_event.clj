@@ -52,7 +52,11 @@
     :db/cardinality :db.cardinality/one}
    {:db/ident       :shopping-event/order-position
     :db/valueType   :db.type/long
-    :db/cardinality :db.cardinality/one}])
+    :db/cardinality :db.cardinality/one}
+   {:db/ident       :shopping-event/user-id
+    :db/valueType   :db.type/uuid
+    :db/cardinality :db.cardinality/one
+    :db/doc         "user id"}])
 
 (s/defn upsert
   [cart-events :- [models.internal.shopping-cart/CartEvent]

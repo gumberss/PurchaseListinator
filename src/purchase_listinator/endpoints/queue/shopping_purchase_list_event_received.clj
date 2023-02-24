@@ -9,17 +9,17 @@
   [_channel
    _metadata
    components
-   event :- wires.in.purchase-category-events/PurchaseCategoryDeletedEvent]
+   {:keys [user-id] :as event} :- wires.in.purchase-category-events/PurchaseCategoryDeletedEvent]
   (-> (adapters.in.shopping-purchase-list-events/category-deleted-event->internal event)
-      (flows.shopping/receive-cart-event-by-list components)))
+      (flows.shopping/receive-cart-event-by-list user-id components)))
 
 (s/defn purchase-list-category-created-event-received
   [_channel
    _metadata
    components
-   event :- wires.in.purchase-category-events/PurchaseCategoryCreatedEvent]
+   {:keys [user-id] :as event} :- wires.in.purchase-category-events/PurchaseCategoryCreatedEvent]
   (-> (adapters.in.shopping-purchase-list-events/category-created-event->internal event)
-      (flows.shopping/receive-cart-event-by-list components)))
+      (flows.shopping/receive-cart-event-by-list user-id components)))
 
 (s/defn purchase-list-item-created-event-received
   [_channel

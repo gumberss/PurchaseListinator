@@ -2,14 +2,16 @@
   (:require [schema.core :as s]))
 
 (def purchase-category-deleted-event-skeleton
-  {:event-id               s/Uuid
+  {:event-id         s/Uuid
    :category-id      s/Uuid
    :purchase-list-id s/Uuid
+   :user-id          s/Uuid
    :moment           s/Num})
 (s/defschema PurchaseCategoryDeletedEvent purchase-category-deleted-event-skeleton)
 
 (def purchase-category-created-event-skeleton
-  {:event-id               s/Uuid
+  {:event-id         s/Uuid
+   :user-id          s/Uuid
    :name             s/Str
    :category-id      s/Uuid
    :order-position   s/Int

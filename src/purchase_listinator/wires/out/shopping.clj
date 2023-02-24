@@ -4,5 +4,6 @@
 
 (s/defschema ShoppingFinishedEvent
   {:event-id s/Uuid
+   :user-id s/Uuid
    :moment s/Num
    :shopping models.internal.shopping/Shopping})

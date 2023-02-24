@@ -13,6 +13,7 @@ services:
       - mongodb
       - rabbitmq
     environment:
+      - DATAHIKE_PATH=/usr/purchaselistinator/database
       - REDIS_HOST=redis
       - MONGODB_HOST=mongodb
       - RABBITMQ_HOST=rabbitmq

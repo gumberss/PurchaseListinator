@@ -31,7 +31,11 @@
     :db/valueType   :db.type/float}
    {:db/ident       :shopping-item/quantity-in-cart
     :db/cardinality :db.cardinality/one
-    :db/valueType   :db.type/long}])
+    :db/valueType   :db.type/long}
+   {:db/ident       :shopping-item/user-id
+    :db/valueType   :db.type/uuid
+    :db/cardinality :db.cardinality/one
+    :db/doc         "user id"}])
 
 (s/defn upsert :- models.internal.shopping-item/ShoppingItem
   [shopping-item :- models.internal.shopping-item/ShoppingItem
@@ -39,12 +43,4 @@
   (->> (adapters.db.shopping-item/internal->db shopping-item)
        (misc.datomic/transact connection))
   shopping-item)
-
-(s/defn upsert-many :- [models.internal.shopping-item/ShoppingItem]
-  [shopping-items :- [models.internal.shopping-item/ShoppingItem]
-   {:keys [connection]}]
-  (->> shopping-items
-       (map adapters.db.shopping-item/internal->db)
-       (apply misc.datomic/transact connection))
-  shopping-items)
 

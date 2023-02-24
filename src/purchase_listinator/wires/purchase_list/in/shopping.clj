@@ -17,4 +17,5 @@
 (misc.schema/loose-schema ShoppingFinishedEvent
   {:event-id s/Uuid
    :moment   s/Num
+   :user-id  s/Uuid
    :shopping Shopping})

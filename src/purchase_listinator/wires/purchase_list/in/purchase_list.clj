@@ -5,7 +5,8 @@
   {:name        s/Str
    :id          s/Str
    :enabled     s/Bool
-   :in-progress s/Bool})
+   :in-progress s/Bool
+   :user-id          s/Uuid})
 
 (s/defschema PurchaseList purchase-list-skeleton)
 

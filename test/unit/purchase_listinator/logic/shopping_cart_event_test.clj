@@ -9,10 +9,12 @@
 (def category-id (random-uuid))
 (def category2-id (random-uuid))
 (def item-id (random-uuid))
+(def user-id (random-uuid))
 
 (def item1
   {:id               item-id
    :name             "item"
+   :user-id          user-id
    :quantity         15
    :price            0
    :quantity-in-cart 0
@@ -22,6 +24,7 @@
 (def category1
   {:name             "Category 1"
    :id               category-id
+   :user-id          user-id
    :order-position   1
    :color            123
    :purchase-list-id purchase-list-id
@@ -35,11 +38,13 @@
 
 (def shopping-list
   {:purchase-list-id purchase-list-id
+   :user-id          user-id
    :shopping-id      shopping-id
    :categories       [category1 category2]})
 
 (def change-item-event
   {:id               (random-uuid)
+   :user-id          user-id
    :moment           123
    :event-type       :change-item
    :shopping-id      shopping-id
@@ -49,6 +54,7 @@
 
 (def change-item-removing-event
   {:id               (random-uuid)
+   :user-id          user-id
    :moment           123
    :event-type       :change-item
    :shopping-id      shopping-id
@@ -83,6 +89,7 @@
    :moment           123
    :event-type       :purchase-list-category-created
    :name             "New category"
+   :user-id          user-id
    :shopping-id      shopping-id
    :category-id      new-category-id
    :order-position   50
@@ -95,6 +102,7 @@
       (is (= 3 (count categories)))
       (is (= {:name             "New category"
               :id               new-category-id
+              :user-id          user-id
               :order-position   50
               :color            321
               :purchase-list-id purchase-list-id
@@ -104,6 +112,7 @@
   {:id               (random-uuid)
    :moment           213
    :event-type       :purchase-list-category-deleted
+   :user-id          user-id
    :shopping-id      shopping-id
    :category-id      category-id
    :purchase-list-id purchase-list-id})

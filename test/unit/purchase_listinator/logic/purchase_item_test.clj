@@ -4,10 +4,12 @@
             [purchase-listinator.logic.purchase-item :as logic.purchase-item]))
 
 (def category-id (random-uuid))
+(def user-id (random-uuid))
 
 (def first-item
   {:id             (random-uuid)
    :name           "Item"
+   :user-id user-id
    :quantity       1
    :order-position 0
    :category-id    category-id})

@@ -18,6 +18,11 @@
    {:keys [quantity-in-cart]} :- models.internal.purchase-list.shopping/ShoppingItem]
   (assoc purchase-item :quantity (- quantity quantity-in-cart)))
 
+(s/defn link-with-user :- models.internal.purchase-item/PurchaseItem
+  [purchase-item :- models.internal.purchase-item/PurchaseItem
+   user-id :- s/Uuid]
+  (assoc purchase-item :user-id user-id))
+
 (s/defn find-by-shopping-item :- models.internal.purchase-item/PurchaseItem
   [purchase-items :- [models.internal.purchase-item/PurchaseItem]
    {:keys [id]} :- models.internal.purchase-list.shopping/ShoppingItem]

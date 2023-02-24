@@ -19,6 +19,11 @@
    purchase-list :- purchase-list-management-data/ManagementData]
   (assoc purchase-list :shopping-id shopping-id))
 
+(s/defn link-with-user :- models.internal.shopping/Shopping
+  [shopping :- models.internal.shopping/Shopping
+   user-id :- s/Uuid]
+   (assoc shopping :user-id user-id))
+
 (s/defn ^:private sort-items
   [items :- [models.internal.shopping-list/ShoppingItem]]
   (sort-by :order-position items))
