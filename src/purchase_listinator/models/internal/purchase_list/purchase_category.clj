@@ -12,4 +12,5 @@
 
 (s/defschema PurchaseCategoryCreation
   (-> (dissoc purchase-category-skeleton :order-position :user-id)
-      (assoc (s/optional-key :user-id) s/Uuid)))
+      (assoc (s/optional-key :user-id) s/Uuid
+             (s/optional-key :order-position) s/Int)))

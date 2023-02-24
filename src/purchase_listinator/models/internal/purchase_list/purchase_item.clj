@@ -4,6 +4,7 @@
 (def purchase-item-skeleton
   {:id             s/Uuid
    :name           s/Str
+   :user-id s/Uuid
    :quantity       s/Int
    :order-position s/Int
    :category-id    s/Uuid})

@@ -6,7 +6,6 @@
    :event-type   s/Str
    :shopping-id  s/Str
    :category-id  s/Str
-   :user-id      s/Uuid
    :new-position s/Int})
 
 (s/defschema ReorderItemEvent
@@ -14,7 +13,6 @@
    :event-type      s/Str
    :shopping-id     s/Str
    :item-id         s/Str
-   :user-id         s/Uuid
    :new-position    s/Int
    :new-category-id s/Str})
 
@@ -23,6 +21,5 @@
    :event-type       s/Str
    :shopping-id      s/Str
    :item-id          s/Str
-   :user-id          s/Uuid
    :price            s/Num
    :quantity-changed s/Int})

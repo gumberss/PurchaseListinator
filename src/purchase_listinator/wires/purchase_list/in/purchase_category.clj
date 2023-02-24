@@ -11,4 +11,4 @@
 (s/defschema PurchaseCategory purchase-category-skeleton)
 
 (s/defschema PurchaseCategoryCreation
-  (dissoc purchase-category-skeleton :order-position))
+  (dissoc purchase-category-skeleton :order-position :user-id))

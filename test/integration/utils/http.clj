@@ -20,25 +20,29 @@
   [pedestal]
   (utils.integration-test/get-component pedestal [:service ::http/service-fn]))
 
-(defn parsee
+(defn parse
   [body cn]
   (misc.content-type-parser/transform-content-to body cn))
 
+(def default-token (random-uuid))
+
 (defn request!
-  ([{:keys [method endpoint params body headers] :or {headers {"Content-Type" "application/json"}}}]
+  ([{:keys [method endpoint params body headers token] :or {headers {"Content-Type" "application/json"}}}]
    (flow (str "Requesting -" method " - " endpoint)
-     [service (state-flow.api/get-state :pedestal)]
-     (let [service (service-fn service)
-           {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params)
-                                                         :headers headers
-                                                         :body (parsee body "application/json"))
-           outcome (assoc json-outcome :body (parsee body "application/edn"))]
-       (flow/return outcome)))))
+         [service (state-flow.api/get-state :pedestal)]
+         (let [service (service-fn service)
+               token (or token default-token)
+               headers (assoc headers "authorization" (str "Bearer " token))
+               {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params)
+                                                             :headers headers
+                                                             :body (parse body "application/json"))
+               outcome (assoc json-outcome :body (parse body "application/edn"))]
+           (flow/return outcome)))))
 
-(integration-test first-test
-  (flow "first test"
-    (let [{:keys [status body] :as a} (request! {:method   :get
-                                                 :endpoint :api-version
-                                                 :params   {:id (str (random-uuid))}})]
+(integration-test check-version-test
+                  (flow "first test"
+                        (let [response (request! {:method   :get
+                                                  :endpoint :api-version
+                                                  :params   {:id (str (random-uuid))}})]
 
-      (match? {:status 200} a))))
+                          (match? {:status 200} response))))
