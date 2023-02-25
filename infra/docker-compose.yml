@@ -3,7 +3,7 @@ services:
   purchase_listinator_server:
     container_name: purchase_listinator_server
     restart: always
-    image: gumberss/purchase-listinator:v1
+    image: gumberss/purchase-listinator:v2
     ports:
       - "3000:3000"
     volumes:
