@@ -75,4 +75,4 @@
   [system]
   (component/stop system))
 
-(set-init (constantly (new-system system-config)))
+#_(set-init (constantly (new-system system-config)))
