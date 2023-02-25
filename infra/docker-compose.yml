@@ -17,6 +17,7 @@ services:
       - REDIS_HOST=redis
       - MONGODB_HOST=mongodb
       - RABBITMQ_HOST=rabbitmq
+      - ENVIRONMENT_TYPE=prod
     networks:
       - purchaseListinator
   redis:
