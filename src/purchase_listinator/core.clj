@@ -7,10 +7,8 @@
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.redis :as redis]
             [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]
-            [clojure.java.io :as io])
-  (:gen-class)
-  (:import (java.nio.file Path)))
+            [purchase-listinator.components.rabbitmq :as rabbitmq])
+  (:gen-class))
 (defn new-system
   [config]
   (component/system-map
@@ -42,7 +40,7 @@
 
 ; Put this configs in the .env file
 (def system-config
-  {:env        :prod
+  {:env        (keyword (or (System/getenv "ENVIRONMENT_TYPE") "dev"))
    :web-server {:port (or (System/getenv "WEBSERVER_PORT") 3000)
                 :host (or (System/getenv "WEBSERVER_URL") "0.0.0.0")}
    :mongo      {:port    27017
@@ -75,4 +73,6 @@
   [system]
   (component/stop system))
 
-#_(set-init (constantly (new-system system-config)))
+(when (= (:env system-config) :dev)
+  (set-init (constantly (new-system system-config))))
+

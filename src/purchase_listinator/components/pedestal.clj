@@ -13,7 +13,6 @@
   {:status 200
    :body   {:version :v1}})
 
-
 (def default-routes
   #{["/api/version" :get [version] :route-name :api-version]})
 
