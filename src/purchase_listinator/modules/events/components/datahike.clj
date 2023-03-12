@@ -11,8 +11,6 @@
   component/Lifecycle
 
   (start [component]
-    (println config-key)
-
     (try (d/create-database (-> config config-key))
          (catch Exception e
            (println e)))
