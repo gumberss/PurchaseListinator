@@ -79,7 +79,7 @@
 (s/defn receive-cart-event-by-list
   [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent
    user-id :- s/Uuid
-   {:keys [redis datomic]}]
+   {:keys [redis datomic] :as c}]
   (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-list-id purchase-list-id user-id datomic))
              event+shopping-id (assoc event :shopping-id shopping-id)]
          (some-> shopping-id
