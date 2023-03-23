@@ -8,7 +8,7 @@
 (def webapp-dependencies
   [:events/rabbitmq :events/main-db])
 
-(def system-map
+(def components
   {:events/main-db  (component/using (components.datahike/new-datahike :events/main-db) [:config])
    :events/rabbitmq (component/using (rabbitmq/new-rabbit-mq :events/rabbitmq) rabbitmq-dependencies)})
 
@@ -23,3 +23,9 @@
                      :username "guest"
                      :password "guest"
                      :vhost    "/"}})
+(def config
+  {:rabbitmq-dependencies rabbitmq-dependencies
+   :webapp-dependencies webapp-dependencies
+   :system-components components
+   :system-config system-config
+   :system-config-test system-config})
