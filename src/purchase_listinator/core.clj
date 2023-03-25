@@ -15,7 +15,7 @@
                      modules.events.core/config])
 (def system-config
   (reduce conj
-          {:env (keyword (or (System/getenv "ENVIRONMENT_TYPE") "dev"))
+          {:env        (keyword (or (System/getenv "ENVIRONMENT_TYPE") "dev"))
            :web-server {:port (or (System/getenv "WEBSERVER_PORT") 3000)
                         :host (or (System/getenv "WEBSERVER_URL") "0.0.0.0")}}
           (map :system-config modules-config)))
@@ -46,20 +46,6 @@
                                      (concat (general-components config)
                                              (mapcat :system-components modules-config)))]
     (system-map)))
-
-(defn new-system-test
-  [config]
-  (component/system-map
-    :config config
-    :service-map {:env         (:env config)
-                  ::http/type  :jetty
-                  ::http/port  (get-in config [:web-server :port])
-                  ::http/host  (get-in config [:web-server :host])
-                  ::http/join? false}
-    :datomic (component/using (datomic/new-datomic) [:config :service-map])
-    :redis (component/using (redis/new-redis-mock) [:config])
-    :pedestal (component/using (pedestal/new-pedestal) [:service-map :datomic :redis :rabbitmq])
-    :rabbitmq (component/using (rabbitmq/new-rabbit-mq-fake) [])))
 
 (defn -main
   "The entry-point for 'lein run'"
