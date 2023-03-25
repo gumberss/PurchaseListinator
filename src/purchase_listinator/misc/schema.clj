@@ -1,8 +1,5 @@
 (ns purchase-listinator.misc.schema
-  (:require [schema.utils :as utils]
-            [schema.coerce :as coerce]
-            [schema.core :as s])
-  (:import (clojure.lang PersistentHashMap PersistentArrayMap)))
+  (:require [schema.core :as s]))
 
 (defmacro loose-schema
   [name schema]

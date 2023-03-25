@@ -4,21 +4,21 @@
             [purchase-listinator.modules.events.components.datahike :as components.datahike]))
 
 (def rabbitmq-dependencies
-  [:config :events/main-db])
+  [:config :shopping-events/main-db])
 (def webapp-dependencies
-  [:events/rabbitmq :events/main-db])
+  [:shopping-events/rabbitmq :shopping-events/main-db])
 
 (def components
-  {:events/main-db  (component/using (components.datahike/new-datahike :events/main-db) [:config])
-   :events/rabbitmq (component/using (rabbitmq/new-rabbit-mq :events/rabbitmq) rabbitmq-dependencies)})
+  {:shopping-events/main-db  (component/using (components.datahike/new-datahike :shopping-events/main-db) [:config])
+   :shopping-events/rabbitmq (component/using (rabbitmq/new-rabbit-mq :shopping-events/rabbitmq) rabbitmq-dependencies)})
 
 (def system-config
-  {:events/main-db  {:store (if (System/getenv "DATAHIKE_PATH")
+  {:shopping-events/main-db  {:store (if (System/getenv "DATAHIKE_PATH")
                               {:backend :file
                                :path    (or (System/getenv "DATAHIKE_PATH") "")}
                               {:backend :mem
-                               :id      "events/database"})}
-   :events/rabbitmq {:host     (or (System/getenv "RABBITMQ_HOST") "localhost")
+                               :id      "shopping-events/database"})}
+   :shopping-events/rabbitmq {:host     (or (System/getenv "RABBITMQ_HOST") "localhost")
                      :port     5672
                      :username "guest"
                      :password "guest"

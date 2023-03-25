@@ -45,7 +45,7 @@
    {:keys [mongo datomic]}]
   (let [near-places (mongo.shopping-location/find-by-location latitude longitude mongo)
         first-near-shopping (and (seq near-places)
-                                 (datomic.shopping/get-by-id (-> near-places first :shopping-id)  user-id datomic))]
+                                 (datomic.shopping/get-by-id (-> near-places first :shopping-id) user-id datomic))]
     (if first-near-shopping
       first-near-shopping
       (left {:status 404 :data "not-found"}))))
@@ -122,5 +122,5 @@
     (dbs.datomic.shopping-events/upsert events datomic)
     (datomic.shopping/upsert shopping datomic)
     (dbs.redis.shopping-cart/delete id redis)
-    (publishers.shopping/shopping-finished shopping rabbitmq)))
+    (publishers.shopping/shopping-finished shopping events rabbitmq)))
 

@@ -1,8 +1,9 @@
 (ns purchase-listinator.modules.events.components.datahike
   (:require [com.stuartsierra.component :as component]
+            [purchase-listinator.modules.events.diplomat.db.shopping-events :as diplomat.db.shopping-events]
             [datahike.api :as d]))
 
-(def schema (concat []))
+(def schema (concat diplomat.db.shopping-events/schema))
 
 (defn create-schema [conn]
   (d/transact conn schema))
