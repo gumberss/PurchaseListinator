@@ -37,7 +37,7 @@
    :redis    (component/using (redis/new-redis-mock) [:config])
    :rabbitmq (component/using (rabbitmq/new-rabbit-mq-fake) [])
    ;todo: fake mongo
-   :mongo    (component/using (mongo/new-mongo) [:config])})
+   :mongo    (component/using (mongo/new-mongo-fake) [:config])})
 
 (defn system-config-test
   []

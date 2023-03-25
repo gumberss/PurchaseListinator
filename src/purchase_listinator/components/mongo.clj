@@ -36,3 +36,16 @@
 (defn new-mongo
   []
   (map->Mongo {}))
+
+
+(defrecord MongoFake [config]
+  component/Lifecycle
+  (start [this]
+    ;todo
+      this)
+  (stop [this]
+    (dissoc this :connection :db)))
+
+(defn new-mongo-fake
+  []
+  (map->MongoFake {}))
