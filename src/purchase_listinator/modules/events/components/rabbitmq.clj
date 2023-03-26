@@ -6,18 +6,16 @@
             [langohr.exchange :as le]
             [langohr.basic :as lb]
             [com.stuartsierra.component :as component]
-            [purchase-listinator.endpoints.queue.shopping-purchase-list-event-received :as endpoints.queue.shopping-purchase-list-event-received]
-            [purchase-listinator.endpoints.queue.purchase-list-shopping-event-received :as endpoints.queue.purchase-list-shopping-event-received]
             [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
             [schema.core :as s]
             [clojure.data.json :as json]
             [camel-snake-kebab.core :as csk]
-            [schema.coerce :as coerce])
+            [schema.coerce :as coerce]
+            [purchase-listinator.modules.events.diplomat.consumers.shopping-events :as diplomat.consumers.shopping-events])
   (:import (clojure.lang PersistentQueue)))
 
 (def subscribers (concat
-                   endpoints.queue.shopping-purchase-list-event-received/subscribers
-                   endpoints.queue.purchase-list-shopping-event-received/subscribers))
+                   diplomat.consumers.shopping-events/subscribers))
 
 (s/defn ->rabbitmq :- s/Str
   [key :- s/Keyword]
@@ -111,7 +109,9 @@
 (defrecord RabbitMqFake [config]
   component/Lifecycle
   (start [this]
-    (assoc this :publish publish-mock))
+    (assoc this
+      :subscribers subscribers
+      :publish publish-mock))
   (stop [this]
     (dissoc this :publish)))
 

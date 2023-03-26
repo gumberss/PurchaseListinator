@@ -1,10 +1,13 @@
 (ns purchase-listinator.modules.events.schemas.wires.out.db.shopping-events
-  (:require [schema.core :as s]))
+  (:require
+    [purchase-listinator.misc.general :as misc.general]
+    [schema.core :as s]))
 
 (s/defschema ShoppingEvent
-             {:id          s/Uuid
-              :moment      s/Num
-              :event-type  s/Keyword
-              :user-id     s/Uuid
-              :shopping-id s/Uuid
-              :properties  s/Str})
+  (-> {:id          s/Uuid
+       :moment      s/Num
+       :event-type  s/Keyword
+       :user-id     s/Uuid
+       :shopping-id s/Uuid
+       :properties  s/Str}
+      (misc.general/namespace-keys "shopping-event")))
