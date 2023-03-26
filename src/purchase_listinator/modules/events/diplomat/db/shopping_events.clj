@@ -34,11 +34,6 @@
        (apply misc.datomic/transact connection))
   events)
 
-(s/defn get-by-user-id
-  [user-id
-   datahike])
-
-
 (s/defn get-by-user-id :- [schemas.models.shopping-event/ShoppingEvent]
   [user-id :- s/Uuid
    {:keys [connection]}]
