@@ -1,5 +1,6 @@
 (ns purchase-listinator.components.pedestal
   (:require
+    [clojure.set :as set]
     [clojure.string :as str]
     [com.stuartsierra.component :as component]
     [io.pedestal.http :as http]
@@ -63,7 +64,7 @@
     (if service
       this
       (cond-> service-map
-              true (assoc ::http/routes (add-interceptors (set (concat default-routes routes)) this))
+              true (assoc ::http/routes (add-interceptors (set/union default-routes routes) this))
               true http/create-server
               (not (test? service-map)) http/start
               true ((partial assoc this :service)))))

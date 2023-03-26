@@ -61,5 +61,5 @@
   [system]
   (component/stop system))
 (when (= (:env system-config) :dev)
-  (set-init (constantly (component/start (new-system system-config)))))
+  (set-init (fn [_] (new-system system-config))))
 
