@@ -13,7 +13,7 @@
 
 (defn url-for
   ([url params]
-   (let [url-for (route/url-for-routes (route/expand-routes components.pedestal/all-routes))]
+   (let [url-for (route/url-for-routes (route/expand-routes purchase-listinator.core/routes))]
      (url-for url :params params))))
 
 (defn service-fn

@@ -3,7 +3,10 @@
             [purchase-listinator.components.datomic :as datomic]
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.rabbitmq :as rabbitmq]
-            [purchase-listinator.components.redis :as redis]))
+            [purchase-listinator.components.redis :as redis]
+            [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
+            [purchase-listinator.endpoints.http.shopping :as http.shopping]
+            [purchase-listinator.endpoints.http.user :as endpoints.http.user]))
 
 (def purchase-listinator-components
   {:redis    (component/using (redis/new-Redis) [:config])
@@ -46,19 +49,22 @@
                 :host "192.168.1.104"}
    :datomic    {:store {:backend :mem
                         :id      (str (random-uuid))}}
-   :mongo    {:port    27017
-              :host    (or (System/getenv "MONGODB_HOST") "localhost")
-              :db-name "purchase-listinator-test"
-              :uri     (or (System/getenv "MONGODB_URI") nil)}})
+   :mongo      {:port    27017
+                :host    (or (System/getenv "MONGODB_HOST") "localhost")
+                :db-name "purchase-listinator-test"
+                :uri     (or (System/getenv "MONGODB_URI") nil)}})
 
 
 (def module-config
-  {:rabbitmq-dependencies  [:config :redis :datomic :mongo]
-   :webapp-dependencies    [:service-map :mongo :redis :datomic :rabbitmq]
-   :system-config          purchase-listinator-config
-   :system-components      purchase-listinator-components})
+  {:rabbitmq-dependencies [:config :redis :datomic :mongo]
+   :webapp-dependencies   [:service-map :mongo :redis :datomic :rabbitmq]
+   :routes                (set (concat endpoints.http.user/routes
+                                       http.purchase-list/routes
+                                       http.shopping/routes))
+   :system-config         purchase-listinator-config
+   :system-components     purchase-listinator-components})
 
 (defn module-config-test
   []
-  {:system-config    (system-config-test)
+  {:system-config     (system-config-test)
    :system-components system-components-test})

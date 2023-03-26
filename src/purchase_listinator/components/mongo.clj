@@ -1,8 +1,9 @@
 (ns purchase-listinator.components.mongo
   (:require [monger.core :as mg]
-            [com.stuartsierra.component :as component]))
+            [com.stuartsierra.component :as component]
+            [purchase-listinator.dbs.mongo.shopping-location :as dbs.mongo.shopping-location]))
 
-(def indexes (vector purchase-listinator.dbs.mongo.shopping-location/indexes))
+(def indexes (vector dbs.mongo.shopping-location/indexes))
 
 (defn connect-by-uri
   [uri]
