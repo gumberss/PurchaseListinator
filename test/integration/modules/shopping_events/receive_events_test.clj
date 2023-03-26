@@ -18,8 +18,8 @@
 
 (integration-test receive-shopping-events-test
   (flow "Receive shopping events"
-    (events/publish-event! :purchase-listinator/shopping.finished
-                           events))
+    (events/publish-event! :purchase-listinator/shopping.finished events))
   (flow "Validating insertion"
     [main-db (state-flow.api/get-state :shopping-events/main-db)]
-    (match? [event] (diplomat.db.shopping-events/get-by-user-id user-id main-db))))
+    (match? [event]
+            (diplomat.db.shopping-events/get-by-user-id user-id main-db))))
