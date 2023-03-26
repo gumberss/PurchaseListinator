@@ -11,4 +11,5 @@
 
 (s/defn db->internal :- models.shopping-event/ShoppingEvent
   [{:keys [properties] :as event} :- wires.out.db.shopping-events/ShoppingEvent]
-  (assoc event :properties (clojure.edn/read-string properties)))
+  (-> (assoc event :properties (or (clojure.edn/read-string properties) {}))
+      (misc.general/unnamespace-keys)))

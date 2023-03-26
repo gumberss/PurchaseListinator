@@ -1,5 +1,6 @@
 (ns purchase-listinator.modules.events.diplomat.db.shopping-events
   (:require
+    [datahike.api :as d]
     [purchase-listinator.misc.datomic :as misc.datomic]
     [schema.core :as s]
     [purchase-listinator.modules.events.schemas.models.shopping-event :as schemas.models.shopping-event]
@@ -32,3 +33,19 @@
   (->> (map adapters.db.shopping-events/internal->db events)
        (apply misc.datomic/transact connection))
   events)
+
+(s/defn get-by-user-id
+  [user-id
+   datahike])
+
+
+(s/defn get-by-user-id :- [schemas.models.shopping-event/ShoppingEvent]
+  [user-id :- s/Uuid
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?e [*]) ...]
+              :in $ ?u-id
+              :where
+              [?e :shopping-event/user-id ?u-id]]
+            (d/db connection) user-id)
+       (map #(dissoc % :db/id))
+       (map adapters.db.shopping-events/db->internal)))

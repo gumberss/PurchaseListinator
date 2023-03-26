@@ -10,7 +10,7 @@
    :event-type  s/Keyword
    :user-id     s/Uuid
    :shopping-id s/Uuid
-   :properties  [ShoppingEventProperty]})
+   :properties  ShoppingEventProperty})
 
 (s/defschema ShoppingEventCollection
   {:events [ShoppingEvent]})
