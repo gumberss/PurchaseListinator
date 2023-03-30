@@ -7,7 +7,8 @@
     [io.pedestal.http :as http]
     [purchase-listinator.components.pedestal :as pedestal]
     [purchase-listinator.modules.events.core :as modules.events.core]
-    [purchase-listinator.purchase-listinator-core :as purchase-listinator-core])
+    [purchase-listinator.purchase-listinator-core :as purchase-listinator-core]
+    [purchase-listinator.components.pedestal :as components.pedestal])
   (:gen-class))
 
 (def modules-config [purchase-listinator-core/module-config
@@ -22,10 +23,12 @@
 (def webapp-dependencies
   (vec (mapcat :webapp-dependencies modules-config)))
 
+(def default-routes
+  (set/union components.pedestal/default-routes))
 (def routes
   (->> (filter :routes modules-config)
        (map :routes)
-       (reduce #(set/union %1 %2))))
+       (reduce #(set/union %1 %2) default-routes)))
 
 (defn general-components
   [config]
