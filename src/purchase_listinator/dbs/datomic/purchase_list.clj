@@ -35,7 +35,6 @@
 (s/defn get-enabled
   [user-id :- s/Uuid
    {:keys [connection]}]
-  (println connection)
   (->> (d/q '[:find [(pull ?e [*]) ...]
               :in $ ?u-id
               :where

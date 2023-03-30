@@ -15,7 +15,7 @@
 
 (s/defn get-purchase-lists :- {:status s/Int
                                :body   [out.purchases-lists/PurchaseList]}
-  [{{:keys [datomic] :as component} :component
+  [{{:keys [datomic]} :component
     user-id           :user-id}]
   (branch (misc.either/try-right
             (let [user-id (adapters.misc/string->uuid user-id)]
