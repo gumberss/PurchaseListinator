@@ -1,14 +1,14 @@
 (ns purchase-listinator.core
-  (:require [com.stuartsierra.component :as component]
-            [com.stuartsierra.component.repl
-             :refer [reset set-init start stop system]]
-            [io.pedestal.http :as http]
-            [purchase-listinator.components.pedestal :as pedestal]
-            [purchase-listinator.components.redis :as redis]
-            [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]
-            [purchase-listinator.modules.events.core :as modules.events.core]
-            [purchase-listinator.purchase-listinator-core :as purchase-listinator-core])
+  (:require
+    [clojure.set :as set]
+    [com.stuartsierra.component :as component]
+    [com.stuartsierra.component.repl
+     :refer [reset set-init start stop system]]
+    [io.pedestal.http :as http]
+    [purchase-listinator.components.pedestal :as pedestal]
+    [purchase-listinator.modules.events.core :as modules.events.core]
+    [purchase-listinator.purchase-listinator-core :as purchase-listinator-core]
+    [purchase-listinator.components.pedestal :as components.pedestal])
   (:gen-class))
 
 (def modules-config [purchase-listinator-core/module-config
@@ -23,6 +23,13 @@
 (def webapp-dependencies
   (vec (mapcat :webapp-dependencies modules-config)))
 
+(def default-routes
+  (set/union components.pedestal/default-routes))
+(def routes
+  (->> (filter :routes modules-config)
+       (map :routes)
+       (reduce #(set/union %1 %2) default-routes)))
+
 (defn general-components
   [config]
   {:service-map {:env         (:env config)
@@ -30,7 +37,7 @@
                  ::http/port  (get-in config [:web-server :port])
                  ::http/host  (get-in config [:web-server :host])
                  ::http/join? false}
-   :pedestal    (component/using (pedestal/new-pedestal) webapp-dependencies)})
+   :pedestal    (component/using (pedestal/new-pedestal routes) webapp-dependencies)})
 
 (defn fill-system-map-keyval
   [system-map [key val]]
@@ -57,5 +64,5 @@
   [system]
   (component/stop system))
 (when (= (:env system-config) :dev)
-  (set-init (constantly (new-system system-config))))
+  (set-init (fn [_] (new-system system-config))))
 

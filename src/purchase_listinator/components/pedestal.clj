@@ -1,13 +1,11 @@
 (ns purchase-listinator.components.pedestal
   (:require
+    [clojure.set :as set]
     [clojure.string :as str]
     [com.stuartsierra.component :as component]
     [io.pedestal.http :as http]
-    [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
-    [purchase-listinator.endpoints.http.shopping :as http.shopping]
     [io.pedestal.http.body-params :as body-params]
     [purchase-listinator.misc.pedestal :as misc.pedestal]
-    [purchase-listinator.endpoints.http.user :as endpoints.http.user]
     [camel-snake-kebab.core :as csk]))
 (defn version [_]
   {:status 200
@@ -15,12 +13,6 @@
 
 (def default-routes
   #{["/api/version" :get [version] :route-name :api-version]})
-
-(def all-routes
-  (set (concat default-routes
-               endpoints.http.user/routes
-               http.purchase-list/routes
-               http.shopping/routes)))
 
 (defn test?
   [service-map]
@@ -43,7 +35,7 @@
 (defn validate-user [{{:keys [user-id]} :request :as context}]
   (if user-id
     context
-    (assoc context :response {:status 403
+    (assoc context :response {:status  403
                               :headers {}})))
 (def validate-user-identifier
   {:name  :validate-user-identifier
@@ -66,14 +58,13 @@
   [endpoints component]
   (set (map #(include-interceptors % component) endpoints)))
 
-(defrecord Pedestal [service-map
-                     service]
+(defrecord Pedestal [routes service-map service]
   component/Lifecycle
   (start [this]
     (if service
       this
       (cond-> service-map
-              true (assoc ::http/routes (add-interceptors all-routes this))
+              true (assoc ::http/routes (add-interceptors routes this))
               true http/create-server
               (not (test? service-map)) http/start
               true ((partial assoc this :service)))))
@@ -83,5 +74,5 @@
     (assoc this :service nil)))
 
 (defn new-pedestal
-  []
-  (map->Pedestal {}))
+  [routes]
+  (map->Pedestal {:routes routes}))
