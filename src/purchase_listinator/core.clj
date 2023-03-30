@@ -60,6 +60,7 @@
   "The entry-point for 'lein run'"
   [system]
   (component/stop system))
+
 (when (= (:env system-config) :dev)
   (set-init (fn [_] (new-system system-config))))
 

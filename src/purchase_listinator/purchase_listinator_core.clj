@@ -1,12 +1,14 @@
 (ns purchase-listinator.purchase-listinator-core
-  (:require [com.stuartsierra.component :as component]
-            [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.mongo :as mongo]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]
-            [purchase-listinator.components.redis :as redis]
-            [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
-            [purchase-listinator.endpoints.http.shopping :as http.shopping]
-            [purchase-listinator.endpoints.http.user :as endpoints.http.user]))
+  (:require
+    [clojure.set :as set]
+    [com.stuartsierra.component :as component]
+    [purchase-listinator.components.datomic :as datomic]
+    [purchase-listinator.components.mongo :as mongo]
+    [purchase-listinator.components.rabbitmq :as rabbitmq]
+    [purchase-listinator.components.redis :as redis]
+    [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
+    [purchase-listinator.endpoints.http.shopping :as http.shopping]
+    [purchase-listinator.endpoints.http.user :as endpoints.http.user]))
 
 (def purchase-listinator-components
   {:redis    (component/using (redis/new-Redis) [:config])
@@ -58,9 +60,9 @@
 (def module-config
   {:rabbitmq-dependencies [:config :redis :datomic :mongo]
    :webapp-dependencies   [:service-map :mongo :redis :datomic :rabbitmq]
-   :routes                (set (concat endpoints.http.user/routes
-                                       http.purchase-list/routes
-                                       http.shopping/routes))
+   :routes                (set/union endpoints.http.user/routes
+                                     http.purchase-list/routes
+                                     http.shopping/routes)
    :system-config         purchase-listinator-config
    :system-components     purchase-listinator-components})
 

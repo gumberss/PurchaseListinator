@@ -66,7 +66,7 @@
       (cond-> service-map
               true (assoc ::http/routes (add-interceptors (set/union default-routes routes) this))
               true http/create-server
-              (not (test? service-map)) http/start
+              #_(not (test? service-map)) #_http/start
               true ((partial assoc this :service)))))
   (stop [this]
     (when (and service #_(not (test? service-map)))
