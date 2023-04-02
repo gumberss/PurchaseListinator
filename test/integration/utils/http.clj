@@ -4,6 +4,7 @@
             [io.pedestal.http.route :as route]
             [io.pedestal.test :refer [response-for]]
             [clojure.test :refer :all]
+            [schema.coerce :as coerce]
             [state-flow.api :as state-flow.api]
             [state-flow.core :refer [flow]]
             [state-flow.assertions.matcher-combinators :refer [match?]]
@@ -27,22 +28,24 @@
 (def default-token (random-uuid))
 
 (defn request!
-  ([{:keys [method endpoint params body headers token] :or {headers {"Content-Type" "application/json"}}}]
+  ([{:keys [method endpoint params body headers token response-body-schema] :or {headers {"Content-Type" "application/json"}}}]
    (flow (str "Requesting -" method " - " endpoint)
-         [service (state-flow.api/get-state :pedestal)]
-         (let [service (service-fn service)
-               token (or token default-token)
-               headers (assoc headers "authorization" (str "Bearer " token))
-               {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params)
-                                                             :headers headers
-                                                             :body (parse body "application/json"))
-               outcome (assoc json-outcome :body (parse body "application/edn"))]
-           (flow/return outcome)))))
+     [service (state-flow.api/get-state :pedestal)]
+     (let [service (service-fn service)
+           token (or token default-token)
+           headers (assoc headers "authorization" (str "Bearer " token))
+           coerce-function (if response-body-schema (coerce/coercer response-body-schema coerce/json-coercion-matcher) identity)
+           {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params)
+                                                         :headers headers
+                                                         :body (parse (or body {}) "application/json"))
+           outcome (assoc json-outcome :body (-> (parse body "application/edn")
+                                                 (coerce-function)))]
+       (flow/return outcome)))))
 
 (integration-test check-version-test
-                  (flow "first test"
-                        (let [response (request! {:method   :get
-                                                  :endpoint :api-version
-                                                  :params   {:id (str (random-uuid))}})]
+  (flow "first test"
+    (let [response (request! {:method   :get
+                              :endpoint :api-version
+                              :params   {:id (str (random-uuid))}})]
 
-                          (match? {:status 200} response))))
+      (match? {:status 200} response))))

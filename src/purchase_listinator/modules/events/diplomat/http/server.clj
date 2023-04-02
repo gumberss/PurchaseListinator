@@ -9,8 +9,9 @@
     [schema.core :as s]))
 
 (s/defn get-events-by-item-id :- {:status s/Int
-                                  :body   [wires.out.http.shopping-events/EventCollection]}
-  [{:keys [component item-id]}]
+                                  :body   wires.out.http.shopping-events/EventCollection}
+  [{:keys              [component]
+    {item-id :item-id} :path-params}]
   (misc.http/default-branch
     (misc.either/try-right
       (-> (adapters.misc/string->uuid item-id)

@@ -57,5 +57,21 @@
 (defn dissoc-if
   [map prop cond]
   (if (cond (prop map))
-    (apply dissoc map prop)))
+    (dissoc map prop)
+    map))
 
+
+(defn ^:private ->uuid
+  [[key val]]
+  (println (str "o que??? "val))
+  (if (string? val)
+    (try
+      [key (or (parse-uuid val) val)]
+      (catch Exception _
+        [key val]))
+    [key val]))
+(defn parse-uuids
+  [m]
+  (println (str "o que???????? "m))
+  (->> (map ->uuid m)
+      (into {})))
