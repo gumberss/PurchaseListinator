@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [purchase-listinator.modules.events.schemas.wires.in.shopping-finished-event :as wires.in.shopping-finished-event]
             [purchase-listinator.modules.events.adapters.in.shopping-events :as adapters.in.shopping-events]
-            [purchase-listinator.modules.events.flows.shopping-events :as events.flows.shopping-events]))
+            [purchase-listinator.modules.events.flows.receive-shopping-events :as events.flows.shopping-events]))
 
 (s/defn shopping-events-received
   [_channel

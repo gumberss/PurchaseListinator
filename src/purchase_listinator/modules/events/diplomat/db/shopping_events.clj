@@ -23,6 +23,12 @@
    {:db/ident       :shopping-event/shopping-id
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one}
+   {:db/ident       :shopping-event/item-id
+    :db/valueType   :db.type/uuid
+    :db/cardinality :db.cardinality/one}
+   {:db/ident       :shopping-event/category-id
+    :db/valueType   :db.type/uuid
+    :db/cardinality :db.cardinality/one}
    {:db/ident       :shopping-event/properties
     :db/valueType   :db.type/string
     :db/cardinality :db.cardinality/one}])
@@ -42,5 +48,16 @@
               :where
               [?e :shopping-event/user-id ?u-id]]
             (d/db connection) user-id)
+       (map #(dissoc % :db/id))
+       (map adapters.db.shopping-events/db->internal)))
+
+(s/defn get-by-item-id :- [schemas.models.shopping-event/ShoppingEvent]
+  [item-id :- s/Uuid
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?e [*]) ...]
+              :in $ ?i-id
+              :where
+              [?e :shopping-event/item-id ?i-id]]
+            (d/db connection) item-id)
        (map #(dissoc % :db/id))
        (map adapters.db.shopping-events/db->internal)))

@@ -7,9 +7,12 @@
 (s/defn internal->db :- wires.out.db.shopping-events/ShoppingEvent
   [{:keys [properties] :as event} :- models.shopping-event/ShoppingEvent]
   (-> (assoc event :properties (str properties))
+      (misc.general/dissoc-nils)
       (misc.general/namespace-keys "shopping-event")))
 
 (s/defn db->internal :- models.shopping-event/ShoppingEvent
-  [{:keys [properties] :as event} :- wires.out.db.shopping-events/ShoppingEvent]
-  (-> (assoc event :properties (or (clojure.edn/read-string properties) {}))
-      (misc.general/unnamespace-keys)))
+  [{:shopping-event/keys [category-id item-id properties] :as event} :- wires.out.db.shopping-events/ShoppingEvent]
+  (-> (misc.general/unnamespace-keys event)
+      (assoc :properties (or (clojure.edn/read-string properties) {})
+             :category-id category-id
+             :item-id item-id)))

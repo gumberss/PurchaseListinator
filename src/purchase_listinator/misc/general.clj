@@ -49,3 +49,13 @@
          (throw (IllegalArgumentException.
                   "assoc expects even number of arguments after map/vector, found odd number")))
        ret))))
+
+(defn dissoc-nils
+  [map]
+  (apply dissoc map (for [[k v] map :when (nil? v)] k)))
+
+(defn dissoc-if
+  [map prop cond]
+  (if (cond (prop map))
+    (apply dissoc map prop)))
+

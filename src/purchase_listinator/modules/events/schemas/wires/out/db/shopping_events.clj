@@ -4,10 +4,12 @@
     [schema.core :as s]))
 
 (s/defschema ShoppingEvent
-  (-> {:id          s/Uuid
-       :moment      s/Num
-       :event-type  s/Keyword
-       :user-id     s/Uuid
-       :shopping-id s/Uuid
-       :properties  s/Str}
+  (-> {:id                           s/Uuid
+       :moment                       s/Num
+       :event-type                   s/Keyword
+       :user-id                      s/Uuid
+       :shopping-id                  s/Uuid
+       (s/optional-key :item-id)     s/Uuid
+       (s/optional-key :category-id) s/Uuid
+       :properties                   s/Str}
       (misc.general/namespace-keys "shopping-event")))

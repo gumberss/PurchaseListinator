@@ -10,6 +10,8 @@
    :event-type  s/Keyword
    :user-id     s/Uuid
    :shopping-id s/Uuid
+   :item-id     (s/maybe s/Uuid)
+   :category-id (s/maybe s/Uuid)
    :properties  ShoppingEventProperty})
 
 (s/defschema ShoppingEventCollection
