@@ -59,17 +59,3 @@
   (if (cond (prop map))
     (dissoc map prop)
     map))
-
-(defn ^:private ->uuid
-  [[key val]]
-  (if (string? val)
-    (try
-      [key (or (parse-uuid val) val)]
-      (catch Exception _
-        [key val]))
-    [key val]))
-
-(defn parse-uuids
-  [m]
-  (->> (map ->uuid m)
-      (into {})))
