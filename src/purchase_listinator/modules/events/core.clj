@@ -1,7 +1,8 @@
 (ns purchase-listinator.modules.events.core
   (:require [com.stuartsierra.component :as component]
             [purchase-listinator.modules.events.components.rabbitmq :as rabbitmq]
-            [purchase-listinator.modules.events.components.datahike :as components.datahike]))
+            [purchase-listinator.modules.events.components.datahike :as components.datahike]
+            [purchase-listinator.modules.events.diplomat.http.server :as http.server]))
 
 (def rabbitmq-dependencies
   [:config :shopping-events/main-db])
@@ -38,7 +39,8 @@
   {:rabbitmq-dependencies rabbitmq-dependencies
    :webapp-dependencies   webapp-dependencies
    :system-components     components
-   :system-config         system-config})
+   :system-config         system-config
+   :routes                (set (concat http.server/routes))})
 
 
 (defn system-config-test
