@@ -1,4 +1,4 @@
-(ns purchase-listinator.modules.events.schemas.models.shopping-event
+(ns purchase-listinator.modules.events.schemas.models.shopping-events
   (:require [schema.core :as s]))
 
 (s/defschema ShoppingEventProperty
@@ -15,4 +15,4 @@
    :properties  ShoppingEventProperty})
 
 (s/defschema ShoppingEventCollection
-  {:events [ShoppingEvent]})
+  {:events  [ShoppingEvent]})

@@ -1,7 +1,7 @@
 (ns purchase-listinator.modules.events.adapters.db.shopping-events
   (:require [schema.core :as s]
             [purchase-listinator.modules.events.schemas.wires.out.db.shopping-events :as wires.out.db.shopping-events]
-            [purchase-listinator.modules.events.schemas.models.shopping-event :as models.shopping-event]
+            [purchase-listinator.modules.events.schemas.models.shopping-events :as models.shopping-event]
             [purchase-listinator.misc.general :as misc.general]))
 
 (s/defn internal->db :- wires.out.db.shopping-events/ShoppingEvent

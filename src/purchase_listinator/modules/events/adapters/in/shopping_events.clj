@@ -1,7 +1,7 @@
 (ns purchase-listinator.modules.events.adapters.in.shopping-events
   (:require [purchase-listinator.modules.events.schemas.wires.in.shopping-finished-event :as wires.in.shopping-finished-event]
             [purchase-listinator.modules.events.schemas.wires.in.shopping-events :as modules.events.schemas.wires.in.events]
-            [purchase-listinator.modules.events.schemas.models.shopping-event :as modules.events.schemas.models.shopping-event]
+            [purchase-listinator.modules.events.schemas.models.shopping-events :as modules.events.schemas.models.shopping-event]
             [schema.core :as s]))
 
 (s/defn ^:private ->internal :- modules.events.schemas.models.shopping-event/ShoppingEvent

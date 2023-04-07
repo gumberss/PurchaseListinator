@@ -3,7 +3,7 @@
     [datahike.api :as d]
     [purchase-listinator.misc.datomic :as misc.datomic]
     [schema.core :as s]
-    [purchase-listinator.modules.events.schemas.models.shopping-event :as schemas.models.shopping-event]
+    [purchase-listinator.modules.events.schemas.models.shopping-events :as schemas.models.shopping-event]
     [purchase-listinator.modules.events.adapters.db.shopping-events :as adapters.db.shopping-events]))
 
 (def schema
@@ -59,5 +59,16 @@
               :where
               [?e :shopping-event/item-id ?i-id]]
             (d/db connection) item-id)
+       (map #(dissoc % :db/id))
+       (map adapters.db.shopping-events/db->internal)))
+
+(s/defn get-by-items-ids :- [schemas.models.shopping-event/ShoppingEvent]
+  [items-ids :- [s/Uuid]
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?e [*]) ...]
+              :in $ [?i-id ...]
+              :where
+              [?e :shopping-event/item-id ?i-id]]
+            (d/db connection) items-ids)
        (map #(dissoc % :db/id))
        (map adapters.db.shopping-events/db->internal)))
