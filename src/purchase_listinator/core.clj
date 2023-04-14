@@ -7,12 +7,14 @@
     [io.pedestal.http :as http]
     [purchase-listinator.components.pedestal :as pedestal]
     [purchase-listinator.modules.events.core :as modules.events.core]
+    [purchase-listinator.modules.price-suggestion.core :as modules.price-suggestion.core]
     [purchase-listinator.purchase-listinator-core :as purchase-listinator-core]
     [purchase-listinator.components.pedestal :as components.pedestal])
   (:gen-class))
 
 (def modules-config [purchase-listinator-core/module-config
-                     modules.events.core/config])
+                     modules.events.core/config
+                     modules.price-suggestion.core/config])
 (def system-config
   (reduce conj
           {:env        (keyword (or (System/getenv "ENVIRONMENT_TYPE") "dev"))
