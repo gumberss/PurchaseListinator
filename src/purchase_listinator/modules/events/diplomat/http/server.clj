@@ -23,7 +23,7 @@
 (s/defn get-events-by-items :- {:status s/Int
                                 :body   wires.out.http.shopping-item-events/ShoppingItemEventsResult}
   [{:keys               [component]
-    {:keys [items-ids]} :params :as l}]
+    {:keys [items-ids]} :params}]
   (misc.http/default-branch
     (misc.either/try-right
       (-> (json/read-str items-ids)
