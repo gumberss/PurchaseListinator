@@ -2,9 +2,9 @@
   (:require [purchase-listinator.modules.price-suggestion.diplomat.http.server :as http.server]))
 
 (def rabbitmq-dependencies
-  [:config :price-suggestion/main-db])
+  [])
 (def webapp-dependencies
-  [:price-suggestion/rabbitmq :price-suggestion/main-db])
+  [])
 
 (def components
   {})
