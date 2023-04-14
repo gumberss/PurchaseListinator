@@ -48,7 +48,6 @@
               :where
               [?e :shopping-event/user-id ?u-id]]
             (d/db connection) user-id)
-       (map #(dissoc % :db/id))
        (map adapters.db.shopping-events/db->internal)))
 
 (s/defn get-by-item-id :- [schemas.models.shopping-event/ShoppingEvent]
@@ -59,7 +58,6 @@
               :where
               [?e :shopping-event/item-id ?i-id]]
             (d/db connection) item-id)
-       (map #(dissoc % :db/id))
        (map adapters.db.shopping-events/db->internal)))
 
 (s/defn get-by-items-ids :- [schemas.models.shopping-event/ShoppingEvent]
@@ -70,5 +68,4 @@
               :where
               [?e :shopping-event/item-id ?i-id]]
             (d/db connection) items-ids)
-       (map #(dissoc % :db/id))
        (map adapters.db.shopping-events/db->internal)))
