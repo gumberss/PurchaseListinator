@@ -23,5 +23,5 @@
 
 (def routes
   #{["/api/price-suggestion/by/item/:item-id" :get [get-price-by-item] :route-name :get-price-suggestion-by-item-id]
-    ["/api/price-suggestion/by/items" :get [get-price-by-items] :route-name :get-price-suggestion-by-items-id]})
+    ["/api/price-suggestion/by/items" :get [get-price-by-items] :route-name :get-price-suggestion-by-items-ids]})
 
