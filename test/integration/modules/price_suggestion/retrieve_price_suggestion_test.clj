@@ -5,13 +5,16 @@
             [state-flow.core :refer [flow]]
             [state-flow.assertions.matcher-combinators :refer [match?]]
             [matcher-combinators.matchers :as m]
-            [utils.http]))
+            [clj-http.client :as c]
+            [utils.http])
+  (:use clj-http.fake))
 
 (def user-id (random-uuid))
 (def item-id (random-uuid))
 (def item-2-id (random-uuid))
-
+;(with-fake-routes-in-isolation)
 (integration-test retrieve-item-price-suggestion-test
+
   (flow "Retrieve item price suggestion"
     [response (utils.http/request! {:method               :get
                                     :endpoint             :get-price-suggestion-by-item-id

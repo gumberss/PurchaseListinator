@@ -26,8 +26,7 @@
    :enter (partial assoc-component component)})
 
 (defn assoc-identifier [{{:keys [headers]} :request :as context}]
-  (update context :request assoc :user-id (some-> (get headers "authorization")
-                                                  (str/replace "Bearer " ""))))
+  (update context :request assoc :user-id (get headers "user-id")))
 (def inject-user-identifier
   {:name  :inject-user-identifier
    :enter assoc-identifier})
