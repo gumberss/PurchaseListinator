@@ -42,7 +42,8 @@
      (let [service (service-fn service)
            token (or token default-token)
            params (->> (map value->json params) (into {}))
-           headers (assoc headers "authorization" (str "Bearer " token))
+           headers (assoc headers "authorization" (str "Bearer " token)
+                                  "user-id" (str token))
            coerce-function (if response-body-schema (coerce/coercer response-body-schema coerce/json-coercion-matcher) identity)
            {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params)
                                                          :headers headers
