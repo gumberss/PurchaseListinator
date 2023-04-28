@@ -1,5 +1,8 @@
 (ns purchase-listinator.modules.price-suggestion.core
-  (:require [purchase-listinator.modules.price-suggestion.diplomat.http.server :as http.server]))
+  (:require
+    [com.stuartsierra.component :as component]
+    [purchase-listinator.modules.price-suggestion.diplomat.http.server :as http.server]
+    [purchase-listinator.modules.price-suggestion.components.http :as components.http]))
 
 (def rabbitmq-dependencies
   [])
@@ -7,7 +10,7 @@
   [:config])
 
 (def components
-  {})
+  {:http (component/using (components.http/new-http) [:config])})
 
 (def system-components-test
   {})
