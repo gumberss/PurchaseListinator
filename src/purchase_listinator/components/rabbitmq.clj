@@ -30,6 +30,7 @@
    channel
    metadata
    ^bytes payload]
+  ;todo: use purchase-listinator.misc.content-type-parser to coerce the data
   (try (let [data (String. payload "UTF-8")
              map-data (json/read-str data :key-fn csk/->kebab-case-keyword)
              map-data (if (string? map-data)
