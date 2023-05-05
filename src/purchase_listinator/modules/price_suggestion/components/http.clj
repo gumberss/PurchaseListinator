@@ -9,7 +9,7 @@
   {:method                         s/Keyword
    :url                            s/Keyword
    (s/optional-key :content-type)  s/Keyword
-   (s/optional-key :params)        [s/Any]
+   (s/optional-key :query-params)  s/Any
    (s/optional-key :body)          {s/Any s/Any}
    (s/optional-key :result-schema) s/Any})
 (s/defschema RequestData request-data-skeleton)
@@ -36,8 +36,9 @@
 
   IHttp
   (request [{:keys [routes]}
-            {:keys [method url params body content-type result-schema headers user-id]}]
+            {:keys [method url query-params body content-type result-schema headers user-id]}]
     (let [url-str (url routes)
+          content-type (or content-type "application/json")
           request-fn (condp = method
                        :get client/get
                        :post client/post
@@ -45,8 +46,8 @@
                        :delete client/delete)
           request-params (misc.general/assoc-some {:as      "UTF-8"
                                                    :headers (assoc headers :user-id user-id)}
-                                                  :params params
-                                                  :body body
+                                                  :query-params query-params
+                                                  :body (misc.content-type-parser/transform-content-to body content-type)
                                                   :content-type content-type)
           {:keys [body] :as _request-result} (request-fn url-str request-params)
           coerced-data (misc.content-type-parser/json->edn body result-schema)]

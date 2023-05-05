@@ -4,6 +4,7 @@
     [purchase-listinator.adapters.misc :as adapters.misc]
     [purchase-listinator.misc.either :as misc.either]
     [purchase-listinator.misc.http :as misc.http]
+    [purchase-listinator.misc.pedestal :as misc.pedestal]
     [purchase-listinator.modules.events.flows.retrieve-events :as flows.retrieve-events]
     [purchase-listinator.modules.events.adapters.out.shopping-item-events :as out.shopping-item-events]
     [purchase-listinator.modules.events.schemas.wires.out.http.shopping-item-events :as wires.out.http.shopping-item-events]
@@ -22,14 +23,13 @@
 (s/defn get-events-by-items :- {:status s/Int
                                 :body   wires.out.http.shopping-item-events/ShoppingItemEventsResult}
   [{:keys               [component]
-    {:keys [items-ids]} :params}]
+    {:keys [items-ids]} :query-params}]
   (misc.http/default-branch
     (misc.either/try-right
-      (-> (json/read-str items-ids)
+      (-> items-ids
           (->> (map adapters.misc/string->uuid))
           (flows.retrieve-events/get-items-by-items component)
           (out.shopping-item-events/internal-collections->wire-result)))))
-
 (def routes
   #{["/api/events/by/item/:item-id" :get [get-events-by-item-id] :route-name :get-events-by-item-id]
     ["/api/events/by/items" :get [get-events-by-items] :route-name :get-events-by-items]})

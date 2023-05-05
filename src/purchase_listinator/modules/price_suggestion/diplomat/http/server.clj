@@ -19,12 +19,12 @@
                                :body   s/Any}
   [{:keys               [component]
     {:keys [items-ids]} :params
-    {:keys [headers]}   :request}]
+    {:keys [user-id]}   :request}]
   (misc.http/default-branch
     (misc.either/try-right
       :ok
       #_(-> (map adapters.misc/string->uuid items-ids)
-      (flows.item-price-suggestion/suggest-price headers component)))))
+      (flows.item-price-suggestion/suggest-price user-id component)))))
 
 
 (def routes

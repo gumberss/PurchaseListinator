@@ -1,14 +1,12 @@
 (ns purchase-listinator.modules.price-suggestion.flows.item-price-suggestion
   (:require
-    [clojure.data.json :as json]
-    [schema.core :as s]
-    [clj-http.client :as client]))
+    [purchase-listinator.modules.price-suggestion.diplomat.http.client :as diplomat.http.client]
+    [schema.core :as s]))
 
 (s/defn suggest-price
   [items-ids :- [s/Uuid]
-   headers
-   {{urls :price-suggestion/request-routes} :config}]
-  #_(client/get (:shopping-events/get-events-by-items urls) {:headers      headers
-                                                           :query-params (json/write-str items-ids)})
+   user-id :- s/Uuid
+   {:price-suggestion/keys [http]}]
+  (diplomat.http.client/get-items-events items-ids user-id http)
   :ok)
 
