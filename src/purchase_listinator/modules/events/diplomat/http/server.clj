@@ -1,10 +1,8 @@
 (ns purchase-listinator.modules.events.diplomat.http.server
   (:require
-    [clojure.data.json :as json]
     [purchase-listinator.adapters.misc :as adapters.misc]
     [purchase-listinator.misc.either :as misc.either]
     [purchase-listinator.misc.http :as misc.http]
-    [purchase-listinator.misc.pedestal :as misc.pedestal]
     [purchase-listinator.modules.events.flows.retrieve-events :as flows.retrieve-events]
     [purchase-listinator.modules.events.adapters.out.shopping-item-events :as out.shopping-item-events]
     [purchase-listinator.modules.events.schemas.wires.out.http.shopping-item-events :as wires.out.http.shopping-item-events]

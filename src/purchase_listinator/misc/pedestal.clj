@@ -1,7 +1,6 @@
 (ns purchase-listinator.misc.pedestal
   (:require [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
-            [io.pedestal.interceptor.error :as pedestal.interceptor.error]
-            [schema.coerce :as coerce]))
+            [io.pedestal.interceptor.error :as pedestal.interceptor.error]))
 
 (defn accepted-type
   [context]

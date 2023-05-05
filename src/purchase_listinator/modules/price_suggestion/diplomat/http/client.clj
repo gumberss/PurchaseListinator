@@ -9,6 +9,5 @@
    http]
   (components.http/request http {:method :get
                                  :url :shopping-events/get-events-by-items
-                                 :query-params items-ids
+                                 :query-params {:items-ids items-ids}
                                  :user-id user-id}))
-;(def kk (component/start (components.http/map->Http {:config {:price-suggestion/request-routes {:a "http://localhost:3000/api/events/by/items"}}})))
