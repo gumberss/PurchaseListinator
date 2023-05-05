@@ -1,7 +1,6 @@
 (ns purchase-listinator.components.pedestal
   (:require
     [clojure.set :as set]
-    [schema.coerce :as coerce]
     [clojure.string :as str]
     [com.stuartsierra.component :as component]
     [io.pedestal.http :as http]
