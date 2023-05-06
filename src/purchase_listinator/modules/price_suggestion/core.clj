@@ -10,7 +10,7 @@
   [:config])
 
 (def components
-  {:http (component/using (components.http/new-http) [:config])})
+  {:price-suggestion/http (component/using (components.http/new-http) [:config])})
 
 (def system-components-test
   {})
@@ -24,6 +24,7 @@
 (defn config-test
   []
   {})
+
 (def config
   {:rabbitmq-dependencies rabbitmq-dependencies
    :webapp-dependencies   webapp-dependencies

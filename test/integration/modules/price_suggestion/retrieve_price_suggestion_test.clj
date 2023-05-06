@@ -19,7 +19,7 @@
     [response (utils.http/request! {:method               :get
                                     :endpoint             :get-price-suggestion-by-item-id
                                     :token                user-id
-                                    :params               {:item-id (str item-id)}
+                                    :path-params          {:item-id (str item-id)}
                                     :response-body-schema s/Keyword})]
     (match? {:status 200
              :body   :ok} response)))
@@ -29,7 +29,7 @@
     [response (utils.http/request! {:method               :get
                                     :endpoint             :get-price-suggestion-by-items-ids
                                     :token                user-id
-                                    :params               {:items-ids [item-id item-2-id]}
+                                    :query-params         {:items-ids [item-id item-2-id]}
                                     :response-body-schema s/Keyword})]
     (match? {:status 200
              :body   :ok} response)))

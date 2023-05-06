@@ -1,6 +1,5 @@
 (ns purchase-listinator.modules.events.diplomat.http.server
   (:require
-    [clojure.data.json :as json]
     [purchase-listinator.adapters.misc :as adapters.misc]
     [purchase-listinator.misc.either :as misc.either]
     [purchase-listinator.misc.http :as misc.http]
@@ -22,14 +21,13 @@
 (s/defn get-events-by-items :- {:status s/Int
                                 :body   wires.out.http.shopping-item-events/ShoppingItemEventsResult}
   [{:keys               [component]
-    {:keys [items-ids]} :params}]
+    {:keys [items-ids]} :query-params}]
   (misc.http/default-branch
     (misc.either/try-right
-      (-> (json/read-str items-ids)
+      (-> items-ids
           (->> (map adapters.misc/string->uuid))
           (flows.retrieve-events/get-items-by-items component)
           (out.shopping-item-events/internal-collections->wire-result)))))
-
 (def routes
   #{["/api/events/by/item/:item-id" :get [get-events-by-item-id] :route-name :get-events-by-item-id]
     ["/api/events/by/items" :get [get-events-by-items] :route-name :get-events-by-items]})

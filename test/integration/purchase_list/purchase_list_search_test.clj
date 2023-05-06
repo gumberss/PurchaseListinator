@@ -31,7 +31,7 @@
     (flow "Should be able to retrieve the existent purchase lists"
       [{:keys [body] :as response} (utils.http/request! {:method       :get
                                                          :endpoint     :purchases-lists-management-data
-                                                         :params {:id (str (:id body))}})]
+                                                         :path-params {:id (str (:id body))}})]
       (match? {:status 200
                :body   {:id         (:id body)
                         :categories []}} response))))
