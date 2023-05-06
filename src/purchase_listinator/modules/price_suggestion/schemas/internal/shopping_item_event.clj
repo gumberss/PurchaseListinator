@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [purchase-listinator.misc.schema :as misc.schema]))
 
-(misc.schema/loose-schema Event
+(s/defschema Event
   {:id                     s/Uuid
    :moment                 s/Num
    :event-type             s/Keyword

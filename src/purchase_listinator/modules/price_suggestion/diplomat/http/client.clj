@@ -10,7 +10,7 @@
 (s/defn get-items-events :- internal.shopping-item-event/ShoppingItemEvents
   [items-ids :- [s/Uuid]
    user-id :- s/Uuid
-   http :- components.http/IHttp]
+   http ]
   (-> (components.http/request http {:method        :get
                                      :url           :shopping-events/get-events-by-items
                                      :query-params  {:items-ids items-ids}

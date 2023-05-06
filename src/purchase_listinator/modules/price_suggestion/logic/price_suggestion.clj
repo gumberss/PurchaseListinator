@@ -11,7 +11,7 @@
     (Math/floor diff-weeks)))
 
 (s/defn calculate-by-events :- s/Num
-  [events :- internal.shopping-item-event/Event
+  [events :- [internal.shopping-item-event/Event]
    predict-time :- s/Num]
   (let [lasts-by-shopping (->> (filter #(= :change-item (:event-type %)) events)
                                (group-by :shopping-id)
@@ -20,7 +20,8 @@
         least-recent-event (first lasts-by-shopping)
         prices (map :price lasts-by-shopping)
         times (->> (map :moment lasts-by-shopping)
-                   (map #(week-diff (:moment least-recent-event) %)))
+                   (map #(+ 1 (week-diff (:moment least-recent-event) %))))
+        _ (println least-recent-event)
 
         sum-prices (reduce + prices)
         sum-times (reduce + times)
@@ -31,9 +32,10 @@
         time-summed-pow (Math/pow (reduce + times) 2)
         price-by-time-summed (->> (map * times prices)
                                   (reduce +))
+        divider (- (* (count times) time-pow-summed) time-summed-pow)
 
         slope (/ (- (* (count times) price-by-time-summed) (* sum-times sum-prices))
-                 (- (* (count times) time-pow-summed) time-summed-pow))
+                 (if (zero? divider) 1 divider))
         intercept (- mean-price (* slope mean-time))
         predicted-price (+ intercept (* slope predict-time))]
     predicted-price))
@@ -41,6 +43,7 @@
 (s/defn calculate-for-item :- internal.price-suggestion/ShoppingItemSuggestedPrice
   [predict-date :- s/Num
    {:keys [item-id events]} :- internal.shopping-item-event/ShoppingItemEvent]
+
   {:item-id         item-id
    :predicted-date  predict-date
    :suggested-price (calculate-by-events events predict-date)})

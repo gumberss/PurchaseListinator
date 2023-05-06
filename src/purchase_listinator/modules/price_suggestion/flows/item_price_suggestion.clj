@@ -13,5 +13,6 @@
   (let [items-events (diplomat.http.client/get-items-events items-ids user-id http)
         predicted-date (misc.date/numb-now)
         price-suggestions (logic.price-suggestion/calculate-for-all items-events predicted-date)]
+
     price-suggestions))
 

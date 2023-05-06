@@ -9,6 +9,7 @@
     [io.pedestal.test :refer [response-for]]
     [clojure.test :refer :all]
     [schema.coerce :as coerce]
+    [schema.core :as s]
     [state-flow.api :as state-flow.api]
     [state-flow.core :refer [flow]]
     [state-flow.assertions.matcher-combinators :refer [match?]]
@@ -45,14 +46,23 @@
            {:keys [body] :as json-outcome} (response-for service method url
                                                          :headers headers
                                                          :body (parse (or body {}) "application/json"))
+           _ (println body)
+           _ (println (parse body "application/edn"))
            outcome (assoc json-outcome :body (-> (parse body "application/edn")
                                                  (coerce-function)))]
        (flow/return outcome)))))
 
+(s/defn with-response
+  [http-component-key endpoint method response]
+  (flow (str "Setting response for " method " " endpoint)
+    [http (state-flow.api/get-state http-component-key)]
+
+    (flow/return ((:with-response http) endpoint method response))))
+
 (integration-test check-version-test
   (flow "first test"
-    (let [response (request! {:method   :get
-                              :endpoint :api-version
-                              :path-params   {:id (str (random-uuid))}})]
+    (let [response (request! {:method      :get
+                              :endpoint    :api-version
+                              :path-params {:id (str (random-uuid))}})]
 
       (match? {:status 200} response))))
