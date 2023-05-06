@@ -39,7 +39,6 @@
            token (or token default-token)
            query-params-str (when query-params (str "?" (client/generate-query-string query-params)))
            url (str (url-for endpoint path-params) query-params-str)
-           _ (println url)
            headers (assoc headers "authorization" (str "Bearer " token)
                                   "user-id" (str token))
            coerce-function (if response-body-schema (coerce/coercer response-body-schema coerce/json-coercion-matcher) identity)
