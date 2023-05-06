@@ -22,6 +22,7 @@
                                 :body   wires.out.http.shopping-item-events/ShoppingItemEventsResult}
   [{:keys               [component]
     {:keys [items-ids]} :query-params}]
+  (clojure.pprint/pprint items-ids)
   (misc.http/default-branch
     (misc.either/try-right
       (-> items-ids

@@ -1,6 +1,8 @@
 (ns utils.http
   (:require
     [clojure.data.json :as json]
+    [clj-http.client :as client]
+    [clojure.string :as str]
     [io.pedestal.http :as http]
     [purchase-listinator.components.pedestal :as components.pedestal]
     [io.pedestal.http.route :as route]
@@ -17,7 +19,7 @@
 (defn url-for
   ([url params]
    (let [url-for (route/url-for-routes (route/expand-routes purchase-listinator.core/routes))]
-     (url-for url :params params))))
+     (url-for url :path-params params))))
 
 (defn service-fn
   [pedestal]
@@ -29,23 +31,19 @@
 
 (def default-token (random-uuid))
 
-(defn value->json
-  [[key value]]
-   (if (coll? value)
-     {key (json/write-str value)}
-     {key value}))
-
 (defn request!
-  ([{:keys [method endpoint params body headers token response-body-schema] :or {headers {"Content-Type" "application/json"}}}]
+  ([{:keys [method endpoint path-params query-params body headers token response-body-schema] :or {headers {"Content-Type" "application/json"}}}]
    (flow (str "Requesting -" method " - " endpoint)
      [service (state-flow.api/get-state :pedestal)]
      (let [service (service-fn service)
            token (or token default-token)
-           params (->> (map value->json params) (into {}))
+           query-params-str (when query-params (str "?" (client/generate-query-string query-params)))
+           url (str (url-for endpoint path-params) query-params-str)
+           _ (println url)
            headers (assoc headers "authorization" (str "Bearer " token)
                                   "user-id" (str token))
            coerce-function (if response-body-schema (coerce/coercer response-body-schema coerce/json-coercion-matcher) identity)
-           {:keys [body] :as json-outcome} (response-for service method (url-for endpoint params)
+           {:keys [body] :as json-outcome} (response-for service method url
                                                          :headers headers
                                                          :body (parse (or body {}) "application/json"))
            outcome (assoc json-outcome :body (-> (parse body "application/edn")
@@ -56,6 +54,6 @@
   (flow "first test"
     (let [response (request! {:method   :get
                               :endpoint :api-version
-                              :params   {:id (str (random-uuid))}})]
+                              :path-params   {:id (str (random-uuid))}})]
 
       (match? {:status 200} response))))

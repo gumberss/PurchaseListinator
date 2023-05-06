@@ -1,6 +1,5 @@
 (ns modules.shopping-events.retrieve-items-events-test
   (:require
-    [clojure.data.json :as json]
     [clojure.test :refer :all]
     [purchase-listinator.modules.events.schemas.wires.out.http.shopping-item-events :as wires.out.http.shopping-item-events]
     [utils.integration-test :refer [integration-test]]
@@ -36,7 +35,7 @@
 (def item-events {:item-id item-id
                   :events  [event]})
 (def item-2-events {:item-id item-2-id
-                  :events  [event-2]})
+                    :events  [event-2]})
 
 
 (integration-test retrieve-shopping-item-events-test
@@ -46,7 +45,7 @@
     [response (utils.http/request! {:method               :get
                                     :endpoint             :get-events-by-item-id
                                     :token                user-id
-                                    :params               {:item-id (str item-id)}
+                                    :path-params         {:item-id (str item-id)}
                                     :response-body-schema wires.out.http.shopping-item-events/ShoppingItemEventCollection})]
     (match? {:status 200
              :body   events} response)))
@@ -63,7 +62,7 @@
     [response (utils.http/request! {:method               :get
                                     :endpoint             :get-events-by-items
                                     :token                user-id
-                                    :params               {:items-ids [item-id item-2-id]}
+                                    :query-params         {:items-ids [(str item-id) (str item-2-id)]}
                                     :response-body-schema wires.out.http.shopping-item-events/ShoppingItemEventsResult})]
     (match? {:status 200
              :body   events-collections-result} response)))
