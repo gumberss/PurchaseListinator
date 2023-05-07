@@ -24,7 +24,7 @@
     {:keys [items-ids]} :query-params}]
   (misc.http/default-branch
     (misc.either/try-right
-      (-> items-ids
+      (-> (if (vector? items-ids) items-ids [items-ids])
           (->> (map adapters.misc/string->uuid))
           (flows.retrieve-events/get-items-by-items component)
           (out.shopping-item-events/internal-collections->wire-result)))))
