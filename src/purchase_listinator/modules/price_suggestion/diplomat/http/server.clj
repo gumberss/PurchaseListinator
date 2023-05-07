@@ -18,16 +18,17 @@
       :ok)))
 
 (s/defn get-price-by-items :- {:status s/Int
-                               :body    s/Any
+                               :body   s/Any
                                #_schemas.wire.out.price-suggestion/ShoppingItemSuggestedPrices}
   [{:keys               [component]
     {:keys [items-ids]} :params
-    user-id :user-id}]
+    user-id             :user-id}]
   (misc.http/default-branch
     (misc.either/try-right
-      (->(map adapters.misc/string->uuid items-ids)
-         (flows.item-price-suggestion/suggest-price (adapters.misc/string->uuid user-id) component)
-         (adapters.out.price-suggestion/internals->wire)))))
+      (let [items-ids (if (vector? items-ids) items-ids [items-ids])]
+        (-> (map adapters.misc/string->uuid items-ids)
+            (flows.item-price-suggestion/suggest-price (adapters.misc/string->uuid user-id) component)
+            (adapters.out.price-suggestion/internals->wire))))))
 
 (def routes
   #{["/api/price-suggestion/by/item/:item-id" :get [get-price-by-item] :route-name :get-price-suggestion-by-item-id]
