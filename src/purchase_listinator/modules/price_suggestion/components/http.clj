@@ -20,10 +20,10 @@
    (s/optional-key :exception) s/Any})
 (s/defschema RequestResult request-result-skeleton)
 
-(s/defprotocol IHttp
-  (request :- RequestResult
-    [http :- IHttp
-     data :- RequestData]))
+(defprotocol IHttp
+  (request
+    [http
+     data ]))
 
 (defrecord Http [config]
   component/Lifecycle
@@ -55,3 +55,24 @@
 
 (defn new-http []
   (map->Http {}))
+
+
+(def response-mock (atom {}))
+
+(defn with-response
+  [endpoint method response]
+  (swap! response-mock update-in [endpoint method] (fn [_] response)))
+(defrecord HttpMock [config]
+  component/Lifecycle
+
+  (start [component]
+    (assoc component :with-response with-response))
+
+  (stop [component]
+    component)
+  IHttp
+  (request [_this {:keys [method url]}]
+    (get-in @response-mock [url method])))
+
+(defn new-http-mock []
+  (map->HttpMock {}))

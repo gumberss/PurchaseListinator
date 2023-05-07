@@ -6,11 +6,13 @@
             [com.stuartsierra.component :as component]
             [state-flow.cljtest :as cljtest]
             [purchase-listinator.purchase-listinator-core :as purchase-listinator-core]
-            [purchase-listinator.modules.events.core :as modules.events.core]))
+            [purchase-listinator.modules.events.core :as modules.events.core]
+            [purchase-listinator.modules.price-suggestion.core :as modules.price-suggestion.core]))
 
 (def module-config-test
   [purchase-listinator-core/module-config-test
-   modules.events.core/system-config-test])
+   modules.events.core/system-config-test
+   modules.price-suggestion.core/system-config-test])
 
 (defn system-config-test
   []

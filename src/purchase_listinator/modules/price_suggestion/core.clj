@@ -7,13 +7,13 @@
 (def rabbitmq-dependencies
   [])
 (def webapp-dependencies
-  [:config])
+  [:config :price-suggestion/http])
 
 (def components
   {:price-suggestion/http (component/using (components.http/new-http) [:config])})
 
 (def system-components-test
-  {})
+  {:price-suggestion/http  (component/using (components.http/new-http-mock) [:config])})
 
 (def request-routes
   {:shopping-events/get-events-by-items (or (System/getenv "SHOPPING_EVENTS_URL") "http://localhost:3000/api/events/by/items")})
