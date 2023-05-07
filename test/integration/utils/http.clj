@@ -46,8 +46,6 @@
            {:keys [body] :as json-outcome} (response-for service method url
                                                          :headers headers
                                                          :body (parse (or body {}) "application/json"))
-           _ (println body)
-           _ (println (parse body "application/edn"))
            outcome (assoc json-outcome :body (-> (parse body "application/edn")
                                                  (coerce-function)))]
        (flow/return outcome)))))

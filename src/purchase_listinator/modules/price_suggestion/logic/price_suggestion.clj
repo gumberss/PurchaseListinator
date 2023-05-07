@@ -21,8 +21,6 @@
         prices (map :price lasts-by-shopping)
         times (->> (map :moment lasts-by-shopping)
                    (map #(+ 1 (week-diff (:moment least-recent-event) %))))
-        _ (println least-recent-event)
-
         sum-prices (reduce + prices)
         sum-times (reduce + times)
         mean-price (/ sum-prices (count prices))

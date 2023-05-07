@@ -15,7 +15,7 @@
 (def item-id (random-uuid))
 (def item-2-id (random-uuid))
 ;(with-fake-routes-in-isolation)
-#_(integration-test retrieve-item-price-suggestion-test
+(integration-test retrieve-item-price-suggestion-test
 
     (flow "Retrieve item price suggestion"
       [response (utils.http/request! {:method               :get

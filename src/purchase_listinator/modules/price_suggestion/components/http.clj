@@ -72,7 +72,6 @@
     component)
   IHttp
   (request [_this {:keys [method url]}]
-    (println "bora que bimba")
     (get-in @response-mock [url method])))
 
 (defn new-http-mock []
