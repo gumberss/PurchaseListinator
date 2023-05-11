@@ -1,4 +1,4 @@
-(ns purchase-listinator.modules.price-suggestion.components.http
+(ns purchase-listinator.components.http
   (:require
     [clj-http.client :as client]
     [com.stuartsierra.component :as component]
@@ -25,11 +25,11 @@
     [http
      data ]))
 
-(defrecord Http [config]
+(defrecord Http [config request-routes=key]
   component/Lifecycle
 
   (start [component]
-    (assoc component :routes (:price-suggestion/request-routes config)))
+    (assoc component :routes (request-routes=key config)))
 
   (stop [component]
     (dissoc component :routes))
@@ -53,8 +53,8 @@
           coerced-data (misc.content-type-parser/json->edn body result-schema)]
       coerced-data)))
 
-(defn new-http []
-  (map->Http {}))
+(defn new-http [request-routes-key]
+  (map->Http {:request-routes-key request-routes-key}))
 
 
 (def response-mock (atom {}))
