@@ -22,7 +22,7 @@
 (s/defn link-with-user :- models.internal.shopping/Shopping
   [shopping :- models.internal.shopping/Shopping
    user-id :- s/Uuid]
-   (assoc shopping :user-id user-id))
+  (assoc shopping :user-id user-id))
 
 (s/defn ^:private sort-items
   [items :- [models.internal.shopping-list/ShoppingItem]]
@@ -57,3 +57,11 @@
 (s/defn finish :- models.internal.shopping/Shopping
   [shopping :- models.internal.shopping/Shopping]
   (assoc shopping :status :done))
+
+(s/defn has-price?
+  [{:keys [price]} :- models.internal.shopping-list/ShoppingItem]
+  (and price (> price 0)))
+(s/defn items-without-prices :- models.internal.shopping-list/ShoppingItem
+  [{:keys [categories]} :- models.internal.shopping-list/ShoppingList]
+  (->> (mapcat :items categories)
+      (filter (complement has-price?))))

@@ -48,7 +48,7 @@
            (d/db connection) purchase-category-id user-id)
       ffirst))
 
-(s/defn get-by-name :- models.internal.purchase-item/PurchaseItem
+(s/defn get-by-name :- (s/maybe models.internal.purchase-item/PurchaseItem)
   [name :- s/Str
    category-id :- s/Uuid
    user-id :- s/Uuid

@@ -63,8 +63,8 @@
 
 
 (def module-config
-  {:rabbitmq-dependencies [:config :redis :datomic :mongo]
-   :webapp-dependencies   [:service-map :mongo :redis :datomic :rabbitmq]
+  {:rabbitmq-dependencies [:config :redis :datomic :mongo :http]
+   :webapp-dependencies   [:service-map :mongo :redis :datomic :rabbitmq :http]
    :routes                (set (concat endpoints.http.user/routes
                                        http.purchase-list/routes
                                        http.shopping/routes))

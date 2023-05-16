@@ -84,6 +84,15 @@
    :item-id     s/Uuid
    :category-id s/Uuid})
 
+(s/defschema ItemPriceSuggested
+  {:id          s/Uuid
+   :event-type  (s/eq :price-suggested)
+   :user-id     s/Uuid
+   :moment      s/Num
+   :shopping-id s/Uuid
+   :item-id     s/Uuid
+   :price       s/Num})
+
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
   (= expected-event-type event-type))
@@ -96,7 +105,8 @@
     (partial of-type :purchase-list-category-created) PurchaseListCategoryCreated
     (partial of-type :purchase-list-item-created) PurchaseListItemCreated
     (partial of-type :purchase-list-item-changed) PurchaseListItemChanged
-    (partial of-type :purchase-list-item-deleted) PurchaseListItemDeleted))
+    (partial of-type :purchase-list-item-deleted) PurchaseListItemDeleted
+    (partial of-type :item-price-suggested) ItemPriceSuggested))
 
 (def cart-skeleton
   {:shopping-id s/Uuid

@@ -7,21 +7,21 @@
             [purchase-listinator.misc.general :as misc.general]))
 
 
-(s/defn item-created :- wires.out.purchase-list-item-events/ItemCreatedEvent
+(s/defn item-created :- models.internal.purchase-item/PurchaseItem
   [item :- models.internal.purchase-item/PurchaseItem
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.created
            (adapters.out.purchase-list-item-events/->ItemCreatedEvent item (misc.date/numb-now) (misc.general/squuid)))
   item)
 
-(s/defn item-changed :- wires.out.purchase-list-item-events/ItemChangedEvent
+(s/defn item-changed :- models.internal.purchase-item/PurchaseItem
   [item :- models.internal.purchase-item/PurchaseItem
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.changed
            (adapters.out.purchase-list-item-events/->ItemChangedEvent item (misc.date/numb-now) (misc.general/squuid)))
   item)
 
-(s/defn item-deleted :- wires.out.purchase-list-item-events/ItemDeletedEvent
+(s/defn item-deleted :- models.internal.purchase-item/PurchaseItem
   [item :- models.internal.purchase-item/PurchaseItem
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.deleted
