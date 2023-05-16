@@ -12,7 +12,7 @@
              :quantity (long quantity))
       (misc.general/namespace-keys :purchase-item)))
 
-(s/defn db->internal :- models.internal.purchase-item/PurchaseItem
+(s/defn db->internal :- (s/maybe models.internal.purchase-item/PurchaseItem)
   [db-wire]
   (when (not-empty db-wire)
     (let [{:keys [category] :as parsed} (-> (misc.datomic/datomic->entity db-wire)

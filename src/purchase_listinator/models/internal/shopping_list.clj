@@ -5,7 +5,7 @@
   {:id               s/Uuid
    :name             s/Str
    :quantity         s/Int
-   :price            s/Num
+   :price            (s/maybe s/Num)
    :quantity-in-cart s/Int
    :order-position   s/Int
    :user-id          s/Uuid

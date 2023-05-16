@@ -1,26 +1,30 @@
 (ns purchase-listinator.flows.shopping
-  (:require [schema.core :as s]
-            [cats.monad.either :refer [left]]
-            [clojure.core.async :refer [go <!! <!] :as async]
-            [purchase-listinator.misc.either :as either]
-            [purchase-listinator.models.internal.shopping-initiation :as models.internal.shopping-initiation]
-            [purchase-listinator.dbs.datomic.shopping :as datomic.shopping]
-            [purchase-listinator.logic.shopping :as logic.shopping]
-            [purchase-listinator.logic.shopping-location :as logic.shopping-location]
-            [purchase-listinator.misc.date :as misc.date]
-            [purchase-listinator.dbs.mongo.shopping-location :as mongo.shopping-location]
-            [purchase-listinator.misc.general :as misc.general]
-            [purchase-listinator.logic.errors :as logic.errors]
-            [purchase-listinator.models.internal.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
-            [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]
-            [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
-            [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]
-            [purchase-listinator.logic.shopping-cart :as logic.shopping-cart]
-            [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
-            [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]
-            [purchase-listinator.logic.shopping-category :as logic.shopping-category]
-            [purchase-listinator.dbs.redis.shopping-cart :as dbs.redis.shopping-cart]
-            [purchase-listinator.publishers.shopping :as publishers.shopping]))
+  (:require
+    [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
+    [schema.core :as s]
+    [cats.monad.either :refer [left]]
+    [clojure.core.async :refer [go <!! <!] :as async]
+    [purchase-listinator.misc.either :as either]
+    [purchase-listinator.models.internal.shopping-initiation :as models.internal.shopping-initiation]
+    [purchase-listinator.dbs.datomic.shopping :as datomic.shopping]
+    [purchase-listinator.logic.shopping :as logic.shopping]
+    [purchase-listinator.logic.shopping-location :as logic.shopping-location]
+    [purchase-listinator.misc.date :as misc.date]
+    [purchase-listinator.dbs.mongo.shopping-location :as mongo.shopping-location]
+    [purchase-listinator.misc.general :as misc.general]
+    [purchase-listinator.logic.errors :as logic.errors]
+    [purchase-listinator.models.internal.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
+    [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]
+    [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
+    [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]
+    [purchase-listinator.logic.shopping-cart :as logic.shopping-cart]
+    [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
+    [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]
+    [purchase-listinator.logic.shopping-category :as logic.shopping-category]
+    [purchase-listinator.dbs.redis.shopping-cart :as dbs.redis.shopping-cart]
+    [purchase-listinator.publishers.shopping :as publishers.shopping]
+    [purchase-listinator.endpoints.http.client.shopping :as http.client.shopping]
+    [purchase-listinator.logic.price-suggestion :as logic.price-suggestion]))
 
 (s/defn init-shopping
   [shopping-initiation :- models.internal.shopping-initiation/ShoppingInitiation
@@ -50,15 +54,33 @@
       first-near-shopping
       (left {:status 404 :data "not-found"}))))
 
+(s/defn generate-price-suggestion-events! :- models.internal.shopping-list/ShoppingList
+  [items-without-price-ids :- [s/Uuid]
+   user-id :- s/Uuid
+   shopping :- models.internal.shopping-list/ShoppingList
+   cart :- models.internal.shopping-cart/Cart
+   {:keys [http redis]}]
+  (let [cart+price-suggestions (->> (http.client.shopping/get-price-suggestion items-without-price-ids user-id http)
+                                    :price-suggestion
+                                    (map (partial logic.price-suggestion/->cart-event (random-uuid) user-id shopping))
+                                    (reduce logic.shopping-cart-event/add-event cart))]
+    (-> (redis.shopping-cart/upsert cart+price-suggestions redis)
+        (logic.shopping-cart-event/apply-cart shopping))))
+
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
-   {:keys [datomic redis]}]
-  (let [cart (redis.shopping-cart/find-cart shopping-id redis)
-        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id user-id datomic)
+   {:keys [datomic redis] :as components}]
+  (let [{:keys [list-id date]} (datomic.shopping/get-by-id shopping-id user-id datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id user-id date datomic)
-        shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)]
-    (logic.shopping-cart-event/apply-cart cart shopping)))
+        shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
+        cart (redis.shopping-cart/find-cart shopping-id redis)
+        shopping+cart (logic.shopping-cart-event/apply-cart cart shopping)
+        without-price-items-ids (map :id (logic.shopping/items-without-prices shopping+cart))
+        shopping-completed (if (seq without-price-items-ids)
+                             (generate-price-suggestion-events! without-price-items-ids user-id shopping cart components)
+                             shopping+cart)]
+    shopping-completed))
 
 (s/defn find-existent
   [list-id :- s/Uuid

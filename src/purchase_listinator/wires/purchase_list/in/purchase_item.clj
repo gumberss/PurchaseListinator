@@ -6,7 +6,6 @@
    :id               s/Str
    :quantity         s/Int
    :order-position   s/Int
-   :user-id          s/Uuid
    :category-id      s/Str})
 
 (s/defschema PurchaseItem purchase-item-skeleton)
