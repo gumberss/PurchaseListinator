@@ -61,7 +61,8 @@
    cart :- models.internal.shopping-cart/Cart
    {:keys [http redis]}]
   (let [cart+price-suggestions (->> (http.client.shopping/get-price-suggestion items-without-price-ids user-id http)
-                                    (map (partial logic.price-suggestion/->cart-event (random-uuid) shopping))
+                                    :price-suggestion
+                                    (map (partial logic.price-suggestion/->cart-event (random-uuid) user-id shopping))
                                     (reduce logic.shopping-cart-event/add-event cart))]
     (-> (redis.shopping-cart/upsert cart+price-suggestions redis)
         (logic.shopping-cart-event/apply-cart shopping))))

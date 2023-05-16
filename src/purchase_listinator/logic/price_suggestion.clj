@@ -7,7 +7,8 @@
 
 (s/defn ->cart-event :- models.internal.shopping-cart/ItemPriceSuggested
   [event-id :- s/Uuid
-   {:keys [shopping-id user-id]} :- models.internal.shopping-list/ShoppingList
+   user-id :- s/Uuid
+   {:keys [shopping-id]} :- models.internal.shopping-list/ShoppingList
    {:keys [item-id predicted-date suggested-price]} :- models.internal.price-suggestion/ShoppingItemSuggestedPrice]
   {:id          event-id
    :event-type  :price-suggested

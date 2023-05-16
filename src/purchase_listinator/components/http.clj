@@ -25,11 +25,11 @@
     [http
      data ]))
 
-(defrecord Http [config request-routes=key]
+(defrecord Http [config request-routes-key]
   component/Lifecycle
 
   (start [component]
-    (assoc component :routes (request-routes=key config)))
+    (assoc component :routes (request-routes-key config)))
 
   (stop [component]
     (dissoc component :routes))
