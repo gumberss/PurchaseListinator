@@ -1,19 +1,13 @@
 (ns purchase-listinator.logic.shopping-cart-event
   (:require [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
             [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
+            [purchase-listinator.logic.shopping-item :as logic.shopping-item]
             [purchase-listinator.logic.shopping-purchase-list-cart-event :as logic.shopping-purchase-list-cart-event]
             [purchase-listinator.logic.reposition :as logic.reposition]
             [purchase-listinator.logic.shopping :as logic.shopping]
             [schema.core :as s]))
 
 (defmulti apply-event (fn [{:keys [event-type]} _] event-type))
-
-(s/defn update-item :- models.internal.shopping-list/ShoppingItem
-  [{:keys [quantity-in-cart] :as item} :- models.internal.shopping-list/ShoppingItem
-   price :- s/Num
-   quantity-changed :- s/Int]
-  (assoc item :price price
-              :quantity-in-cart (+ (or quantity-in-cart 0) (or quantity-changed 0))))
 
 (s/defn replace-item :- models.internal.shopping-list/ShoppingListCategory
   [{:keys [items] :as category} :- models.internal.shopping-list/ShoppingListCategory
@@ -34,7 +28,18 @@
                                             (filter #(= item-id (:id %)))
                                             first)
         category (first (filter #(= category-id (:id %)) categories))
-        changed-item (update-item item price quantity-changed)
+        changed-item (logic.shopping-item/update-item item price quantity-changed)
+        changed-category (replace-item category changed-item)]
+    (replace-category shopping-list changed-category)))
+
+(s/defmethod ^:private apply-event :price-suggested :- models.internal.shopping-list/ShoppingList
+  [{:keys [item-id price]} :- models.internal.shopping-cart/ItemPriceSuggested
+   {:keys [categories] :as shopping-list} :- models.internal.shopping-list/ShoppingList]
+  (let [{:keys [category-id] :as item} (->> (mapcat :items categories)
+                                            (filter #(= item-id (:id %)))
+                                            first)
+        category (first (filter #(= category-id (:id %)) categories))
+        changed-item (logic.shopping-item/update-item-price item price)
         changed-category (replace-item category changed-item)]
     (replace-category shopping-list changed-category)))
 
