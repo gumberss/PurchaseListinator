@@ -22,5 +22,5 @@
                  [clj-time "0.15.2"]
                  [funcool/cats "2.2.0"]
                  [nubank/matcher-combinators "3.5.0"]]
-  :test-paths ["test/unit"]
+  :test-paths ["test/unit" "test/helpers"]
   :repl-options {:init-ns purchase-listinator.core})
