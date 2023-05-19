@@ -1,17 +1,20 @@
 (ns purchase-listinator.logic.shopping-cart-event-test
   (:require [clojure.test :refer :all]
             [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
-            [schema.test :as st]))
+            [schema.test :as st]
+            [nrepl.misc :as misc]))
 
 (def purchase-list-id (random-uuid))
 (def shopping-id (random-uuid))
 (def category-id (random-uuid))
 (def category2-id (random-uuid))
 (def item-id (random-uuid))
+(def user-id (random-uuid))
 
 (def item1
   {:id               item-id
    :name             "item"
+   :user-id          user-id
    :quantity         15
    :price            0
    :quantity-in-cart 0
@@ -21,6 +24,7 @@
 (def category1
   {:name             "Category 1"
    :id               category-id
+   :user-id          user-id
    :order-position   1
    :color            123
    :purchase-list-id purchase-list-id
@@ -34,11 +38,14 @@
 
 (def shopping-list
   {:purchase-list-id purchase-list-id
+   :user-id          user-id
    :shopping-id      shopping-id
    :categories       [category1 category2]})
 
 (def change-item-event
-  {:moment           123
+  {:id               (random-uuid)
+   :user-id          user-id
+   :moment           123
    :event-type       :change-item
    :shopping-id      shopping-id
    :item-id          item-id
@@ -46,7 +53,9 @@
    :quantity-changed 10})
 
 (def change-item-removing-event
-  {:moment           123
+  {:id               (random-uuid)
+   :user-id          user-id
+   :moment           123
    :event-type       :change-item
    :shopping-id      shopping-id
    :item-id          item-id
@@ -76,9 +85,12 @@
 
 (def new-category-id (random-uuid))
 (def purchase-list-category-created-event
-  {:moment           123
+  {:id               (random-uuid)
+   :moment           123
    :event-type       :purchase-list-category-created
    :name             "New category"
+   :user-id          user-id
+   :shopping-id      shopping-id
    :category-id      new-category-id
    :order-position   50
    :color            321
@@ -90,14 +102,18 @@
       (is (= 3 (count categories)))
       (is (= {:name             "New category"
               :id               new-category-id
+              :user-id          user-id
               :order-position   50
               :color            321
               :purchase-list-id purchase-list-id
               :items            []} (last categories))))))
 
 (def purchase-list-category-deleted-event
-  {:moment           213
+  {:id               (random-uuid)
+   :moment           213
    :event-type       :purchase-list-category-deleted
+   :user-id          user-id
+   :shopping-id      shopping-id
    :category-id      category-id
    :purchase-list-id purchase-list-id})
 

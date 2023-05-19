@@ -1,22 +1,7 @@
 # purchase-listinator
 
-A Clojure library designed to ... well, that part is up to you.
+The documentation is in [this repository](https://github.com/gumberss/FinanceControlinatorDocs/tree/main/Features/Purchase%20Listinator)
 
-## Usage
+# Video
+https://user-images.githubusercontent.com/38296002/214667299-4b0e4cb9-fd7c-42a9-81ff-b5526ba28a3e.mp4
 
-FIXME
-
-## License
-
-Copyright © 2022 FIXME
-
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
-
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.

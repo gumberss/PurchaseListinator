@@ -4,8 +4,8 @@
             [clojure.set :as c.set]))
 
 (s/defn change-order-position :- models.logic.reposition/Reorder
-  [order-position :- s/Int
-   reorder :- models.logic.reposition/Reorder]
+  [order-position :- (s/maybe s/Int)
+   reorder :- models.logic.reposition/ReorderMaybePosition]
   (assoc reorder :order-position (or order-position 0)))
 
 (s/defn increment-order :- models.logic.reposition/Reorder
@@ -48,7 +48,7 @@
   (let [reposition-func* (partial reposition-one old-position new-position)
         max-position (max old-position new-position)
         min-position (min old-position new-position)
-        to-reoder (filter #(<= min-position (:order-position %) max-position) reorder)
-        not-changed (c.set/difference (set reorder) (set to-reoder))
-        changed (map reposition-func* to-reoder)]
+        to-reorder (filter #(<= min-position (:order-position %) max-position) reorder)
+        not-changed (c.set/difference (set reorder) (set to-reorder))
+        changed (map reposition-func* to-reorder)]
     (sort-by :order-position (concat changed not-changed))))

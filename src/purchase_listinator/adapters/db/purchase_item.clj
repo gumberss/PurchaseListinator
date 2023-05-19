@@ -2,15 +2,17 @@
   (:require [schema.core :as s]
             [purchase-listinator.misc.general :as misc.general]
             [purchase-listinator.misc.datomic :as misc.datomic]
-            [purchase-listinator.models.internal.purchase-item :as models.internal.purchase-item]))
+            [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]))
 
 (s/defn internal->db
-  [{:keys [category-id] :as internal} :- models.internal.purchase-item/PurchaseItem]
+  [{:keys [category-id order-position quantity] :as internal} :- models.internal.purchase-item/PurchaseItem]
   (-> (dissoc internal :category-id)
-      (assoc :category {:purchase-category/id category-id})
+      (assoc :category {:purchase-category/id category-id}
+             :order-position (long order-position)
+             :quantity (long quantity))
       (misc.general/namespace-keys :purchase-item)))
 
-(s/defn db->internal :- models.internal.purchase-item/PurchaseItem
+(s/defn db->internal :- (s/maybe models.internal.purchase-item/PurchaseItem)
   [db-wire]
   (when (not-empty db-wire)
     (let [{:keys [category] :as parsed} (-> (misc.datomic/datomic->entity db-wire)

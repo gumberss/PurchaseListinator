@@ -13,44 +13,60 @@
 
 (s/defn init-shopping
   [{component :component
-    wire      :json-params}]
+    wire      :json-params
+    user-id      :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.in.shopping-initiation/wire->internal wire)
-                                  (flows.shopping/init-shopping component)))))
+                                  (flows.shopping/init-shopping  (adapters.misc/string->uuid user-id) component)))))
 (s/defn get-init-shopping-data
   [{component    :component
-    query-params :query-params}]
+    query-params :query-params
+    user-id      :user-id}]
   (misc.http/default-branch-adapter (misc.either/try-right
                                       (-> (adapters.in.shopping-initiation-data-request/wire->internal query-params)
-                                          (flows.shopping/get-initial-data component)))
+                                          (flows.shopping/get-initial-data (adapters.misc/string->uuid user-id) component)))
                                     adapters.out.shopping-initiation-data/shopping->wire))
 
 (s/defn existent-shopping
   [{component         :component
-    {:keys [list-id]} :path-params}]
+    {:keys [list-id]} :path-params
+    user-id           :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid list-id)
-                                  (flows.shopping/find-existent component)))))
+                                  (flows.shopping/find-existent (adapters.misc/string->uuid user-id) component)))))
 
 (s/defn get-shopping-list
   [{component             :component
-    {:keys [shopping-id]} :path-params}]
+    {:keys [shopping-id]} :path-params
+    user-id               :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (-> (adapters.misc/string->uuid shopping-id)
-                                  (flows.shopping/get-in-progress-list component)))))
+                                  (flows.shopping/get-in-progress-list (adapters.misc/string->uuid user-id) component)))))
 
 (s/defn receive-events
   [{component :component
-    wire      :json-params}]
+    wire      :json-params
+    user-id :user-id}]
   (misc.http/default-branch
     (misc.either/try-right
       (let [now (misc.date/numb-now)
-            cart-event (adapters.in.shopping-cart-event/wire->internal wire now)]
+            user-id (adapters.misc/string->uuid user-id)
+            cart-event (adapters.in.shopping-cart-event/wire->internal wire now user-id)]
         (flows.shopping/receive-cart-event cart-event component)))))
+
+(s/defn finish-shopping
+  [{component             :component
+    {:keys [shopping-id]} :path-params
+    user-id               :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.misc/string->uuid shopping-id)
+          (flows.shopping/finish (adapters.misc/string->uuid user-id) component)))))
 
 (def routes
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
     ["/api/shopping/list/:shopping-id" :get [get-shopping-list] :route-name :get-in-progress]
-    ["/api/shopping/cart/events" :post [receive-events] :route-name :receive-shopping-list-events]})
+    ["/api/shopping/cart/events" :post [receive-events] :route-name :receive-shopping-list-events]
+    ["/api/shopping/finish/:shopping-id" :post [finish-shopping] :route-name :finish-shopping]})

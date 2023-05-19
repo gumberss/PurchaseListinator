@@ -8,7 +8,7 @@
   [{:keys [list-id] :as internal} :- models.internal.shopping/Shopping]
   (-> internal
       (assoc :list {:purchase-list/id list-id})
-      (dissoc :list-id)
+      (dissoc :list-id :categories)
       (misc.general/namespace-keys :shopping)))
 
 (s/defn db->internal :- models.internal.shopping/Shopping

@@ -8,4 +8,11 @@
   (-> event
       (assoc :id category-id
              :items [])
-      (dissoc :category-id :event-type :moment)))
+      (dissoc :category-id :event-type :moment :shopping-id)))
+
+(s/defn created->item :- models.internal.shopping-list/ShoppingItem
+  [{:keys [item-id] :as event} :- models.internal.shopping-cart/PurchaseListItemCreated]
+  (-> event
+      (assoc :id item-id)
+      (dissoc :item-id :event-type :moment :shopping-id)))
+

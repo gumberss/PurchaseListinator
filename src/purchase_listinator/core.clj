@@ -1,47 +1,70 @@
 (ns purchase-listinator.core
-  (:require [com.stuartsierra.component :as component]
-            [com.stuartsierra.component.repl
-             :refer [reset set-init start stop system]]
-            [io.pedestal.http :as http]
-            [purchase-listinator.components.pedestal :as pedestal]
-            [purchase-listinator.components.mongo :as mongo]
-            [purchase-listinator.components.redis :as redis]
-            [purchase-listinator.components.datomic :as datomic]
-            [purchase-listinator.components.rabbitmq :as rabbitmq]))
+  (:require
+    [clojure.set :as set]
+    [com.stuartsierra.component :as component]
+    [com.stuartsierra.component.repl
+     :refer [reset set-init start stop system]]
+    [io.pedestal.http :as http]
+    [purchase-listinator.components.pedestal :as pedestal]
+    [purchase-listinator.modules.events.core :as modules.events.core]
+    [purchase-listinator.modules.price-suggestion.core :as modules.price-suggestion.core]
+    [purchase-listinator.purchase-listinator-core :as purchase-listinator-core]
+    [purchase-listinator.components.pedestal :as components.pedestal])
+  (:gen-class))
+
+(def modules-config [purchase-listinator-core/module-config
+                     modules.events.core/config
+                     modules.price-suggestion.core/config])
+(def system-config
+  (reduce conj
+          {:env        (keyword (or (System/getenv "ENVIRONMENT_TYPE") "dev"))
+           :web-server {:port (or (System/getenv "WEBSERVER_PORT") 3000)
+                        :host (or (System/getenv "WEBSERVER_URL") "0.0.0.0")}}
+          (map :system-config modules-config)))
+
+(def webapp-dependencies
+  (vec (mapcat :webapp-dependencies modules-config)))
+
+(def default-routes
+  (set/union components.pedestal/default-routes))
+(def routes
+  (->> (filter :routes modules-config)
+       (map :routes)
+       (reduce #(set/union %1 %2) default-routes)))
+
+(defn general-components
+  [config]
+  {:service-map {:env         (:env config)
+                 ::http/type  :jetty
+                 ::http/port  (get-in config [:web-server :port])
+                 ::http/host  (get-in config [:web-server :host])
+                 ::http/join? false}
+   :pedestal    (component/using (pedestal/new-pedestal routes) webapp-dependencies)})
+
+(defn fill-system-map-keyval
+  [system-map [key val]]
+  (partial system-map key val))
+
+(defn build-system-map
+  [initial-system-map components]
+  (reduce fill-system-map-keyval initial-system-map components))
 
 (defn new-system
   [config]
-  (component/system-map
-    :config config
-    :service-map {:env         (:env config)
-                  ::http/type  :jetty
-                  ::http/port  (get-in config [:web-server :port])
-                  ::http/host (get-in config [:web-server :host])
-                  ::http/join? false}
-    :redis (component/using (redis/new-Redis) [:config])
-    :mongo (component/using (mongo/new-mongo) [:config])
-    :datomic (component/using (datomic/new-datomic) [:config])
-    :pedestal (component/using (pedestal/new-pedestal) [:service-map :redis :mongo :datomic :rabbitmq])
-    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config :redis :mongo :datomic])))
+  (let [system-map (build-system-map (partial component/system-map :config config)
+                                     (concat (general-components config)
+                                             (mapcat :system-components modules-config)))]
+    (system-map)))
 
-; Put this configs in the .env file
-(def system-config
-  {:env        :prod
-   :web-server {:port 5150
-                :host "192.168.1.104"}
-   :mongo      {:port    27017
-                :host    "localhost"
-                :db-name "monger-test"}
-   :datomic    {:db-uri "datomic:free://localhost:4334/datomic-component?password=datomic"}
-   :redis      {:host     "127.0.0.1"
-                :port     6379
-                :password "pass"
-                :timeout  6000}
-   :rabbitmq {:host "localhost"
-              :port 5672
-              :username "guest"
-              :password "guest"
-              :vhost "/"}})
+(defn -main
+  "The entry-point for 'lein run'"
+  [& args]
+  (component/start (new-system system-config)))
 
+(defn -stop
+  "The entry-point for 'lein run'"
+  [system]
+  (component/stop system))
+(when (= (:env system-config) :dev)
+  (set-init (fn [_] (new-system system-config))))
 
-(set-init (constantly (new-system system-config)))
