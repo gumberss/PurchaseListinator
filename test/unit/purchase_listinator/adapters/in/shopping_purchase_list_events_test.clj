@@ -49,3 +49,16 @@
             :item-id                      fixtures.event/item-id
             :category-id                  fixtures.event/category-id}
            (adapters.in.shopping-purchase-list-events/item-deleted-event->internal fixtures.event/item-deleted-event-wire)))))
+
+(s/deftest item-changed-event->internal-test
+  (testing "That we can internalize a item changed event from wire"
+    (is (= {:id             fixtures.event/event-id
+            :event-type     :purchase-list-item-changed
+            :user-id        fixtures.event/user-id
+            :moment         40
+            :item-id        fixtures.event/item-id
+            :name           "random-item-name"
+            :quantity       4
+            :order-position 2
+            :category-id    fixtures.event/category-id}
+           (adapters.in.shopping-purchase-list-events/item-changed-event->internal fixtures.event/item-changed-event-wire)))))

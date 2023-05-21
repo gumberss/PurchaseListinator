@@ -64,16 +64,16 @@
    :category-id                  s/Uuid})
 
 (s/defschema PurchaseListItemChanged
-  {:id             s/Uuid
-   :event-type     (s/eq :purchase-list-item-changed)
-   :user-id        s/Uuid
-   :moment         s/Num
-   :shopping-id    s/Uuid
-   :item-id        s/Uuid
-   :name           s/Str
-   :quantity       s/Int
-   :order-position s/Int
-   :category-id    s/Uuid})
+  {:id                           s/Uuid
+   :event-type                   (s/eq :purchase-list-item-changed)
+   :user-id                      s/Uuid
+   :moment                       s/Num
+   (s/optional-key :shopping-id) s/Uuid
+   :item-id                      s/Uuid
+   :name                         s/Str
+   :quantity                     s/Int
+   :order-position               s/Int
+   :category-id                  s/Uuid})
 
 (s/defschema PurchaseListItemDeleted
   {:id                           s/Uuid

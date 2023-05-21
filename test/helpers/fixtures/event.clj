@@ -41,3 +41,13 @@
    :category-id category-id
    :moment      35
    :user-id     user-id})
+
+(def item-changed-event-wire
+  {:event-id       event-id
+   :moment         40
+   :item-id        item-id
+   :name           "random-item-name"
+   :quantity       4
+   :order-position 2
+   :category-id    category-id
+   :user-id        user-id})
