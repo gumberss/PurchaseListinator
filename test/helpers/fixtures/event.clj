@@ -34,3 +34,10 @@
    :order-position 1
    :category-id    category-id
    :user-id        user-id})
+
+(def item-deleted-event-wire
+  {:event-id    event-id
+   :item-id     item-id
+   :category-id category-id
+   :moment      35
+   :user-id     user-id})

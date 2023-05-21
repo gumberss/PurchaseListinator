@@ -39,3 +39,13 @@
             :order-position               1
             :category-id                  fixtures.event/category-id}
            (adapters.in.shopping-purchase-list-events/item-created-event->internal fixtures.event/item-created-event-wire)))))
+
+(s/deftest item-deleted-event->internal-test
+  (testing "That we can internalize a item deleted event from wire"
+    (is (= {:id                           fixtures.event/event-id
+            :event-type                   :purchase-list-item-deleted
+            :user-id                      fixtures.event/user-id
+            :moment                       35
+            :item-id                      fixtures.event/item-id
+            :category-id                  fixtures.event/category-id}
+           (adapters.in.shopping-purchase-list-events/item-deleted-event->internal fixtures.event/item-deleted-event-wire)))))

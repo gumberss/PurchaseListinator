@@ -76,13 +76,13 @@
    :category-id    s/Uuid})
 
 (s/defschema PurchaseListItemDeleted
-  {:id          s/Uuid
-   :event-type  (s/eq :purchase-list-item-deleted)
-   :user-id     s/Uuid
-   :moment      s/Num
-   :shopping-id s/Uuid
-   :item-id     s/Uuid
-   :category-id s/Uuid})
+  {:id                           s/Uuid
+   :event-type                   (s/eq :purchase-list-item-deleted)
+   :user-id                      s/Uuid
+   :moment                       s/Num
+   (s/optional-key :shopping-id) s/Uuid
+   :item-id                      s/Uuid
+   :category-id                  s/Uuid})
 
 (s/defschema ItemPriceSuggested
   {:id          s/Uuid
