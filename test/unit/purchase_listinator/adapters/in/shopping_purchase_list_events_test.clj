@@ -22,3 +22,16 @@
             :order-position   1
             :purchase-list-id fixtures.event/purchase-list-id}
            (adapters.in.shopping-purchase-list-events/category-created-event->internal fixtures.event/create-category-event)))))
+
+(s/deftest item-created-event->internal-test
+  (testing "That we can internalize a item created event from wire"
+    (is (= {:id                           fixtures.event/event-id
+            :event-type                   :purchase-list-item-created
+            :user-id                      fixtures.event/user-id
+            :moment                       10
+            :item-id                      fixtures.event/item-id
+            :name                         "random-item-name"
+            :quantity                     2
+            :order-position               1
+            :category-id                  fixtures.event/category-id}
+           (adapters.in.shopping-purchase-list-events/item-created-event->internal fixtures.event/item-created-event-wire)))))
