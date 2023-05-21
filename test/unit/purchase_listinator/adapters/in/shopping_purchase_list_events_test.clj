@@ -6,10 +6,12 @@
 
 (s/deftest category-deleted-event->internal-test
   (testing "That we can internalize a category deleted event from wire"
-    (is (= {:category-id      fixtures.event/category-id
-            :event-type       :purchase-list-category-deleted
-            :moment           10
-            :purchase-list-id fixtures.event/purchase-list-id}
+    (is (= {:id                           fixtures.event/event-id
+            :moment                       30
+            :event-type                   :purchase-list-category-deleted
+            :user-id                      fixtures.event/user-id
+            :category-id                  fixtures.event/category-id
+            :purchase-list-id             fixtures.event/purchase-list-id}
            (adapters.in.shopping-purchase-list-events/category-deleted-event->internal fixtures.event/delete-category-event)))))
 
 (s/deftest category-created-event->internal-test

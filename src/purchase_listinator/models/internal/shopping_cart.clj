@@ -31,13 +31,13 @@
    :quantity-changed s/Int})
 
 (s/defschema PurchaseListCategoryDeleted
-  {:id               s/Uuid
-   :moment           s/Num
-   :event-type       (s/eq :purchase-list-category-deleted)
-   :user-id          s/Uuid
-   :shopping-id      s/Uuid
-   :category-id      s/Uuid
-   :purchase-list-id s/Uuid})
+  {:id                           s/Uuid
+   :moment                       s/Num
+   :event-type                   (s/eq :purchase-list-category-deleted)
+   :user-id                      s/Uuid
+   (s/optional-key :shopping-id) s/Uuid
+   :category-id                  s/Uuid
+   :purchase-list-id             s/Uuid})
 
 (s/defschema PurchaseListCategoryCreated
   {:id                           s/Uuid

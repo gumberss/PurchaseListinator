@@ -9,9 +9,11 @@
 (def shopping-id (random-uuid))
 
 (def delete-category-event
-  {:category-id      category-id
+  {:event-id         event-id
+   :category-id      category-id
    :purchase-list-id purchase-list-id
-   :moment           10})
+   :user-id          user-id
+   :moment           30})
 
 (def create-category-event
   {:event-id         event-id
