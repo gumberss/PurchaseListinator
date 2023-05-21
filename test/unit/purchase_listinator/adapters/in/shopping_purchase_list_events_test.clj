@@ -14,12 +14,14 @@
 
 (s/deftest category-created-event->internal-test
   (testing "That we can internalize a category created event from wire"
-    (is (= {:category-id      fixtures.event/category-id
-            :color            255
+    (is (= {:id               fixtures.event/event-id
+            :moment           25
             :event-type       :purchase-list-category-created
-            :moment           5
-            :name             "random-name"
-            :order-position   1
+            :user-id          fixtures.event/user-id
+            :name             "random-category-name"
+            :category-id      fixtures.event/category-id
+            :order-position   3
+            :color            255
             :purchase-list-id fixtures.event/purchase-list-id}
            (adapters.in.shopping-purchase-list-events/category-created-event->internal fixtures.event/create-category-event)))))
 

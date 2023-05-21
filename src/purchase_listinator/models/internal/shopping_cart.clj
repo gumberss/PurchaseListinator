@@ -40,16 +40,16 @@
    :purchase-list-id s/Uuid})
 
 (s/defschema PurchaseListCategoryCreated
-  {:id               s/Uuid
-   :moment           s/Num
-   :event-type       (s/eq :purchase-list-category-created)
-   :user-id          s/Uuid
-   :shopping-id      s/Uuid
-   :name             s/Str
-   :category-id      s/Uuid
-   :order-position   s/Int
-   :color            s/Int
-   :purchase-list-id s/Uuid})
+  {:id                           s/Uuid
+   :moment                       s/Num
+   :event-type                   (s/eq :purchase-list-category-created)
+   :user-id                      s/Uuid
+   (s/optional-key :shopping-id) s/Uuid
+   :name                         s/Str
+   :category-id                  s/Uuid
+   :order-position               s/Int
+   :color                        s/Int
+   :purchase-list-id             s/Uuid})
 
 (s/defschema PurchaseListItemCreated
   {:id                           s/Uuid

@@ -14,12 +14,14 @@
    :moment           10})
 
 (def create-category-event
-  {:name             "random-name"
+  {:event-id         event-id
+   :user-id          user-id
+   :name             "random-category-name"
    :category-id      category-id
-   :order-position   1
+   :order-position   3
    :color            255
    :purchase-list-id purchase-list-id
-   :moment           5})
+   :moment           25})
 
 (def item-created-event-wire
   {:event-id       event-id
