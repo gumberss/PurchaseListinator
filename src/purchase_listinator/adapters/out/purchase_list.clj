@@ -4,6 +4,7 @@
             [schema.core :as s]))
 
 (s/defn internal->wire :- wires.out.purchase-list/PurchaseList
-  [{:keys [id] :as wire} :- models.internal.purchase-list/PurchaseList]
-
-  (assoc wire :id (str id)))
+  [{:keys [id user-id] :as purchase-list} :- models.internal.purchase-list/PurchaseList]
+  (merge purchase-list
+         {:id (str id)
+          :user-id (str user-id)}))

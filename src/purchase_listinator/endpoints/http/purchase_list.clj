@@ -3,6 +3,7 @@
             [purchase-listinator.wires.purchase-list.out.purchase-list :as out.purchases-lists]
             [purchase-listinator.flows.purchase-list :as flows.purchase-list]
             [purchase-listinator.adapters.purchase-list.in.purchase-list :as adapters.in.purchase-list]
+            [purchase-listinator.adapters.out.purchase-list :as adapters.out.purchase-list]
             [purchase-listinator.adapters.misc :as adapters.misc]
             [purchase-listinator.adapters.purchase-list.in.purchase-category :as adapters.in.purchase-category]
             [purchase-listinator.adapters.purchase-list.in.purchase-item :as adapters.in.purchase-item]
@@ -21,7 +22,8 @@
             (let [user-id (adapters.misc/string->uuid user-id)]
               (flows.purchase-list/get-lists user-id datomic)))
           misc.http/->Error
-          misc.http/->Success))
+          #(-> (map adapters.out.purchase-list/internal->wire %)
+               misc.http/->Success)))
 
 (s/defn post-purchase-lists :- {:status s/Int
                                 :body   wires.purchase-list.out.purchase-list/PurchaseList}
@@ -32,7 +34,8 @@
             (let [user-id (adapters.misc/string->uuid user-id)]
               (flows.purchase-list/create name user-id datomic)))
           misc.http/->Error
-          misc.http/->Success))
+          #(-> (adapters.out.purchase-list/internal->wire %)
+              misc.http/->Success)))
 
 (s/defn disable-purchase-lists :- {:status s/Int
                                    :body   {}}

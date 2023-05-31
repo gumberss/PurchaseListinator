@@ -4,18 +4,19 @@
             [schema.test :as s]))
 
 (def user-id (random-uuid))
+(def purchase-list-id (random-uuid))
 
 (def wire-purchase-list
   {:name        "random name"
-   :id          "f948399f-29c3-402e-81ed-b0d695fc792a"
-   :user-id     user-id
+   :id          (str purchase-list-id)
+   :user-id     (str user-id)
    :enabled     true
    :in-progress true})
 
 (s/deftest wire->internal-test
   (testing "That we can internalize a purchase list from the wire"
     (is (= {:enabled     true
-            :id          #uuid "f948399f-29c3-402e-81ed-b0d695fc792a"
+            :id          purchase-list-id
             :user-id     user-id
             :in-progress true
             :name        "random name"}

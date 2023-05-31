@@ -6,7 +6,7 @@
    :id          s/Str
    :enabled     s/Bool
    :in-progress s/Bool
-   :user-id          s/Uuid})
+   :user-id     s/Str})
 
 (s/defschema PurchaseList purchase-list-skeleton)
 
