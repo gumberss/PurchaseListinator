@@ -18,24 +18,23 @@
                                :body   [out.purchases-lists/PurchaseList]}
   [{{:keys [datomic]} :component
     user-id           :user-id}]
-  (branch (misc.either/try-right
-            (let [user-id (adapters.misc/string->uuid user-id)]
-              (flows.purchase-list/get-lists user-id datomic)))
-          misc.http/->Error
-          #(-> (map adapters.out.purchase-list/internal->wire %)
-               misc.http/->Success)))
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.misc/string->uuid user-id)
+          (flows.purchase-list/get-lists datomic)
+          (->> (map adapters.out.purchase-list/internal->wire))))))
 
 (s/defn post-purchase-lists :- {:status s/Int
                                 :body   wires.purchase-list.out.purchase-list/PurchaseList}
   [{{datomic :datomic} :component
     {:keys [name]}     :json-params
     user-id            :user-id}]
-  (branch (misc.either/try-right
-            (let [user-id (adapters.misc/string->uuid user-id)]
-              (flows.purchase-list/create name user-id datomic)))
-          misc.http/->Error
-          #(-> (adapters.out.purchase-list/internal->wire %)
-              misc.http/->Success)))
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.misc/string->uuid user-id)
+          (flows.purchase-list/create name datomic)
+          :right
+          adapters.out.purchase-list/internal->wire))))
 
 (s/defn disable-purchase-lists :- {:status s/Int
                                    :body   {}}
