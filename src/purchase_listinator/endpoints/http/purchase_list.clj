@@ -29,12 +29,11 @@
   [{{datomic :datomic} :component
     {:keys [name]}     :json-params
     user-id            :user-id}]
-  (misc.http/default-branch
+  (misc.http/default-branch-adapter
     (misc.either/try-right
       (-> (adapters.misc/string->uuid user-id)
-          (flows.purchase-list/create name datomic)
-          :right
-          adapters.out.purchase-list/internal->wire))))
+          (flows.purchase-list/create name datomic)))
+    adapters.out.purchase-list/internal->wire))
 
 (s/defn disable-purchase-lists :- {:status s/Int
                                    :body   {}}
