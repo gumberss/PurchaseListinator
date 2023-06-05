@@ -5,6 +5,7 @@
             [purchase-listinator.adapters.misc :as adapters.misc]))
 
 (s/defn wire->internal :- models.internal.purchase-list/PurchaseList
-  [{:keys [id] :as wire} :- wires.in.purchase-list/PurchaseList]
-  (->> (adapters.misc/string->uuid id)
-       (assoc wire :id)))
+  [{:keys [id user-id] :as purchase-list} :- wires.in.purchase-list/PurchaseList]
+  (merge purchase-list
+         {:id      (adapters.misc/string->uuid id)
+          :user-id (adapters.misc/string->uuid user-id)}))

@@ -14,8 +14,8 @@
   (datomic.purchase-list/get-enabled user-id datomic))
 
 (s/defn create
-  [name :- s/Str
-   user-id :- s/Uuid
+  [user-id :- s/Uuid
+   name :- s/Str
    datomic]
   (either/try-right
     (if (datomic.purchase-list/get-by-name name user-id datomic)
