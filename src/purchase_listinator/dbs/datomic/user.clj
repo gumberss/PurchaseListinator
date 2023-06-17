@@ -13,8 +13,14 @@
     :db/doc         "The user table id"}
    {:db/ident       :user/external-id
     :db/valueType   :db.type/string
+    :db/unique      :db.unique/value
     :db/cardinality :db.cardinality/one
-    :db/doc         "The user external identifier"}])
+    :db/doc         "The user external identifier"}
+   {:db/ident       :user/nickname
+    :db/valueType   :db.type/string
+    :db/unique      :db.unique/value
+    :db/cardinality :db.cardinality/one
+    :db/doc         "The user nickname"}])
 
 (s/defn existent?
   [external-user-id :- s/Str
