@@ -13,8 +13,14 @@
     :db/doc         "The user table id"}
    {:db/ident       :user/external-id
     :db/valueType   :db.type/string
+    :db/unique      :db.unique/value
     :db/cardinality :db.cardinality/one
-    :db/doc         "The user external identifier"}])
+    :db/doc         "The user external identifier"}
+   {:db/ident       :user/nickname
+    :db/valueType   :db.type/string
+    :db/unique      :db.unique/value
+    :db/cardinality :db.cardinality/one
+    :db/doc         "The user nickname"}])
 
 (s/defn existent?
   [external-user-id :- s/Str
@@ -25,6 +31,17 @@
               [?u :user/external-id ?e-id]
               [?u :user/id ?id]]
             (d/db connection) external-user-id)
+       ffirst))
+
+(s/defn existent-nickname?
+  [nickname :- s/Str
+   {:keys [connection]}]
+  (->> (d/q '[:find ?id
+              :in $ ?e-nickname
+              :where
+              [?u :user/nickname ?e-nickname]
+              [?u :user/id ?id]]
+            (d/db connection) nickname)
        ffirst))
 
 (s/defn find-by-external-id
