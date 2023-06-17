@@ -33,17 +33,6 @@
             (d/db connection) external-user-id)
        ffirst))
 
-(s/defn existent-nickname?
-  [nickname :- s/Str
-   {:keys [connection]}]
-  (->> (d/q '[:find ?id
-              :in $ ?e-nickname
-              :where
-              [?u :user/nickname ?e-nickname]
-              [?u :user/id ?id]]
-            (d/db connection) nickname)
-       ffirst))
-
 (s/defn find-by-external-id
   [external-user-id :- s/Str
    {:keys [connection]}]
