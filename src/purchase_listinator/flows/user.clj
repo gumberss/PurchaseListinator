@@ -21,7 +21,7 @@
    user-id :- s/Uuid
    {:keys [datomic]}]
   (if (not (logic.user/valid-nickname? nickname))
-    (left (logic.errors/build 400 "[[INVALID_NICKNAME]]"))
+    (left (logic.errors/build 400 {:message "[[INVALID_NICKNAME]]"}))
     (try
       (dbs.datomic.user/upsert
         {:id       user-id
@@ -29,6 +29,6 @@
       (catch Exception ex
         (left
           (if (= :transact/unique (-> ex ex-data :error))
-            (logic.errors/build 400 "[[NICKNAME_ALREADY_USED]]")
+            (logic.errors/build 400 {:message "[[NICKNAME_ALREADY_USED]]"})
             (do (clojure.pprint/pprint ex)
                 (logic.errors/build 500 "An error occurred on the server"))))))))

@@ -5,8 +5,7 @@
             [state-flow.core :refer [flow]]
             [utils.integration-test :refer [integration-test]]
             [state-flow.assertions.matcher-combinators :refer [match?]]
-            [utils.http :as utils.http]
-            [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]))
+            [utils.http :as utils.http]))
 
 (def list-id "5215075f-9a24-47e9-91fb-8485adb410f4")
 (def user-external-id "Random value")
@@ -59,11 +58,11 @@
     (flow "Try to change the second user nickname for one that is already in use"
       [second-nickname-response (change-nickname-request! (-> second-user-response :body :id) "Bro")]
       (match? {:status 400
-               :body   "[[NICKNAME_ALREADY_USED]]"} second-nickname-response))))
+               :body   {:message "[[NICKNAME_ALREADY_USED]]"}} second-nickname-response))))
 
 (integration-test change-nickname-invalid-test
   (flow "Shouldn't change the user nickname when the nickname is invalid"
     [register-user-response (register-user-request! user-external-id)
      change-nickname-response (change-nickname-request! (-> register-user-response :body :id) "")]
     (match? {:status 400
-             :body   "[[INVALID_NICKNAME]]"} change-nickname-response)))
+             :body   {:message "[[INVALID_NICKNAME]]"}} change-nickname-response)))
