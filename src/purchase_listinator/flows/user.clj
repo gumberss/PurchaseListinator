@@ -10,12 +10,11 @@
 (s/defn register
   [user-external-id :- s/Str
    {:keys [datomic]}]
-  (let [user-id (dbs.datomic.user/existent? user-external-id datomic)]
-    (if (not user-id)
-      (dissoc (dbs.datomic.user/upsert {:id          (misc.general/squuid)
-                                        :external-id user-external-id} datomic)
-              :external-id)
-      {:id user-id})))
+  (if-let [user (dbs.datomic.user/find-by-external-id user-external-id datomic)]
+    (dissoc user :external-id)
+    (dissoc (dbs.datomic.user/upsert {:id          (misc.general/squuid)
+                                      :external-id user-external-id} datomic)
+            :external-id)))
 
 (s/defn set-nickname
   [nickname :- (s/maybe s/Str)

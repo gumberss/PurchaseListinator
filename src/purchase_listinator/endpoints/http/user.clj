@@ -9,11 +9,11 @@
 
 
 (s/defn register-user
-  [{component :component
-    :keys     [user-id]}]
+  [{component                  :component
+    {:keys [user-external-id]} :json-params}]
   (misc.http/default-branch
     (misc.either/try-right
-      (flows.user/register user-id component))))
+      (flows.user/register user-external-id component))))
 
 (s/defn nickname-user
   [{component          :component
