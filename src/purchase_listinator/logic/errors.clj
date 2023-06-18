@@ -3,6 +3,6 @@
 
 (s/defn build
   [status :- s/Int
-   error :- s/Str]
+   error :- {:message s/Str}]
   {:status status
    :error  error})

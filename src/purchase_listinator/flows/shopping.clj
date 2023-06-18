@@ -88,7 +88,7 @@
    {:keys [datomic]}]
   (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id user-id datomic)]
     existent
-    (left (logic.errors/build 404 nil))))
+    (left (logic.errors/build 404 {:message nil}))))
 
 (s/defn receive-cart-event
   [{:keys [shopping-id] :as event} :- models.internal.shopping-cart/CartEvent

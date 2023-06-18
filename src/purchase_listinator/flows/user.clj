@@ -31,4 +31,4 @@
           (if (= :transact/unique (-> ex ex-data :error))
             (logic.errors/build 400 {:message "[[NICKNAME_ALREADY_USED]]"})
             (do (clojure.pprint/pprint ex)
-                (logic.errors/build 500 "An error occurred on the server"))))))))
+                (logic.errors/build 500 {:message "An error occurred on the server"}))))))))
