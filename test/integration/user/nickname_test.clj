@@ -17,7 +17,9 @@
     [{:keys [body] :as response} (utils.http/request! {:method               :post
                                                        :endpoint             :register-user
                                                        :token                user-external-id
-                                                       :response-body-schema {:id s/Uuid}})]
+                                                       :body                 {:user-external-id user-external-id}
+                                                       :response-body-schema {:id   s/Uuid
+                                                                              s/Any s/Any}})]
     (match? {:status 200
              :body   {:id uuid?}} response)
 
