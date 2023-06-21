@@ -14,7 +14,7 @@
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one}
    {:db/ident       :purchase-list-share/customer-nickname
-    :db/valueType   :db.type/uuid
+    :db/valueType   :db.type/string
     :db/cardinality :db.cardinality/one}])
 
 (s/defn upsert :- models.internal.purchase-list.share/ShareList

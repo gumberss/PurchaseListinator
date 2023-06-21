@@ -9,7 +9,7 @@
    :customer-nickname "Custom Nickname"})
 
 (def share-list-internal
-  {:list-id           (str list-id)
+  {:list-id           list-id
    :customer-nickname "Custom Nickname"})
 
 (st/deftest wire->internal-test
