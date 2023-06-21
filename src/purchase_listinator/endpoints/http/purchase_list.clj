@@ -12,6 +12,7 @@
             [purchase-listinator.misc.either :as misc.either]
             [purchase-listinator.misc.http :as misc.http]
             [purchase-listinator.wires.purchase-list.out.purchase-list :as wires.purchase-list.out.purchase-list]
+            [purchase-listinator.adapters.purchase-list.in.share :as adapters.purchase-list.in.share]
             [cats.monad.either :refer :all]))
 
 (s/defn get-purchase-lists :- {:status s/Int
@@ -149,9 +150,19 @@
   [{{:keys [datomic]} :component
     wire              :json-params
     user-id           :user-id}]
-  (misc.http/default-branch (misc.either/try-right
-                              (-> (adapters.in.purchase-category/wire->internal wire)
-                                  (flows.purchase-category/edit (adapters.misc/string->uuid user-id) datomic)))))
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.in.purchase-category/wire->internal wire)
+          (flows.purchase-category/edit (adapters.misc/string->uuid user-id) datomic)))))
+
+(s/defn share-list
+  [{{:keys [datomic]} :component
+    wire              :json-params
+    user-id           :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.purchase-list.in.share/wire->internal wire)
+          (flows.purchase-list/share (adapters.misc/string->uuid user-id) datomic)))))
 
 ;todo: /lists should return only the purchase list data and /lists/:id should return items and categories too
 (def routes
@@ -168,4 +179,5 @@
     ["/api/purchases/items/:id/changeName/:new-name" :put [edit-item-name] :route-name :edit-item-name]
     ["/api/purchases/items/:id/changeQuantity/:new-quantity" :put [change-item-quantity] :route-name :change-item-quantity]
     ["/api/purchases/items/:id/changeOrder/:new-category-id/:new-position" :put [change-item-order] :route-name :change-item-order]
-    ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]})
+    ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]
+    ["/api/share/purchase-list" :post [share-list] :route-name :share-list]})
