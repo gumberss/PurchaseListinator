@@ -8,7 +8,8 @@
             [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]
             [purchase-listinator.dbs.datomic.shopping-category :as dbs.datomic.shopping-category]
             [purchase-listinator.dbs.datomic.shopping-item :as dbs.datomic.shopping-item]
-            [purchase-listinator.dbs.datomic.user :as dbs.datomic.user]))
+            [purchase-listinator.dbs.datomic.user :as dbs.datomic.user]
+            [purchase-listinator.dbs.datomic.share :as dbs.datomic.share]))
 
 (def schema (concat dbs.datomic.user/schema
                     datomic.purchase-list/schema
@@ -17,7 +18,8 @@
                     datomic.shopping/schema
                     dbs.datomic.shopping-events/schema
                     dbs.datomic.shopping-item/schema
-                    dbs.datomic.shopping-category/schema))
+                    dbs.datomic.shopping-category/schema
+                    dbs.datomic.share/schema))
 
 (defn create-schema [conn]
   (d/transact conn schema))

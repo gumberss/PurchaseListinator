@@ -1,12 +1,16 @@
 (ns purchase-listinator.flows.purchase-list
-  (:require [schema.core :as s]
-            [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
-            [purchase-listinator.models.internal.purchase-list.purchase-list :as internal.purchase-list]
-            [purchase-listinator.logic.purchase-list :as logic.purchase-list]
-            [purchase-listinator.logic.purchase-category :as logic.purchase-category]
-            [cats.monad.either :refer [left right]]
-            [purchase-listinator.misc.either :as either]
-            [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]))
+  (:require
+    [purchase-listinator.logic.errors :as logic.errors]
+    [purchase-listinator.models.internal.purchase-list.share :as models.internal.purchase-list.share]
+    [schema.core :as s]
+    [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
+    [purchase-listinator.models.internal.purchase-list.purchase-list :as internal.purchase-list]
+    [purchase-listinator.logic.purchase-list :as logic.purchase-list]
+    [purchase-listinator.logic.purchase-category :as logic.purchase-category]
+    [purchase-listinator.dbs.datomic.share :as dbs.datomic.share]
+    [cats.monad.either :refer [left right]]
+    [purchase-listinator.misc.either :as either]
+    [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]))
 
 (s/defn get-lists
   [user-id :- s/Uuid
@@ -46,6 +50,14 @@
         :else (-> (logic.purchase-list/edit existent-purchase-list purchase-list)
                   (datomic.purchase-list/upsert datomic)
                   right)))))
+
+(s/defn share
+  [{:keys [list-id] :as share-list} :- models.internal.purchase-list.share/ShareList
+   user-id :- s/Uuid
+   datomic]
+  (if (datomic.purchase-list/existent? list-id user-id datomic)
+    (dbs.datomic.share/upsert share-list datomic)
+    (logic.errors/build 404 {:message "[[LIST_NOT_FOUND]]"})))
 
 (s/defn management-data :- internal.purchase-list-management-data/ManagementData
   [purchase-list-id :- s/Uuid
