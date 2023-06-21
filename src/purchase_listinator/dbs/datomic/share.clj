@@ -13,7 +13,7 @@
    {:db/ident       :purchase-list-share/list-id
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one}
-   {:db/ident       :purchase-list-share/customer-id
+   {:db/ident       :purchase-list-share/customer-nickname
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one}])
 
