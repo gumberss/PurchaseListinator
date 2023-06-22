@@ -78,7 +78,7 @@
   purchase-list)
 
 (s/defn existent?
-  [id :- s/Str
+  [id :- s/Uuid
    user-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find ?id

@@ -19,7 +19,6 @@
   [{component          :component
     {:keys [nickname]} :json-params
     :keys              [user-id]}]
-  (println nickname)
   (misc.http/default-branch
     (misc.either/try-right
       (flows.user/set-nickname nickname (adapters.misc/string->uuid user-id) component))))
