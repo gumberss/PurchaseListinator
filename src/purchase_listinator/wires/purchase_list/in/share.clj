@@ -5,5 +5,5 @@
   {:list-id     s/Str
    :customer-nickname s/Str})
 
-(s/defschema ShareList share-list-skeleton)
+(s/defschema ShareListRequest share-list-skeleton)
 

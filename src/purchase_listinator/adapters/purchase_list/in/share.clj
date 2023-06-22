@@ -5,6 +5,6 @@
     [purchase-listinator.models.internal.purchase-list.share :as models.internal.purchase-list.share]
     [purchase-listinator.wires.purchase-list.in.share :as wires.purchase-list.in.share]))
 
-(s/defn wire->internal :- models.internal.purchase-list.share/ShareList
-  [{:keys [list-id] :as wire} :- wires.purchase-list.in.share/ShareList]
+(s/defn wire->internal :- models.internal.purchase-list.share/ShareListRequest
+  [{:keys [list-id] :as wire} :- wires.purchase-list.in.share/ShareListRequest]
   (assoc wire :list-id (adapters.misc/string->uuid list-id)))

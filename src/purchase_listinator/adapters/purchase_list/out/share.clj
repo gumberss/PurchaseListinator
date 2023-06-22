@@ -7,3 +7,9 @@
   [internal :- models.internal.purchase-list.share/ShareList]
   (purchase-listinator.misc.general/namespace-keys internal "purchase-list-share"))
 
+
+(s/defn db->internal :- models.internal.purchase-list.share/ShareList
+  [{:purchase-list-share/keys [customer-id list-id]} :- wires.purchase-list.out.db.share/ShareList]
+  {:customer-id customer-id
+   :list-id     list-id})
+

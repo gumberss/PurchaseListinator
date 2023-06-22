@@ -22,16 +22,16 @@
     :db/cardinality :db.cardinality/one
     :db/doc         "The user nickname"}])
 
-(s/defn existent?
-  [external-user-id :- s/Str
+(s/defn get-id-by-nickname
+  [nickname :- s/Str
    {:keys [connection]}]
   (->> (d/q '[:find ?id
-              :in $ ?e-id
-              :where
-              [?u :user/external-id ?e-id]
-              [?u :user/id ?id]]
-            (d/db connection) external-user-id)
-       ffirst))
+                 :in $ ?n
+                 :where
+                 [?u :user/nickname ?n]
+                 [?u :user/id ?id]]
+               (d/db connection) nickname)
+          ffirst))
 
 (s/defn find-by-external-id
   [external-user-id :- s/Str

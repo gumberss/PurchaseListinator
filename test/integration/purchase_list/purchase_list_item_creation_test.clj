@@ -28,13 +28,4 @@
                       :quantity       10
                       :order-position 0
                       :user-id        user-id
-                      :category-id    category-id}} response)
-    #_(match? {:event-id         uuid?
-             :name             "A category"
-             :category-id      (parse-uuid category-id)
-             :user-id          (parse-uuid user-id)
-             :purchase-list-id (parse-uuid list-id)
-             :order-position   0
-             :color            1321
-             :moment           number?}
-            (components.rabbitmq/first-event :purchase-listinator/purchase-list.category.created))))
+                      :category-id    category-id}} response)))
