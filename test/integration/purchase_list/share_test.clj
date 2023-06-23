@@ -7,6 +7,7 @@
             [state-flow.assertions.matcher-combinators :refer [match?]]
             [purchase-listinator.dbs.datomic.share :as dbs.datomic.share]
             [utils.http :as utils.http]))
+
 (def user-external-id "Random value")
 (def user-nickname "Bro")
 

@@ -38,7 +38,11 @@
   (->> (d/q '[:find [(pull ?e [*]) ...]
               :in $ ?u-id
               :where
-              [?e :purchase-list/user-id ?u-id]
+              (or-join [?e ?u-id]
+                       (and [?s :purchase-list-share/customer-id ?u-id]
+                            [?s :purchase-list-share/list-id ?l-id]
+                            [?e :purchase-list/id ?l-id])
+                       [?e :purchase-list/user-id ?u-id])
               [?e :purchase-list/enabled true]]
             (d/db connection) user-id)
        (sort-by :purchase-list/name)
