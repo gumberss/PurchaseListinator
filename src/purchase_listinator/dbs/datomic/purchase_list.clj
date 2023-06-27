@@ -101,6 +101,19 @@
     (transact connection wire)
     (adapter.purchase-list/db->internal wire)))
 
+(s/defn get-shared-list-by-user-id :- [s/Uuid]
+  [user-id :- s/Uuid
+   {:keys [connection]}]
+  (d/q '[:find [?l-id ...]
+         :in $ ?u-id
+         :where
+         (or-join [?l-id ?u-id]
+                  (and [?s :purchase-list-share/customer-id ?u-id]
+                       [?s :purchase-list-share/list-id ?l-id])
+                  (and [?e :purchase-list/user-id ?u-id]
+                       [?e :purchase-list/id ?l-id]))]
+       (d/db connection) user-id))
+
 (s/defn get-management-data
   ([purchase-list-id :- s/Uuid
     user-id :- s/Uuid

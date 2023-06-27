@@ -53,16 +53,11 @@
                   (datomic.purchase-list/upsert datomic)
                   right)))))
 
-(s/defn share
-  [{:keys [list-id customer-nickname] :as share-list-request} :- models.internal.purchase-list.share/ShareListRequest
-   user-id :- s/Uuid
+(s/defn allowed-lists-by-user :- [s/Uuid]
+  [user-id :- s/Uuid
    datomic]
-  (if (datomic.purchase-list/existent? list-id user-id datomic)
-    (if-let [share-with-customer-id (dbs.datomic.user/get-id-by-nickname customer-nickname datomic)]
-      (-> (logic.share/->share-list share-list-request share-with-customer-id)
-          (dbs.datomic.share/upsert datomic))
-      (logic.errors/build 404 {:message "[[USER_NOT_FOUND_BY_NICKNAME]]"}))
-    (logic.errors/build 404 {:message "[[LIST_NOT_FOUND]]"})))
+  (datomic.purchase-list/get-shared-list-by-user-id user-id datomic))
+
 
 (s/defn management-data :- internal.purchase-list-management-data/ManagementData
   [purchase-list-id :- s/Uuid

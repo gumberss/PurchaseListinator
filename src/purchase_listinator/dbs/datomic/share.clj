@@ -34,4 +34,4 @@
               :where
               [?e :purchase-list-share/list-id ?l-id]]
             (d/db connection) list-id)
-       (map adapter.purchase-list/db->internal)))
+       (map adapters.purchase-list.out.share/db->internal)))

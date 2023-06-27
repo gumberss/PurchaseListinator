@@ -9,6 +9,7 @@
             [purchase-listinator.adapters.purchase-list.in.purchase-item :as adapters.in.purchase-item]
             [purchase-listinator.flows.purchase-category :as flows.purchase-category]
             [purchase-listinator.flows.purchase-item :as flows.purchase-item]
+            [purchase-listinator.flows.share :as flows.share]
             [purchase-listinator.misc.either :as misc.either]
             [purchase-listinator.misc.http :as misc.http]
             [purchase-listinator.wires.purchase-list.out.purchase-list :as wires.purchase-list.out.purchase-list]
@@ -155,6 +156,13 @@
       (-> (adapters.in.purchase-category/wire->internal wire)
           (flows.purchase-category/edit (adapters.misc/string->uuid user-id) datomic)))))
 
+(s/defn allowed-lists-by-user
+  [{{:keys [datomic]} :component
+    user-id           :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (flows.purchase-list/allowed-lists-by-user (adapters.misc/string->uuid user-id) datomic))))
+
 (s/defn share-list
   [{{:keys [datomic]} :component
     wire              :json-params
@@ -162,7 +170,7 @@
   (misc.http/default-branch
     (misc.either/try-right
       (-> (adapters.purchase-list.in.share/wire->internal wire)
-          (flows.purchase-list/share (adapters.misc/string->uuid user-id) datomic)))))
+          (flows.share/share (adapters.misc/string->uuid user-id) datomic)))))
 
 ;todo: /lists should return only the purchase list data and /lists/:id should return items and categories too
 (def routes
@@ -180,4 +188,6 @@
     ["/api/purchases/items/:id/changeQuantity/:new-quantity" :put [change-item-quantity] :route-name :change-item-quantity]
     ["/api/purchases/items/:id/changeOrder/:new-category-id/:new-position" :put [change-item-order] :route-name :change-item-order]
     ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]
-    ["/api/share/purchase-list" :post [share-list] :route-name :share-list]})
+    ["/api/share/purchase-list" :post [share-list] :route-name :share-list]
+    ["/api/lists/allowed" :get [allowed-lists-by-user] :route-name :allowed-lists-by-user]})
+
