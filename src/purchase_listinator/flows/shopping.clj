@@ -70,9 +70,10 @@
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
-   {:keys [datomic redis] :as components}]
-  (let [{:keys [list-id date]} (datomic.shopping/get-by-id shopping-id user-id datomic)
-        purchase-list (dbs.datomic.purchase-list/get-management-data list-id user-id date datomic)
+   {:keys [datomic redis http] :as components}]
+  (let [allowed-lists-ids #p (http.client.shopping/get-allowed-lists user-id http)
+        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id user-id datomic)
+        purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
         shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
         cart (redis.shopping-cart/find-cart shopping-id redis)
         shopping+cart (logic.shopping-cart-event/apply-cart cart shopping)
@@ -130,10 +131,11 @@
 (s/defn finish
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
-   {:keys [redis datomic rabbitmq]}]
-  (let [{:keys [events] :as cart} (redis.shopping-cart/find-cart shopping-id redis)
+   {:keys [redis datomic rabbitmq http]}]
+  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
+        {:keys [events] :as cart} (redis.shopping-cart/find-cart shopping-id redis)
         {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id user-id datomic)
-        purchase-list (dbs.datomic.purchase-list/get-management-data list-id user-id date datomic)
+        purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
         shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
         shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)
                       :categories

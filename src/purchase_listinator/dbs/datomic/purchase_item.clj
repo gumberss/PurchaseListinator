@@ -37,58 +37,64 @@
 
 (s/defn items-count
   [purchase-category-id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (-> (d/q '[:find (count ?i)
-             :in $ ?purchase-category-id ?u-id
+             :in $ ?purchase-category-id [?a-l-id ...]
              :where
              [?c :purchase-category/id ?purchase-category-id]
-             [?i :purchase-item/category ?c]
-             [?i :purchase-item/user-id ?u-id]]
-           (d/db connection) purchase-category-id user-id)
+             [?c :purchase-category/purchase-list ?l]
+             [?l :purchase-list/id ?a-l-id]
+             [?i :purchase-item/category ?c]]
+           (d/db connection) purchase-category-id allowed-lists-ids)
       ffirst))
 
 (s/defn get-by-name :- (s/maybe models.internal.purchase-item/PurchaseItem)
   [name :- s/Str
    category-id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?i [*])
-              :in $ ?c-id ?name ?u-id
+              :in $ ?c-id ?name [?a-l-id ...]
               :where
               [?c :purchase-category/id ?c-id]
               [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-list/id ?a-l-id]
               [?all-c :purchase-category/purchase-list ?l]
               [?i :purchase-item/category ?all-c]
               [?i :purchase-item/name ?name]
               [?i :purchase-item/user-id ?u-id]]
-            (d/db connection) category-id name user-id)
+            (d/db connection) category-id name allowed-lists)
        ffirst
        adapters.db.purchase-item/db->internal))
 
 (s/defn get-by-id :- models.internal.purchase-item/PurchaseItem
   [item-id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?i [* {:purchase-item/category [:purchase-category/id]}])
-              :in $ ?i-id ?name ?u-id
+              :in $ ?i-id ?name [?a-l-id ...]
               :where
               [?i :purchase-item/id ?i-id]
-              [?i :purchase-item/user-id ?u-id]]
-            (d/db connection) item-id name user-id)
+              [?i :purchase-item/category ?c]
+              [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-list/id ?a-l-id]]
+            (d/db connection) item-id name allowed-lists)
        ffirst
        adapters.db.purchase-item/db->internal))
 
 (s/defn get-by-ids :- [models.internal.purchase-item/PurchaseItem]
   [item-ids :- [s/Uuid]
-   user-id :- s/Uuid
+   allowed-lists :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?i [* {:purchase-item/category [:purchase-category/id]}])
-              :in $ [?i-id ...]
+              :in $ [?i-id ...] [?a-l-id ...]
               :where
               [?i :purchase-item/id ?i-id]
-              [?i :purchase-item/user-id ?u-id]]
-            (d/db connection) item-ids user-id)
+              [?i :purchase-item/category ?c]
+              [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-list/id ?a-l-id]]
+            (d/db connection) item-ids allowed-lists)
        flatten
        (map adapters.db.purchase-item/db->internal)))
 
@@ -96,34 +102,36 @@
   [category-id :- s/Uuid
    start-range :- s/Num
    end-range :- s/Num
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?i [* {:purchase-item/category [:purchase-category/id]}]) ...]
-              :in $ ?c-id ?s-range ?e-range ?u-id
+              :in $ ?c-id ?s-range ?e-range [?a-l-id ...]
               :where
               [?c :purchase-category/id ?c-id]
+              [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-category/id ?a-l-id]
               [?i :purchase-item/category ?c]
-              [?i :purchase-item/user-id ?u-id]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]
               [(<= ?o ?e-range)]]
-            (d/db connection) category-id start-range end-range user-id)
+            (d/db connection) category-id start-range end-range allowed-lists-ids)
        (map adapters.db.purchase-item/db->internal)))
 
 (s/defn get-by-position-start :- models.internal.purchase-item/PurchaseItems
   [category-id :- s/Uuid
    start-range :- s/Num
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?i [* {:purchase-item/category [:purchase-category/id]}]) ...]
-              :in $ ?c-id ?s-range ?u-id
+              :in $ ?c-id ?s-range [?a-l-id ...]
               :where
               [?c :purchase-category/id ?c-id]
+              [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-category/id ?a-l-id]
               [?i :purchase-item/category ?c]
-              [?i :purchase-item/user-id ?u-id]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]]
-            (d/db connection) category-id start-range user-id)
+            (d/db connection) category-id start-range allowed-lists-ids)
        (map adapters.db.purchase-item/db->internal)))
 
 (s/defn delete-by-id :- s/Uuid

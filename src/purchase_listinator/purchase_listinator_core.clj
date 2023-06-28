@@ -17,7 +17,8 @@
    :http     (component/using (components.http/new-http :shopping/request-routes) [:config])})
 
 (def request-routes
-  {:price-suggestion/items (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")})
+  {:price-suggestion/items (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")
+   :purchase-list/allowed-lists (or (System/getenv "PURCHASE_LIST_URL") "http://localhost:3000/api/lists/allowed")})
 
 (def purchase-listinator-config
   {:mongo                   {:port    27017

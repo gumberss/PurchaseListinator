@@ -1,23 +1,19 @@
 (ns purchase-listinator.flows.purchase-list
   (:require
-    [purchase-listinator.logic.errors :as logic.errors]
-    [purchase-listinator.models.internal.purchase-list.share :as models.internal.purchase-list.share]
     [schema.core :as s]
     [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
     [purchase-listinator.models.internal.purchase-list.purchase-list :as internal.purchase-list]
     [purchase-listinator.logic.purchase-list :as logic.purchase-list]
     [purchase-listinator.logic.purchase-category :as logic.purchase-category]
-    [purchase-listinator.dbs.datomic.share :as dbs.datomic.share]
     [cats.monad.either :refer [left right]]
     [purchase-listinator.misc.either :as either]
-    [purchase-listinator.dbs.datomic.user :as dbs.datomic.user]
-    [purchase-listinator.logic.share :as logic.share]
     [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]))
 
 (s/defn get-lists
   [user-id :- s/Uuid
    datomic]
-  (datomic.purchase-list/get-enabled user-id datomic))
+  (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
+    (datomic.purchase-list/get-enabled allowed-lists-ids datomic)))
 
 (s/defn create
   [user-id :- s/Uuid
@@ -56,14 +52,15 @@
 (s/defn allowed-lists-by-user :- [s/Uuid]
   [user-id :- s/Uuid
    datomic]
-  (datomic.purchase-list/get-shared-list-by-user-id user-id datomic))
+  (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic))
 
 
 (s/defn management-data :- internal.purchase-list-management-data/ManagementData
   [purchase-list-id :- s/Uuid
    user-id :- s/Uuid
    datomic]
-  (let [{:keys [categories] :as management-data} (datomic.purchase-list/get-management-data purchase-list-id user-id datomic)]
+  (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
+        {:keys [categories] :as management-data} (datomic.purchase-list/get-management-data purchase-list-id allowed-lists-ids datomic)]
     (->> (map logic.purchase-category/sort-items-by-position categories)
          logic.purchase-category/sort-by-position
          (assoc management-data :categories))))

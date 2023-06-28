@@ -90,7 +90,7 @@
           misc.http/->Success))
 
 (s/defn change-item-order
-  [{{datomic :datomic}                        :component
+  [{components                                :component
     {:keys [id new-category-id new-position]} :path-params
     user-id                                   :user-id}]
   (branch (misc.either/try-right
@@ -98,7 +98,7 @@
                   new-category-id (adapters.misc/string->uuid new-category-id)
                   new-position (adapters.misc/string->integer new-position)
                   user-id (adapters.misc/string->uuid user-id)]
-              (flows.purchase-item/change-items-order item-id new-category-id new-position user-id datomic)))
+              (flows.purchase-item/change-items-order item-id new-category-id new-position user-id components)))
           misc.http/->Error
           misc.http/->Success))
 
@@ -113,14 +113,14 @@
           misc.http/->Success))
 
 (s/defn change-item-quantity
-  [{{:keys [datomic rabbitmq]} :component
-    {:keys [id new-quantity]}  :path-params
-    user-id                    :user-id}]
+  [{components                :component
+    {:keys [id new-quantity]} :path-params
+    user-id                   :user-id}]
   (misc.http/default-branch (misc.either/try-right
                               (let [new-quantity (adapters.misc/string->integer new-quantity)
                                     item-id (adapters.misc/string->uuid id)
                                     user-id (adapters.misc/string->uuid user-id)]
-                                (flows.purchase-item/change-item-quantity item-id new-quantity user-id datomic rabbitmq)))))
+                                (flows.purchase-item/change-item-quantity item-id new-quantity user-id components)))))
 
 (s/defn delete-purchases-lists-item
   [{{:keys [datomic rabbitmq]} :component

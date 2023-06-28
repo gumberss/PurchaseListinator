@@ -1,27 +1,30 @@
 (ns purchase-listinator.flows.purchase-category
-  (:require [schema.core :as s]
-            [purchase-listinator.dbs.datomic.purchase-category :as datomic.purchase-category]
-            [cats.monad.either :refer [left]]
-            [purchase-listinator.misc.either :as either]
-            [purchase-listinator.models.internal.purchase-list.purchase-category :as models.internal.purchase-category]
-            [purchase-listinator.logic.purchase-category :as logic.purchase-category]
-            [purchase-listinator.logic.reposition :as logic.reposition]
-            [purchase-listinator.publishers.purchase-list-category :as publishers.purchase-list-category]))
+  (:require
+    [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
+    [schema.core :as s]
+    [purchase-listinator.dbs.datomic.purchase-category :as datomic.purchase-category]
+    [cats.monad.either :refer [left]]
+    [purchase-listinator.misc.either :as either]
+    [purchase-listinator.models.internal.purchase-list.purchase-category :as models.internal.purchase-category]
+    [purchase-listinator.logic.purchase-category :as logic.purchase-category]
+    [purchase-listinator.logic.reposition :as logic.reposition]
+    [purchase-listinator.publishers.purchase-list-category :as publishers.purchase-list-category]))
 
 (s/defn create
   [{:keys [name purchase-list-id] :as category} :- models.internal.purchase-category/PurchaseCategoryCreation
    user-id :- s/Uuid
    {:keys [datomic rabbitmq]}]
   (either/try-right
-    (if (datomic.purchase-category/get-by-name purchase-list-id name user-id datomic)
+    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
+    (if (datomic.purchase-category/get-by-name purchase-list-id name allowed-lists-ids datomic)
       (left {:status 400
              :error  {:message "[[CATEGORY_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
-      (let [new-category (-> (datomic.purchase-category/categories-count purchase-list-id user-id datomic)
+      (let [new-category (-> (datomic.purchase-category/categories-count purchase-list-id allowed-lists-ids datomic)
                              (logic.reposition/change-order-position category)
                              (logic.purchase-category/link-with-user user-id))]
         (datomic.purchase-category/upsert new-category datomic)
         (publishers.purchase-list-category/category-created new-category rabbitmq)
-        new-category))))
+        new-category)))))
 
 (s/defn edit
   [{:keys [name color id]} :- models.internal.purchase-category/PurchaseCategory
