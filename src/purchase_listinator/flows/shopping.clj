@@ -71,7 +71,7 @@
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
    {:keys [datomic redis http] :as components}]
-  (let [allowed-lists-ids #p (http.client.shopping/get-allowed-lists user-id http)
+  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
         {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id user-id datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
         shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)

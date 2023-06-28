@@ -16,29 +16,30 @@
    {:keys [datomic rabbitmq]}]
   (either/try-right
     (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
-    (if (datomic.purchase-category/get-by-name purchase-list-id name allowed-lists-ids datomic)
-      (left {:status 400
-             :error  {:message "[[CATEGORY_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
-      (let [new-category (-> (datomic.purchase-category/categories-count purchase-list-id allowed-lists-ids datomic)
-                             (logic.reposition/change-order-position category)
-                             (logic.purchase-category/link-with-user user-id))]
-        (datomic.purchase-category/upsert new-category datomic)
-        (publishers.purchase-list-category/category-created new-category rabbitmq)
-        new-category)))))
+      (if (datomic.purchase-category/get-by-name purchase-list-id name allowed-lists-ids datomic)
+        (left {:status 400
+               :error  {:message "[[CATEGORY_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
+        (let [new-category (-> (datomic.purchase-category/categories-count purchase-list-id allowed-lists-ids datomic)
+                               (logic.reposition/change-order-position category)
+                               (logic.purchase-category/link-with-user user-id))]
+          (datomic.purchase-category/upsert new-category datomic)
+          (publishers.purchase-list-category/category-created new-category rabbitmq)
+          new-category)))))
 
 (s/defn edit
   [{:keys [name color id]} :- models.internal.purchase-category/PurchaseCategory
    user-id :- s/Uuid
    datomic]
   (either/try-right
-    (if-let [existent-category (datomic.purchase-category/get-by-id id user-id datomic)]
-      (if (or (not= name (:name existent-category))
-              (not= color (:color existent-category)))
-        (-> (assoc existent-category :name name :color color)
-            (datomic.purchase-category/upsert datomic))
-        existent-category)
-      (left {:status 404
-             :error  {:message "[[CATEGORY_NOT_FOUND]]"}}))))
+    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
+      (if-let [existent-category (datomic.purchase-category/get-by-id id allowed-lists-ids datomic)]
+        (if (or (not= name (:name existent-category))
+                (not= color (:color existent-category)))
+          (-> (assoc existent-category :name name :color color)
+              (datomic.purchase-category/upsert datomic))
+          existent-category)
+        (left {:status 404
+               :error  {:message "[[CATEGORY_NOT_FOUND]]"}})))))
 
 (s/defn delete
   [category-id :- s/Uuid
@@ -46,7 +47,8 @@
    datomic
    rabbitmq]
   (either/try-right
-    (let [category (datomic.purchase-category/get-by-id category-id user-id datomic)]
+    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
+          category (datomic.purchase-category/get-by-id category-id allowed-lists-ids datomic)]
       (do (datomic.purchase-category/delete-by-id category-id datomic)
           (publishers.purchase-list-category/category-deleted category rabbitmq)))))
 
@@ -56,10 +58,11 @@
    user-id :- s/Uuid
    datomic]
   (either/try-right
-    (let [{:keys [order-position]} (datomic.purchase-category/get-by-id category-id user-id datomic)
+    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
+          {:keys [order-position]} (datomic.purchase-category/get-by-id category-id allowed-lists-ids datomic)
           start-position (min order-position new-position)
           end-position (max order-position new-position)
-          repositioned-categories (->> (datomic.purchase-category/get-by-position-range category-id start-position end-position user-id datomic)
+          repositioned-categories (->> (datomic.purchase-category/get-by-position-range category-id start-position end-position allowed-lists-ids datomic)
                                        logic.purchase-category/sort-by-position
                                        (logic.reposition/reposition order-position new-position))]
       (datomic.purchase-category/upsert-many repositioned-categories datomic))))

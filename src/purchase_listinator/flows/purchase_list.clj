@@ -20,11 +20,12 @@
    name :- s/Str
    datomic]
   (either/try-right
-    (if (datomic.purchase-list/get-by-name name user-id datomic)
-      (left {:status 400
-             :error  {:message "[[LIST_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
-      (-> (logic.purchase-list/generate-new name user-id)
-          (datomic.purchase-list/upsert datomic)))))
+    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
+      (if (datomic.purchase-list/get-by-name name allowed-lists-ids datomic)
+        (left {:status 400
+               :error  {:message "[[LIST_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
+        (-> (logic.purchase-list/generate-new name user-id)
+            (datomic.purchase-list/upsert datomic))))))
 
 (s/defn disable
   [id :- s/Uuid
@@ -38,13 +39,14 @@
    user-id :- s/Uuid
    datomic]
   (either/try-right
-    (let [existent-purchase-list (datomic.purchase-list/get-by-id id user-id datomic)]
+    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
+          existent-purchase-list (datomic.purchase-list/get-by-id id allowed-lists-ids datomic)]
       (cond
         (not existent-purchase-list) (left {:status 400
                                             :error  "[[PURCHASE_LIST_NOT_FOUND]]"})
         (not (logic.purchase-list/changed? existent-purchase-list purchase-list)) (right existent-purchase-list)
-        (some? (datomic.purchase-list/get-by-name name user-id datomic)) (left {:status 400
-                                                                                :error  {:message "[[LIST_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
+        (some? (datomic.purchase-list/get-by-name name allowed-lists-ids datomic)) (left {:status 400
+                                                                                          :error  {:message "[[LIST_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
         :else (-> (logic.purchase-list/edit existent-purchase-list purchase-list)
                   (datomic.purchase-list/upsert datomic)
                   right)))))

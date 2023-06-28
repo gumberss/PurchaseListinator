@@ -46,28 +46,28 @@
 
 (s/defn get-by-name
   [name :- s/Str
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [*])
-              :in $ ?name ?u-id
+              :in $ ?name [?a-l-id ...]
               :where
-              [?e :purchase-list/user-id ?u-id]
+              [?e :purchase-list/id ?a-l-id]
               [?e :purchase-list/name ?name]
               [?e :purchase-list/enabled true]]
-            (d/db connection) name user-id)
+            (d/db connection) name allowed-lists-ids)
        ffirst
        adapter.purchase-list/db->internal))
 
 (s/defn get-by-id
   [id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [*])
-              :in $ ?id ?u-id
+              :in $ ?id [?a-l-id ...]
               :where
               [?e :purchase-list/id ?id]
-              [?e :purchase-list/user-id ?u-id]]
-            (d/db connection) id user-id)
+              [?e :purchase-list/id ?a-l-id]]
+            (d/db connection) id allowed-lists)
        ffirst
        adapter.purchase-list/db->internal))
 

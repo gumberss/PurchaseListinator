@@ -43,7 +43,7 @@
    allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (-> (d/q '[:find (count ?c)
-             :in $ ?purchase-list-id  [?a-l-id ...]
+             :in $ ?purchase-list-id [?a-l-id ...]
              :where
              [?l :purchase-list/id ?purchase-list-id]
              [?c :purchase-category/purchase-list ?l]
@@ -69,14 +69,15 @@
 ;todo: continue from here
 (s/defn get-by-id :- models.internal.purchase-category/PurchaseCategory
   [category-id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?c [* {:purchase-category/purchase-list [:purchase-list/id]}])
-              :in $ ?c-id ?name ?u-id
+              :in $ ?c-id ?name [?a-l-id ...]
               :where
               [?c :purchase-category/id ?c-id]
-              [?c :purchase-category/user-id ?u-id]]
-            (d/db connection) category-id name user-id)
+              [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-list/id ?a-l-id]]
+            (d/db connection) category-id name allowed-lists-ids)
        ffirst
        adapters.db.purchase-category/db->internal))
 
@@ -84,19 +85,20 @@
   [category-id :- s/Uuid
    start-range :- s/Num
    end-range :- s/Num
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?cs [* {:purchase-category/purchase-list [:purchase-list/id]}]) ...]
-              :in $ ?c-id ?s-range ?e-range ?u-id
+              :in $ ?c-id ?s-range ?e-range [?a-l-id]
               :where
               [?c :purchase-category/id ?c-id]
               [?c :purchase-category/user-id ?u-id]
               [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-list/id ?a-l-id]
               [?cs :purchase-category/purchase-list ?l]
               [?cs :purchase-category/order-position ?o]
               [(<= ?s-range ?o)]
               [(<= ?o ?e-range)]]
-            (d/db connection) category-id start-range end-range user-id)
+            (d/db connection) category-id start-range end-range allowed-lists-ids)
        (map adapters.db.purchase-category/db->internal)))
 
 (s/defn upsert :- models.internal.purchase-category/PurchaseCategory

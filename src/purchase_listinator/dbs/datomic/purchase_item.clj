@@ -62,8 +62,7 @@
               [?l :purchase-list/id ?a-l-id]
               [?all-c :purchase-category/purchase-list ?l]
               [?i :purchase-item/category ?all-c]
-              [?i :purchase-item/name ?name]
-              [?i :purchase-item/user-id ?u-id]]
+              [?i :purchase-item/name ?name]]
             (d/db connection) category-id name allowed-lists)
        ffirst
        adapters.db.purchase-item/db->internal))
@@ -109,7 +108,7 @@
               :where
               [?c :purchase-category/id ?c-id]
               [?c :purchase-category/purchase-list ?l]
-              [?l :purchase-category/id ?a-l-id]
+              [?l :purchase-list/id ?a-l-id]
               [?i :purchase-item/category ?c]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]
@@ -127,7 +126,7 @@
               :where
               [?c :purchase-category/id ?c-id]
               [?c :purchase-category/purchase-list ?l]
-              [?l :purchase-category/id ?a-l-id]
+              [?l :purchase-list/id ?a-l-id]
               [?i :purchase-item/category ?c]
               [?i :purchase-item/order-position ?o]
               [(<= ?s-range ?o)]]

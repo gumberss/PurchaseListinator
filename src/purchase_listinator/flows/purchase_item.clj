@@ -16,12 +16,12 @@
    user-id :- s/Uuid
    datomic
    rabbitmq]
-  (let [allowed-lists-ids #p (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
+  (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
     (either/try-right
-      (if-let [_existent-item #p (datomic.purchase-item/get-by-name name category-id allowed-lists-ids datomic)]
+      (if-let [_existent-item (datomic.purchase-item/get-by-name name category-id allowed-lists-ids datomic)]
         (left {:status 400
                :error  {:message "[[ITEM_WITH_THE_SAME_NAME_ALREADY_EXISTENT]]"}})
-        (-> #p (datomic.purchase-item/items-count category-id allowed-lists-ids datomic)
+        (-> (datomic.purchase-item/items-count category-id allowed-lists-ids datomic)
             (logic.purchase-item/change-order-position item)
             (logic.purchase-item/link-with-user user-id)
             (datomic.purchase-item/upsert datomic)
