@@ -46,10 +46,11 @@
 (s/defn get-initial-data
   [{:keys [latitude longitude]} :- models.internal.shopping-initiation-data-request/ShoppingInitiationDataRequest
    user-id :- s/Uuid
-   {:keys [mongo datomic]}]
-  (let [near-places (mongo.shopping-location/find-by-location latitude longitude mongo)
+   {:keys [mongo datomic http]}]
+  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
+        near-places (mongo.shopping-location/find-by-location latitude longitude mongo)
         first-near-shopping (and (seq near-places)
-                                 (datomic.shopping/get-by-id (-> near-places first :shopping-id) user-id datomic))]
+                                 (datomic.shopping/get-by-id (-> near-places first :shopping-id) allowed-lists-ids datomic))]
     (if first-near-shopping
       first-near-shopping
       (left {:status 404 :data "not-found"}))))
@@ -72,7 +73,7 @@
    user-id :- s/Uuid
    {:keys [datomic redis http] :as components}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
-        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id user-id datomic)
+        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
         shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
         cart (redis.shopping-cart/find-cart shopping-id redis)
@@ -86,10 +87,11 @@
 (s/defn find-existent
   [list-id :- s/Uuid
    user-id :- s/Uuid
-   {:keys [datomic]}]
-  (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id user-id datomic)]
-    existent
-    (left (logic.errors/build 404 {:message nil}))))
+   {:keys [datomic http]}]
+  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)]
+    (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id allowed-lists-ids datomic)]
+      existent
+      (left (logic.errors/build 404 {:message nil})))))
 
 (s/defn receive-cart-event
   [{:keys [shopping-id] :as event} :- models.internal.shopping-cart/CartEvent
@@ -102,8 +104,9 @@
 (s/defn receive-cart-event-by-list
   [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent
    user-id :- s/Uuid
-   {:keys [redis datomic]}]
-  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-list-id purchase-list-id user-id datomic))
+   {:keys [redis datomic http]}]
+  (try (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
+             shopping-id (:id (datomic.shopping/get-in-progress-by-list-id purchase-list-id allowed-lists-ids datomic))
              event+shopping-id (assoc event :shopping-id shopping-id)]
          (some-> shopping-id
                  (redis.shopping-cart/find-cart redis)
@@ -116,8 +119,9 @@
 
 (s/defn receive-cart-event-by-category
   [{:keys [category-id user-id] :as event} :- models.internal.shopping-cart/CartEvent
-   {:keys [redis datomic]}]
-  (try (let [shopping-id (:id (datomic.shopping/get-in-progress-by-category-id category-id user-id datomic))
+   {:keys [redis datomic http]}]
+  (try (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
+             shopping-id (:id (datomic.shopping/get-in-progress-by-category-id category-id allowed-lists-ids datomic))
              event+shopping-id (assoc event :shopping-id shopping-id)]
          (some-> shopping-id
                  (redis.shopping-cart/find-cart redis)
@@ -134,7 +138,7 @@
    {:keys [redis datomic rabbitmq http]}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
         {:keys [events] :as cart} (redis.shopping-cart/find-cart shopping-id redis)
-        {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id user-id datomic)
+        {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
         shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
         shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)

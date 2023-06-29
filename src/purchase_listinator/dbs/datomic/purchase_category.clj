@@ -88,10 +88,9 @@
    allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?cs [* {:purchase-category/purchase-list [:purchase-list/id]}]) ...]
-              :in $ ?c-id ?s-range ?e-range [?a-l-id]
+              :in $ ?c-id ?s-range ?e-range [?a-l-id ...]
               :where
               [?c :purchase-category/id ?c-id]
-              [?c :purchase-category/user-id ?u-id]
               [?c :purchase-category/purchase-list ?l]
               [?l :purchase-list/id ?a-l-id]
               [?cs :purchase-category/purchase-list ?l]

@@ -47,44 +47,45 @@
 
 (s/defn get-in-progress-by-list-id :- models.internal.shopping/Shopping
   [list-id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?s [* {:shopping/list [:purchase-list/id]}])
-              :in $ ?l-id ?u-id
+              :in $ ?l-id [?a-l-id ...]
               :where
               [?l :purchase-list/id ?l-id]
+              [?l :purchase-list/id ?a-l-id]
               [?s :shopping/list ?l]
-              [?s :shopping/status :in-progress]
-              [?s :shopping/user-id ?u-id]]
-            (d/db connection) list-id user-id)
+              [?s :shopping/status :in-progress]]
+            (d/db connection) list-id allowed-lists-ids)
        ffirst
        adapter.shopping/db->internal))
 
 (s/defn get-in-progress-by-category-id :- models.internal.shopping/Shopping
   [category-id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?s [* {:shopping/list [:purchase-list/id]}])
-              :in $ ?c-id ?u-id
+              :in $ ?c-id [?a-l-id ...]
               :where
               [?c :purchase-category/id ?c-id]
               [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-list/id ?a-l-id]
               [?s :shopping/list ?l]
-              [?s :shopping/status :in-progress]
-              [?s :shopping/user-id ?u-id]]
-            (d/db connection) category-id user-id)
+              [?s :shopping/status :in-progress]]
+            (d/db connection) category-id allowed-lists-ids)
        ffirst
        adapter.shopping/db->internal))
 
 (s/defn get-by-id :- models.internal.shopping/Shopping
   [id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?s [* {:shopping/list [:purchase-list/id]}])
-              :in $ ?id ?u-id
+              :in $ ?id [?a-l-id ...]
               :where
               [?s :shopping/id ?id]
-              [?s :shopping/user-id ?u-id]]
-            (d/db connection) id user-id)
+              [?s :shopping/list ?l]
+              [?l :purchase-list/id ?a-l-id]]
+            (d/db connection) id allowed-lists-ids)
        ffirst
        adapter.shopping/db->internal))
