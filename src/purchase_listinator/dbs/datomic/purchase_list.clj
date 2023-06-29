@@ -33,45 +33,41 @@
   (d/transact connection purchases-lists))
 
 (s/defn get-enabled
-  [user-id :- s/Uuid
+  [allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?e [*]) ...]
-              :in $ ?u-id
+              :in $ [?a-l-id ...]
               :where
-              (or-join [?e ?u-id]
-                       (and [?s :purchase-list-share/customer-id ?u-id]
-                            [?s :purchase-list-share/list-id ?l-id]
-                            [?e :purchase-list/id ?l-id])
-                       [?e :purchase-list/user-id ?u-id])
+              [?e :purchase-list/id ?a-l-id]
               [?e :purchase-list/enabled true]]
-            (d/db connection) user-id)
+            (d/db connection) allowed-lists-ids)
        (sort-by :purchase-list/name)
        (map adapter.purchase-list/db->internal)))
 
 (s/defn get-by-name
   [name :- s/Str
-   user-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [*])
-              :in $ ?name ?u-id
+              :in $ ?name [?a-l-id ...]
               :where
-              [?e :purchase-list/user-id ?u-id]
+              [?e :purchase-list/id ?a-l-id]
               [?e :purchase-list/name ?name]
               [?e :purchase-list/enabled true]]
-            (d/db connection) name user-id)
+            (d/db connection) name allowed-lists-ids)
        ffirst
        adapter.purchase-list/db->internal))
 
 (s/defn get-by-id
   [id :- s/Uuid
-   user-id :- s/Uuid
+   allowed-lists :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find (pull ?e [*])
-              :in $ ?id ?u-id
+              :in $ ?id [?a-l-id ...]
               :where
               [?e :purchase-list/id ?id]
-              [?e :purchase-list/user-id ?u-id]]
-            (d/db connection) id user-id)
+              [?e :purchase-list/id ?a-l-id]]
+            (d/db connection) id allowed-lists)
        ffirst
        adapter.purchase-list/db->internal))
 
@@ -101,22 +97,35 @@
     (transact connection wire)
     (adapter.purchase-list/db->internal wire)))
 
+(s/defn get-allowed-lists-by-user-id :- [s/Uuid]
+  [user-id :- s/Uuid
+   {:keys [connection]}]
+  (d/q '[:find [?l-id ...]
+         :in $ ?u-id
+         :where
+         (or-join [?l-id ?u-id]
+                  (and [?s :purchase-list-share/customer-id ?u-id]
+                       [?s :purchase-list-share/list-id ?l-id])
+                  (and [?e :purchase-list/user-id ?u-id]
+                       [?e :purchase-list/id ?l-id]))]
+       (d/db connection) user-id))
+
 (s/defn get-management-data
   ([purchase-list-id :- s/Uuid
-    user-id :- s/Uuid
+    allowed-lists-ids :- [s/Uuid]
     datomic]
-   (get-management-data purchase-list-id user-id (misc.date/numb-now) datomic))
+   (get-management-data purchase-list-id allowed-lists-ids (misc.date/numb-now) datomic))
   ([purchase-list-id :- s/Uuid
-    user-id :- s/Uuid
+    allowed-lists-ids :- [s/Uuid]
     moment :- s/Num
     {:keys [connection]}]
    (->> (d/q '[:find (pull ?e [* {[:purchase-category/_purchase-list :as :purchase-list/categories]
                                   [* {[:purchase-item/_category :as :purchase-category/items] [* {:purchase-item/category [:purchase-category/id]}]
                                       :purchase-category/purchase-list                        [:purchase-list/id]}]}])
-               :in $ ?id ?u-id
+               :in $ ?id [?a-l-id ...]
                :where
                [?e :purchase-list/id ?id]
-               [?e :purchase-list/user-id ?u-id]]
-             (d/as-of (d/db connection) (misc.date/numb->date moment)) purchase-list-id user-id)
+               [?e :purchase-list/id ?a-l-id]]
+             (d/as-of (d/db connection) (misc.date/numb->date moment)) purchase-list-id allowed-lists-ids)
         ffirst
         (adapters.db.purchase-list-management-data/db->categories+items-view))))

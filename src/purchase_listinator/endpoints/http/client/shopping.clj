@@ -16,3 +16,11 @@
                                      :user-id       user-id
                                      :result-schema wires.in.price-suggestion/ShoppingItemSuggestedPrices})
       (adapters.in.price-suggestion/wire->internal)))
+
+(s/defn get-allowed-lists :- [s/Uuid]
+  [user-id :- s/Uuid
+   http]
+  (components.http/request http {:method        :get
+                                 :url           :purchase-list/allowed-lists
+                                 :user-id       user-id
+                                 :result-schema [s/Uuid]}))

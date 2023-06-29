@@ -22,4 +22,4 @@
         (flow "Should have a purchase list inserted"
               [datomic (state-flow.api/get-state :datomic)]
               (match? {:id (parse-uuid (:id body)) :name "List 3"}
-                      (dbs.datomic.purchase-list/get-by-name "List 3" user-id datomic)))))
+                      (dbs.datomic.purchase-list/get-by-name "List 3" [(parse-uuid (:id body))] datomic)))))

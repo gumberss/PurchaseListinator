@@ -23,7 +23,7 @@
 (defprotocol IHttp
   (request
     [http
-     data ]))
+     data]))
 
 (defrecord Http [config request-routes-key]
   component/Lifecycle

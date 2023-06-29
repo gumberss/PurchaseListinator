@@ -6,9 +6,10 @@
 
 
 (s/defn internal->db
-  [{:keys [shopping-id] :as internal} :- models.internal.shopping-category/ShoppingCategory]
+  [{:keys [shopping-id order-position] :as internal} :- models.internal.shopping-category/ShoppingCategory]
   (-> (dissoc internal :shopping-id :items)
-      (assoc :shopping {:shopping/id shopping-id})
+      (assoc :shopping {:shopping/id shopping-id}
+             :order-position (long order-position))
       (misc.general/namespace-keys :shopping-category)))
 
 (s/defn db->internal :- models.internal.shopping-category/ShoppingCategory

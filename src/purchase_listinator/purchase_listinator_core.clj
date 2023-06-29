@@ -9,15 +9,19 @@
             [purchase-listinator.endpoints.http.user :as endpoints.http.user]
             [purchase-listinator.components.http :as components.http]))
 
+(def rabbitmq-dependencies
+  [:config :redis :datomic :mongo :http])
+
 (def purchase-listinator-components
   {:redis    (component/using (redis/new-Redis) [:config])
    :mongo    (component/using (mongo/new-mongo) [:config])
    :datomic  (component/using (datomic/new-datomic) [:config :service-map])
-   :rabbitmq (component/using (rabbitmq/new-rabbit-mq) [:config :redis :datomic :mongo])
+   :rabbitmq (component/using (rabbitmq/new-rabbit-mq) rabbitmq-dependencies)
    :http     (component/using (components.http/new-http :shopping/request-routes) [:config])})
 
 (def request-routes
-  {:price-suggestion/items (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")})
+  {:price-suggestion/items (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")
+   :purchase-list/allowed-lists (or (System/getenv "PURCHASE_LIST_URL") "http://localhost:3000/api/lists/allowed")})
 
 (def purchase-listinator-config
   {:mongo                   {:port    27017
@@ -63,7 +67,7 @@
 
 
 (def module-config
-  {:rabbitmq-dependencies [:config :redis :datomic :mongo :http]
+  {:rabbitmq-dependencies rabbitmq-dependencies
    :webapp-dependencies   [:service-map :mongo :redis :datomic :rabbitmq :http]
    :routes                (set (concat endpoints.http.user/routes
                                        http.purchase-list/routes
