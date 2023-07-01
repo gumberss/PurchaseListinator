@@ -1,7 +1,9 @@
 (ns purchase-listinator.flows.purchase-list
   (:require
+    [purchase-listinator.logic.errors :as logic.errors]
     [schema.core :as s]
     [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
+    [purchase-listinator.dbs.datomic.share :as dbs.datomic.share]
     [purchase-listinator.models.internal.purchase-list.purchase-list :as internal.purchase-list]
     [purchase-listinator.logic.purchase-list :as logic.purchase-list]
     [purchase-listinator.logic.purchase-category :as logic.purchase-category]
@@ -27,12 +29,18 @@
         (-> (logic.purchase-list/generate-new name user-id)
             (datomic.purchase-list/upsert datomic))))))
 
+
 (s/defn disable
-  [id :- s/Uuid
+  [list-id :- s/Uuid
    user-id :- s/Uuid
    datomic]
-  (if (datomic.purchase-list/existent? id user-id datomic)
-    (datomic.purchase-list/disable id datomic)))
+  (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
+    (cond
+      (datomic.purchase-list/existent? list-id user-id datomic) (datomic.purchase-list/disable list-id datomic)
+      (some #{list-id} allowed-lists-ids) (-> (dbs.datomic.share/find-share-id user-id list-id datomic)
+                                              (dbs.datomic.share/remove datomic)
+                                              (and {:id list-id}))
+      :else (left (logic.errors/build 404 "[[LIST_NOT_FOUND]]")))))
 
 (s/defn edit
   [{:keys [id name] :as purchase-list} :- internal.purchase-list/PurchaseList

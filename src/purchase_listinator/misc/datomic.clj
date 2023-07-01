@@ -16,7 +16,7 @@
   [connection & data]
   (d/transact connection data))
 
-(s/defn retract-entity
+(s/defn retract-entity-by-id
   [id-key connection & data]
   (d/transact connection (mapv #(vector :db.fn/retractEntity [id-key %]) data)))
 
