@@ -5,12 +5,16 @@
 
 (def list-id (random-uuid))
 (def customer-id (random-uuid))
+(def id (random-uuid))
+
 (def share-list-internal
-  {:list-id     list-id
+  {:id          id
+   :list-id     list-id
    :customer-id customer-id})
 
 (def share-list-db
-  {:purchase-list-share/list-id     list-id
+  {:purchase-list-share/id          id
+   :purchase-list-share/list-id     list-id
    :purchase-list-share/customer-id customer-id})
 
 (st/deftest wire->internal-test

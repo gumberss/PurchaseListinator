@@ -9,7 +9,8 @@
 
 
 (s/defn db->internal :- models.internal.purchase-list.share/ShareList
-  [{:purchase-list-share/keys [customer-id list-id]} :- wires.purchase-list.out.db.share/ShareList]
-  {:customer-id customer-id
+  [{:purchase-list-share/keys [customer-id list-id id]} :- wires.purchase-list.out.db.share/ShareList]
+  {:id          id
+   :customer-id customer-id
    :list-id     list-id})
 
