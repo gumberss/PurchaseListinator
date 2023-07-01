@@ -7,6 +7,7 @@
 (s/defschema ShareListRequest share-list-request-skeleton)
 
 (def share-list-skeleton
-  {:list-id     s/Uuid
+  {:id          s/Uuid
+   :list-id     s/Uuid
    :customer-id s/Uuid})
 (s/defschema ShareList share-list-skeleton)

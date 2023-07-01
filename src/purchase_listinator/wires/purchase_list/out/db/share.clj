@@ -4,7 +4,8 @@
 
 (def share-list-skeleton
   {:purchase-list-share/list-id     s/Uuid
-   :purchase-list-share/customer-id s/Uuid})
+   :purchase-list-share/customer-id s/Uuid
+   :purchase-list-share/id          s/Uuid})
 (misc.schema/loose-schema ShareList share-list-skeleton)
 
 

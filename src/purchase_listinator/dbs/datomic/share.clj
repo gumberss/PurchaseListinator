@@ -35,3 +35,22 @@
               [?e :purchase-list-share/list-id ?l-id]]
             (d/db connection) list-id)
        (map adapters.purchase-list.out.share/db->internal)))
+
+(s/defn find-share-id :- s/Uuid
+  [user-id :- s/Uuid
+   list-id :- s/Uuid
+   {:keys [connection]}]
+  (-> (d/q '[:find ?s-id
+             :in $ ?u-id ?l-id
+             :where
+             [?s :purchase-list-share/customer-id ?u-id]
+             [?s :purchase-list-share/list-id ?l-id]
+             [?s :purchase-list-share/id ?s-id]]
+           (d/db connection) user-id list-id)
+      ffirst))
+
+(s/defn remove :- s/Uuid
+  [share-id :- s/Uuid
+   {:keys [connection]}]
+  (misc.datomic/retract-entity-by-id :purchase-list-share/id connection share-id)
+  share-id)
