@@ -1,31 +1,29 @@
 (ns purchase-listinator.dbs.redis.shopping-cart
-  (:require [taoensso.carmine :as car :refer (wcar)]
-            [schema.core :as s]
-            [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]))
+  (:require
+    [schema.core :as s]
+    [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
+    [purchase-listinator.components.redis :as redis]))
 
 (s/defn init-cart :- models.internal.shopping-cart/Cart
   [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
-   {:keys [connection]}]
-  (if-let [existent (wcar connection (car/get shopping-id))]
+   redis :- redis/IRedis]
+  (if-let [existent (redis/get-data redis shopping-id)]
     existent
-    (wcar connection
-          (car/set shopping-id cart))))
+    (redis/set-data redis shopping-id cart)))
 
 (s/defn find-cart :- (s/maybe models.internal.shopping-cart/Cart)
   [id :- s/Uuid
-   {:keys [connection]}]
-  (wcar connection (car/get id)))
+   redis :- redis/IRedis]
+  (redis/get-data redis id))
 
 (s/defn upsert :- models.internal.shopping-cart/Cart
   [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
-   {:keys [connection]}]
-  (wcar connection
-        (car/set shopping-id cart))
+   redis :- redis/IRedis]
+  (redis/set-data redis shopping-id cart)
   cart)
 
 (s/defn delete :- models.internal.shopping-cart/Cart
   [shopping-id :- s/Uuid
-   {:keys [connection]}]
-  (wcar connection
-        (car/del shopping-id)))
+   redis :- redis/IRedis]
+  (redis/del-data redis shopping-id))
 
