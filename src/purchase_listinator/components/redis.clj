@@ -20,7 +20,7 @@
 
 (defn new-Redis
   [config-key]
-  (map->Redis {:config-key config-key}))
+  (map->Redis config-key))
 
 
 (defrecord RedisMock [config]
@@ -39,6 +39,6 @@
 
 (defn new-redis-mock
   [config-key]
-  (map->RedisMock {:config-key config-key}))
+  (map->RedisMock config-key))
 
 
