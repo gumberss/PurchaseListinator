@@ -13,14 +13,14 @@
   [:config :redis :datomic :mongo :http])
 
 (def purchase-listinator-components
-  {:redis    (component/using (redis/new-Redis) [:config])
+  {:redis    (component/using (redis/new-Redis {:config-key :redis}) [:config])
    :mongo    (component/using (mongo/new-mongo) [:config])
    :datomic  (component/using (datomic/new-datomic) [:config :service-map])
    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) rabbitmq-dependencies)
    :http     (component/using (components.http/new-http :shopping/request-routes) [:config])})
 
 (def request-routes
-  {:price-suggestion/items (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")
+  {:price-suggestion/items      (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")
    :purchase-list/allowed-lists (or (System/getenv "PURCHASE_LIST_URL") "http://localhost:3000/api/lists/allowed")})
 
 (def purchase-listinator-config
@@ -47,7 +47,7 @@
 
 (def system-components-test
   {:datomic  (component/using (datomic/new-datomic) [:config :service-map])
-   :redis    (component/using (redis/new-redis-mock) [:config])
+   :redis    (component/using (redis/new-redis-mock {:config-key :redis}) [:config])
    :rabbitmq (component/using (rabbitmq/new-rabbit-mq-fake) [])
    :http     (component/using (components.http/new-http-mock) [:config])
    ;todo: fake mongo

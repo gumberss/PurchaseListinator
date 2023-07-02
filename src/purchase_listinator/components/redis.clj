@@ -1,12 +1,10 @@
 (ns purchase-listinator.components.redis
-  (:require [com.stuartsierra.component :as component])
-  (:import (java.net Socket)
-           (taoensso.carmine.connections NonPooledConnectionPool Connection)))
+  (:require [com.stuartsierra.component :as component]))
 
-(defrecord Redis [config]
+(defrecord Redis [config-key config]
   component/Lifecycle
   (start [this]
-    (let [{{:keys [username password host port timeout]} :redis} config
+    (let [{{:keys [username password host port timeout]} config-key} config
           conn {:pool {}
                 :spec {:host       host
                        :port       port
@@ -19,26 +17,11 @@
     (dissoc this :connection)))
 
 (defn new-Redis
-  []
-  (map->Redis {}))
-
-
-(defrecord RedisMock [config]
-  component/Lifecycle
-  (start [this]
-    (let [conn {:pool (NonPooledConnectionPool.)
-                :spec {:host     "host"
-                       :port     "port"
-                       :password "password"}}
-          socket (Socket.)
-          connection (Connection. socket "mock" 1 2)]
-      (assoc this
-        :connection conn)))
-  (stop [this]
-    (dissoc this :connection)))
+  [config-key]
+  (map->Redis config-key))
 
 (defn new-redis-mock
-  []
-  (map->Redis {}))
+  [config-key]
+  (map->Redis config-key))
 
 
