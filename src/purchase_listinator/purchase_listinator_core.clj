@@ -3,7 +3,7 @@
             [purchase-listinator.components.datomic :as datomic]
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.rabbitmq :as rabbitmq]
-            [purchase-listinator.components.redis_v2 :as redis]
+            [purchase-listinator.components.redis :as redis]
             [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
             [purchase-listinator.endpoints.http.shopping :as http.shopping]
             [purchase-listinator.endpoints.http.user :as endpoints.http.user]

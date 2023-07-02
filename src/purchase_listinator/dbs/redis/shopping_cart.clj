@@ -1,9 +1,8 @@
 (ns purchase-listinator.dbs.redis.shopping-cart
   (:require
-    [purchase-listinator.components.redis_v2 :as redis]
     [schema.core :as s]
     [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
-    [purchase-listinator.components.redis_v2 :as redis]))
+    [purchase-listinator.components.redis :as redis]))
 
 (s/defn init-cart :- models.internal.shopping-cart/Cart
   [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
