@@ -13,17 +13,17 @@
 
 (s/defn find-cart :- (s/maybe models.internal.shopping-cart/Cart)
   [id :- s/Uuid
-   redis]
+   redis :- redis/IRedis]
   (redis/get-data redis id))
 
 (s/defn upsert :- models.internal.shopping-cart/Cart
   [{:keys [shopping-id] :as cart} :- models.internal.shopping-cart/Cart
-   redis]
+   redis :- redis/IRedis]
   (redis/set-data redis shopping-id cart)
   cart)
 
 (s/defn delete :- models.internal.shopping-cart/Cart
   [shopping-id :- s/Uuid
-   redis]
+   redis :- redis/IRedis]
   (redis/del-data redis shopping-id))
 
