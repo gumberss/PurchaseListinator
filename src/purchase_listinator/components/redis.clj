@@ -3,10 +3,10 @@
   (:import (java.net Socket)
            (taoensso.carmine.connections NonPooledConnectionPool Connection)))
 
-(defrecord Redis [config]
+(defrecord Redis [config-key config]
   component/Lifecycle
   (start [this]
-    (let [{{:keys [username password host port timeout]} :redis} config
+    (let [{{:keys [username password host port timeout]} config-key} config
           conn {:pool {}
                 :spec {:host       host
                        :port       port
@@ -19,8 +19,8 @@
     (dissoc this :connection)))
 
 (defn new-Redis
-  []
-  (map->Redis {}))
+  [config-key]
+  (map->Redis {:config-key config-key}))
 
 
 (defrecord RedisMock [config]
@@ -38,7 +38,7 @@
     (dissoc this :connection)))
 
 (defn new-redis-mock
-  []
-  (map->Redis {}))
+  [config-key]
+  (map->RedisMock {:config-key config-key}))
 
 
