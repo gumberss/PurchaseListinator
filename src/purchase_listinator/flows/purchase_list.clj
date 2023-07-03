@@ -84,4 +84,4 @@
   (let [moment (or moment (misc.date/numb-now))
         allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
         management-data (datomic.purchase-list/get-management-data purchase-list-id allowed-lists-ids moment datomic)]
-    (or management-data (logic.errors/build 404 {:message "[[MANAGEMENT_DATA_NOT_FOUND]]"}))))
+    (or management-data (logic.errors/build-left 404 {:message "[[MANAGEMENT_DATA_NOT_FOUND]]"}))))
