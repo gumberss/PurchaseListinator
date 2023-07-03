@@ -102,15 +102,26 @@
           misc.http/->Error
           misc.http/->Success))
 
-(s/defn purchases-lists-management-data
+(s/defn purchases-lists-management-data-sorted
   [{{datomic :datomic} :component
     {id :id}           :path-params
     user-id            :user-id}]
-  (branch (misc.either/try-right
-            (-> (adapters.misc/string->uuid id)
-                (flows.purchase-list/management-data (adapters.misc/string->uuid user-id) datomic)))
-          misc.http/->Error
-          misc.http/->Success))
+  (misc.http/default-branch
+    (misc.either/try-right
+      (let [list-id (adapters.misc/string->uuid id)
+            user-id (adapters.misc/string->uuid user-id)]
+        (flows.purchase-list/management-data-sorted list-id user-id datomic)))))
+
+(s/defn purchases-lists-management-data-default
+  [{{datomic :datomic} :component
+    {id :id}           :path-params
+    wire               :json-params
+    user-id            :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (let [list-id (adapters.misc/string->uuid id)
+            user-id (adapters.misc/string->uuid user-id)]
+        (flows.purchase-list/management-data-default list-id user-id #p wire datomic)))))
 
 (s/defn change-item-quantity
   [{components                :component
@@ -187,7 +198,8 @@
     ["/api/purchases/items/:id/changeName/:new-name" :put [edit-item-name] :route-name :edit-item-name]
     ["/api/purchases/items/:id/changeQuantity/:new-quantity" :put [change-item-quantity] :route-name :change-item-quantity]
     ["/api/purchases/items/:id/changeOrder/:new-category-id/:new-position" :put [change-item-order] :route-name :change-item-order]
-    ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data] :route-name :purchases-lists-management-data]
+    ["/api/purchases/lists/:id/managementData" :get [purchases-lists-management-data-sorted] :route-name :purchases-lists-management-data]
+    ["/api/purchases/lists/:id/management-data-default" :get [purchases-lists-management-data-default] :route-name :purchases-lists-management-data-default]
     ["/api/share/purchase-list" :post [share-list] :route-name :share-list]
     ["/api/lists/allowed" :get [allowed-lists-by-user] :route-name :allowed-lists-by-user]})
 

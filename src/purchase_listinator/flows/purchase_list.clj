@@ -1,6 +1,7 @@
 (ns purchase-listinator.flows.purchase-list
   (:require
     [purchase-listinator.logic.errors :as logic.errors]
+    [purchase-listinator.misc.date :as misc.date]
     [schema.core :as s]
     [purchase-listinator.dbs.datomic.purchase-list :as datomic.purchase-list]
     [purchase-listinator.dbs.datomic.share :as dbs.datomic.share]
@@ -65,7 +66,7 @@
   (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic))
 
 
-(s/defn management-data :- internal.purchase-list-management-data/ManagementData
+(s/defn management-data-sorted :- internal.purchase-list-management-data/ManagementData
   [purchase-list-id :- s/Uuid
    user-id :- s/Uuid
    datomic]
@@ -74,3 +75,13 @@
     (->> (map logic.purchase-category/sort-items-by-position categories)
          logic.purchase-category/sort-by-position
          (assoc management-data :categories))))
+
+(s/defn management-data-default
+  [purchase-list-id :- s/Uuid
+   user-id :- s/Uuid
+   {:keys [moment]} :- (s/maybe {(s/optional-key :moment) s/Num})
+   datomic]
+  (let [moment (or moment (misc.date/numb-now))
+        allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
+        management-data (datomic.purchase-list/get-management-data purchase-list-id allowed-lists-ids moment datomic)]
+    (or management-data (logic.errors/build 404 {:message "[[MANAGEMENT_DATA_NOT_FOUND]]"}))))
