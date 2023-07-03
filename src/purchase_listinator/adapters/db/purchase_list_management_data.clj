@@ -15,6 +15,7 @@
   [db-wire] :- models.internal.purchase-category/PurchaseCategory
   (let [{:keys [id categories]} (-> (misc.datomic/datomic->entity db-wire)
                                     (misc.general/unnamespace-keys))]
-    {:id         id
-     :categories (map category->internal categories)}))
+    (when db-wire
+      {:id         id
+       :categories (map category->internal categories)})))
 
