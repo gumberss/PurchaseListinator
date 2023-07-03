@@ -66,7 +66,7 @@
   (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic))
 
 
-(s/defn management-data-sorted :- internal.purchase-list-management-data/ManagementData
+(s/defn management-data :- internal.purchase-list-management-data/ManagementData
   [purchase-list-id :- s/Uuid
    user-id :- s/Uuid
    datomic]
