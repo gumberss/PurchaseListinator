@@ -45,7 +45,7 @@
     (match? {:status 200} response)
     (flow "Should be able to retrieve the existent list"
       [{:keys [body] :as response} (utils.http/request! {:method      :get
-                                                         :endpoint    :get-list-default
+                                                         :endpoint    :get-list-simple
                                                          :path-params {:id (str (:id body))}
                                                          :body        {:moment (misc.date/numb-now)}})]
       (match? {:status 200
@@ -60,7 +60,7 @@
     (match? {:status 200} response)
     (flow "Should be able to retrieve the existent list"
       [{:keys [body] :as response} (utils.http/request! {:method      :get
-                                                         :endpoint    :get-list-default
+                                                         :endpoint    :get-list-simple
                                                          :path-params {:id (str (:id body))}})]
       (match? {:status 200
                :body   {:id         (:id body)
@@ -69,7 +69,7 @@
 (integration-test get-purchases-lists-not-found-test
   (flow "Should not be able to retrieve the existent list when the list does not exist"
     [response (utils.http/request! {:method      :get
-                                    :endpoint    :get-list-default
+                                    :endpoint    :get-list-simple
                                     :path-params {:id (str (random-uuid))}
                                     :body        {:moment (misc.date/numb-now)}})]
     (match? {:status 404
@@ -85,7 +85,7 @@
       (match? {:status 200} response)
       (flow "Should not be able to retrieve the existent list when the request moment date is before the list creation date"
         [response (utils.http/request! {:method      :get
-                                        :endpoint    :get-list-default
+                                        :endpoint    :get-list-simple
                                         :path-params {:id (str (:id body))}
                                         :body        {:moment before-the-creation-time}})]
         (match? {:status 404

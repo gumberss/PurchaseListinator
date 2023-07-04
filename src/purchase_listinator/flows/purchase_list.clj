@@ -8,7 +8,7 @@
     [purchase-listinator.models.internal.purchase-list.purchase-list :as internal.purchase-list]
     [purchase-listinator.logic.purchase-list :as logic.purchase-list]
     [purchase-listinator.logic.purchase-category :as logic.purchase-category]
-    [cats.monad.either :refer [left right]]
+    [cats.monad.either :refer [left left? right]]
     [purchase-listinator.misc.either :as either]
     [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]))
 
@@ -76,7 +76,7 @@
          logic.purchase-category/sort-by-position
          (assoc management-data :categories))))
 
-(s/defn get-list-default
+(s/defn get-list-simple
   [purchase-list-id :- s/Uuid
    user-id :- s/Uuid
    {:keys [moment]} :- (s/maybe {(s/optional-key :moment) s/Num})
