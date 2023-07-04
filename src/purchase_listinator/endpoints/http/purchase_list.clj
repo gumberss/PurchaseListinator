@@ -188,7 +188,7 @@
   #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
     ["/api/purchases/lists" :post [post-purchase-lists] :route-name :post-purchases-lists]
     ["/api/purchases/lists" :put [edit-purchase-lists] :route-name :edit-purchases-lists]
-    ["/api/purchases/lists/:id" :get [get-list-simple] :route-name :get-list-simple]
+    ["/api/purchases/lists/:id/simple" :get [get-list-simple] :route-name :get-list-simple]
     ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
     ["/api/purchases/categories" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
     ["/api/purchases/categories/:id" :delete [delete-purchases-lists-category] :route-name :delete-purchases-lists-category]

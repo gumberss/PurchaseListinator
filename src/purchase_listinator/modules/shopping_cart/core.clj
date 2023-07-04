@@ -16,7 +16,7 @@
   {:shopping-cart/redis (component/using (redis/new-redis-mock {:config-key :shopping-cart/redis}) [:config])})
 
 (def request-routes
-  {:purchase-list/purchase-list-by-id (or (System/getenv "PURCHASE_LIST_BY_ID_URL") "http://localhost:3000/api/purchases/lists/:id")})
+  {:purchase-list/purchase-list-by-id (or (System/getenv "PURCHASE_LIST_BY_ID_URL") "http://localhost:3000/api/purchases/lists/:id/simple")})
 
 (def system-config
   {:shopping-cart/request-routes request-routes
