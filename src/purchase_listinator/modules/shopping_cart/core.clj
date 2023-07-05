@@ -1,6 +1,7 @@
 (ns purchase-listinator.modules.shopping-cart.core
   (:require
     [com.stuartsierra.component :as component]
+    [purchase-listinator.components.http :as components.http]
     [purchase-listinator.components.redis :as redis]
     [purchase-listinator.modules.shopping-cart.diplomat.http.server :as modules.shopping-cart.diplomat.http.server]))
 
@@ -10,13 +11,14 @@
   [:config :shopping-cart/redis])
 
 (def components
-  {:shopping-cart/redis (component/using (redis/new-Redis {:config-key :shopping-cart/redis}) [:config])})
+  {:shopping-cart/redis (component/using (redis/new-Redis {:config-key :shopping-cart/redis}) [:config])
+   :http                (component/using (components.http/new-http :shopping-cart/request-routes) [:config])})
 
 (def system-components-test
-  {:shopping-cart/redis    (component/using (redis/new-redis-mock {:config-key :shopping-cart/redis}) [:config])})
+  {:shopping-cart/redis (component/using (redis/new-redis-mock {:config-key :shopping-cart/redis}) [:config])})
 
 (def request-routes
-  {})
+  {:purchase-list/purchase-list-by-id-simple (or (System/getenv "PURCHASE_LIST_BY_ID_URL") "http://localhost:3000/api/purchases/lists/:id/simple")})
 
 (def system-config
   {:shopping-cart/request-routes request-routes

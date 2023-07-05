@@ -8,5 +8,6 @@
             result#
             (right result#)))
         (catch Exception e#
+          (println "[[OUT_ERROR]]")
           (println e#)
           (left e#))))

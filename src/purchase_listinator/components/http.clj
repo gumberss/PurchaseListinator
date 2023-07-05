@@ -1,6 +1,7 @@
 (ns purchase-listinator.components.http
   (:require
     [clj-http.client :as client]
+    [clojure.string :as str]
     [com.stuartsierra.component :as component]
     [purchase-listinator.misc.general :as misc.general]
     [purchase-listinator.misc.content-type-parser :as misc.content-type-parser]
@@ -25,6 +26,22 @@
     [http
      data]))
 
+(defn modify-keys [f m]
+  (zipmap (map f (keys m)) (vals m)))
+
+(defn modify-vals [f m]
+  (zipmap (keys m) (map f (vals m))))
+
+(defn ->path-param
+  [value]
+  (cond
+    (uuid? value) (str value)
+    :else value))
+(s/defn fill-path-params [url params]
+  (->> (modify-keys str params)
+       (modify-vals ->path-param)
+       (reduce (partial apply str/replace) url)))
+
 (defrecord Http [config request-routes-key]
   component/Lifecycle
 
@@ -37,7 +54,8 @@
   IHttp
   (request [{:keys [routes]}
             {:keys [method url query-params body content-type result-schema headers user-id]}]
-    (let [url-str (url routes)
+    (let [url-str (-> (url routes)
+                      (fill-path-params query-params))
           content-type (or content-type "application/json")
           request-fn (condp = method
                        :get client/get

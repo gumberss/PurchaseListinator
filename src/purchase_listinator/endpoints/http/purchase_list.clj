@@ -112,7 +112,7 @@
             user-id (adapters.misc/string->uuid user-id)]
         (flows.purchase-list/management-data list-id user-id datomic)))))
 
-(s/defn get-list-default-default
+(s/defn get-list-simple
   [{{datomic :datomic} :component
     {id :id}           :path-params
     wire               :json-params
@@ -121,7 +121,7 @@
     (misc.either/try-right
       (let [list-id (adapters.misc/string->uuid id)
             user-id (adapters.misc/string->uuid user-id)]
-        (flows.purchase-list/get-list-default list-id user-id wire datomic)))))
+        (flows.purchase-list/get-list-simple list-id user-id wire datomic)))))
 
 (s/defn change-item-quantity
   [{components                :component
@@ -188,7 +188,7 @@
   #{["/api/purchases/lists" :get [get-purchase-lists] :route-name :get-purchases-lists]
     ["/api/purchases/lists" :post [post-purchase-lists] :route-name :post-purchases-lists]
     ["/api/purchases/lists" :put [edit-purchase-lists] :route-name :edit-purchases-lists]
-    ["/api/purchases/lists/:id" :get [get-list-default-default] :route-name :get-list-default]
+    ["/api/purchases/lists/:id/simple" :get [get-list-simple] :route-name :get-list-simple]
     ["/api/purchases/lists/:id" :delete [disable-purchase-lists] :route-name :disable-purchases-lists]
     ["/api/purchases/categories" :post [add-purchases-lists-category] :route-name :add-purchases-lists-category]
     ["/api/purchases/categories/:id" :delete [delete-purchases-lists-category] :route-name :delete-purchases-lists-category]

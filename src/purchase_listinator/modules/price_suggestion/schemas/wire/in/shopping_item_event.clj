@@ -1,8 +1,7 @@
 (ns purchase-listinator.modules.price-suggestion.schemas.wire.in.shopping-item-event
   (:require
     [purchase-listinator.misc.schema :as misc.schema]
-    [schema.core :as s]
-    [purchase-listinator.modules.price-suggestion.schemas.internal.shopping-item-event :as internal.shopping-item-event]))
+    [schema.core :as s]))
 
 (misc.schema/loose-schema Event
   {:id                     s/Uuid
