@@ -1,4 +1,4 @@
-(ns purchase-listinator.modules.shopping-cart.schemas.wire.purchase-list
+(ns purchase-listinator.modules.shopping-cart.schemas.wire.in.purchase-list
   (:require
     [purchase-listinator.misc.schema :as misc.schema]
     [purchase-listinator.modules.shopping-cart.schemas.internal.purchase-list :as modules.shopping-cart.schemas.internal.purchase-list]))
