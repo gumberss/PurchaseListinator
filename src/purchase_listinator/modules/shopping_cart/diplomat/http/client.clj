@@ -16,6 +16,7 @@
                                           :result-schema modules.shopping-cart.schemas.wire.in.purchase-list/PurchaseList})
            (modules.shopping-cart.adapters.in.purchase-list/purchase-list-wire->internal))
        (catch Exception ex
-         (println "get-purchase-list")
-         (println ex)
+         (when (not= 404 (:status (ex-data ex)))
+           (println "get-purchase-list")
+           (println ex))
          nil)))
