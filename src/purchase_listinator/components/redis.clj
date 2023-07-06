@@ -5,7 +5,9 @@
 (defprotocol IRedis
   (set-data [redis key val])
   (get-data [redis key])
-  (del-data [redis key]))
+  (del-data [redis key])
+  (sadd [redis key value])
+  (smembers [redis key]))
 
 (defrecord Redis [config-key config]
   component/Lifecycle
@@ -24,18 +26,29 @@
 
   IRedis
   (set-data [{:keys [connection]}
-        key
-        val]
+             key
+             val]
     (wcar connection
           (car/set key val)))
   (get-data [{:keys [connection]}
-        key]
+             key]
     (wcar connection
           (car/get key)))
   (del-data [{:keys [connection]}
-        key]
+             key]
     (wcar connection
-          (car/del key))))
+          (car/del key)))
+  (sadd [{:keys [connection]}
+         key
+         value]
+    (wcar connection
+          (car/sadd key value)))
+  (smembers [{:keys [connection]}
+             key]
+    (wcar connection
+          (car/smembers key))))
+
+
 
 (defn new-Redis
   [config-key]
