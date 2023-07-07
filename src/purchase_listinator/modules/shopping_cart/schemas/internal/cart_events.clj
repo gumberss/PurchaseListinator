@@ -1,8 +1,7 @@
 (ns purchase-listinator.modules.shopping-cart.schemas.internal.cart-events
   (:require [schema.core :as s]))
 
-
-(s/defschema PurchaseListCategoryCreated
+(def purchase-list-categoty-created-skeleton
   {:id                           s/Uuid
    :moment                       s/Num
    :event-type                   (s/eq :purchase-list-category-created)
@@ -13,6 +12,18 @@
    :order-position               s/Int
    :color                        s/Int
    :purchase-list-id             s/Uuid})
+(s/defschema PurchaseListCategoryCreated
+  purchase-list-categoty-created-skeleton)
+
+(def purchase-list-category-deleted-skeleton
+  {:id                           s/Uuid
+   :moment                       s/Num
+   :event-type                   (s/eq :purchase-list-category-deleted)
+   :user-id                      s/Uuid
+   :category-id                  s/Uuid
+   :purchase-list-id             s/Uuid})
+(s/defschema PurchaseListCategoryDeleted
+  purchase-list-category-deleted-skeleton)
 
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
