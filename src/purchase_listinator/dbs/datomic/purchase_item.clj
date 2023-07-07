@@ -49,6 +49,21 @@
            (d/db connection) purchase-category-id allowed-lists-ids)
       ffirst))
 
+(s/defn get-list-id :- s/Uuid
+  [item-id :- s/Uuid
+   allowed-lists :- [s/Uuid]
+   {:keys [connection]}]
+  (->> (d/q '[:find ?l-id
+              :in $ ?i-id [?a-l-id ...]
+              :where
+              [?i :purchase-item/id ?i-id]
+              [?i :purchase-item/category ?c]
+              [?c :purchase-category/purchase-list ?l]
+              [?l :purchase-list/id ?a-l-id]
+              [?l :purchase-list/id ?l-id]]
+            (d/db connection) item-id allowed-lists)
+       ffirst))
+
 (s/defn get-by-name :- (s/maybe models.internal.purchase-item/PurchaseItem)
   [name :- s/Str
    category-id :- s/Uuid

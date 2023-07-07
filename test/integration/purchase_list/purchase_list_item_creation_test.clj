@@ -3,8 +3,7 @@
             [state-flow.core :refer [flow]]
             [utils.integration-test :refer [integration-test]]
             [state-flow.assertions.matcher-combinators :refer [match?]]
-            [utils.http :as utils.http]
-            [purchase-listinator.components.rabbitmq :as components.rabbitmq]))
+            [utils.http :as utils.http]))
 
 
 
@@ -14,18 +13,32 @@
 (def item-id (str (random-uuid)))
 (integration-test purchase-list-item-creation-test
   (flow "Should create a new purchase item"
-    [{:keys [body] :as response} (utils.http/request! {:method   :post
-                                                       :endpoint :add-purchases-lists-item
-                                                       :token    user-id
-                                                       :body     {:name           "Item"
-                                                                  :id             item-id
-                                                                  :quantity       10
-                                                                  :order-position 0
-                                                                  :category-id    category-id}})]
+    [list-response (utils.http/request! {:method   :post
+                                         :endpoint :post-purchases-lists
+                                         :token    user-id
+                                         :body     {:name "List 3"}})]
+
+
+    [category-response (utils.http/request! {:method   :post
+                                             :endpoint :add-purchases-lists-category
+                                             :token    user-id
+                                             :body     {:name             "A category"
+                                                        :id               category-id
+                                                        :color            1321
+                                                        :purchase-list-id (-> list-response :body :id)}})]
+
+    [item-response (utils.http/request! {:method   :post
+                                         :endpoint :add-purchases-lists-item
+                                         :token    user-id
+                                         :body     {:name           "Item"
+                                                    :id             item-id
+                                                    :quantity       10
+                                                    :order-position 0
+                                                    :category-id    (-> category-response :body :id)}})]
     (match? {:status 200
              :body   {:name           "Item"
                       :id             item-id
                       :quantity       10
                       :order-position 0
                       :user-id        user-id
-                      :category-id    category-id}} response)))
+                      :category-id    (-> category-response :body :id)}} item-response)))

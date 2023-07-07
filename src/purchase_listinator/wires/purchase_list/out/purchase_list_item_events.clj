@@ -10,14 +10,15 @@
 (s/defschema ItemDeletedEvent purchase-item-deleted-event-skeleton)
 
 (def purchase-item-created-event-skeleton
-  {:event-id       s/Uuid
-   :item-id        s/Uuid
+  {:event-id         s/Uuid
+   :item-id          s/Uuid
    :user-id          s/Uuid
-   :name           s/Str
-   :category-id    s/Uuid
-   :order-position s/Int
-   :quantity       s/Int
-   :moment         s/Num})
+   :name             s/Str
+   :category-id      s/Uuid
+   :order-position   s/Int
+   :quantity         s/Int
+   :moment           s/Num
+   :purchase-list-id s/Uuid})
 (s/defschema ItemCreatedEvent purchase-item-created-event-skeleton)
 
 (def purchase-item-changed-event-skeleton
