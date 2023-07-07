@@ -1,7 +1,9 @@
 (ns purchase-listinator.modules.shopping-cart.diplomat.db.redis
-  (:require [schema.core :as s]
-            [purchase-listinator.modules.shopping-cart.schemas.internal.purchase-list :as internal.purchase-list]
-            [purchase-listinator.components.redis :as redis]))
+  (:require
+    [purchase-listinator.modules.shopping-cart.schemas.internal.cart-events :as internal.cart-events]
+    [schema.core :as s]
+    [purchase-listinator.modules.shopping-cart.schemas.internal.purchase-list :as internal.purchase-list]
+    [purchase-listinator.components.redis :as redis]))
 
 (s/defn find-list :- (s/maybe internal.purchase-list/PurchaseList)
   [list-id :- s/Uuid
@@ -25,3 +27,9 @@
   [list-id :- s/Uuid
    redis :- redis/IRedis]
   (redis/smembers redis (str list-id "_global_cart")))
+
+(s/defn add-event
+  [list-id :- s/Uuid
+   event :- internal.cart-events/CartEvent
+   redis :- redis/IRedis]
+  (redis/sadd redis (str list-id "_global_cart") event))

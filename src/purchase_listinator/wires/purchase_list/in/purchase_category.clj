@@ -12,3 +12,5 @@
 
 (s/defschema PurchaseCategoryCreation
   (dissoc purchase-category-skeleton :order-position :user-id))
+
+

@@ -15,9 +15,9 @@
             [schema.coerce :as coerce])
   (:import (clojure.lang PersistentQueue)))
 
-(def subscribers (concat
-                   endpoints.queue.shopping-purchase-list-event-received/subscribers
-                   endpoints.queue.purchase-list-shopping-event-received/subscribers))
+(def default-subscribers (concat
+                           endpoints.queue.shopping-purchase-list-event-received/subscribers
+                           endpoints.queue.purchase-list-shopping-event-received/subscribers))
 
 (s/defn ->rabbitmq :- s/Str
   [key :- s/Keyword]
@@ -68,16 +68,16 @@
                content-type)
    payload))
 
-(defrecord RabbitMq [config]
+(defrecord RabbitMq [subscribers config-key config]
   component/Lifecycle
   (start [this]
-    (let [{rabbit-config :rabbitmq} config
+    (let [{rabbit-config config-key} config
           conn (rmq/connect rabbit-config)
           ch (lch/open conn)
           exchanges (map :exchange subscribers)]
       (doseq [e exchanges]
         (le/declare ch (->rabbitmq e) "fanout" {:durable true}))
-      (doseq [s subscribers]
+      (doseq [s (or subscribers default-subscribers)]
         (start-consumer ch this s))
       (assoc this
         :connection conn
@@ -90,7 +90,13 @@
 
 (defn new-rabbit-mq
   []
-  (map->RabbitMq {}))
+  (map->RabbitMq {:subscribers default-subscribers
+                  :config-key  :rabbitmq}))
+
+(defn new-rabbit-mq-v2
+  [config-key subscribers]
+  (map->RabbitMq {:subscribers subscribers
+                  :config-key  config-key}))
 
 (defn new-queue [] (PersistentQueue/EMPTY))
 

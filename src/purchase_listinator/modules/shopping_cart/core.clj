@@ -3,16 +3,20 @@
     [com.stuartsierra.component :as component]
     [purchase-listinator.components.http :as components.http]
     [purchase-listinator.components.redis :as redis]
-    [purchase-listinator.modules.shopping-cart.diplomat.http.server :as modules.shopping-cart.diplomat.http.server]))
+    [purchase-listinator.modules.shopping-cart.diplomat.http.server :as modules.shopping-cart.diplomat.http.server]
+    [purchase-listinator.modules.shopping-cart.diplomat.consumers.purchase-list-events :as consumers.purchase-list-events]
+    [purchase-listinator.components.rabbitmq :as components.rabbitmq]))
 
 (def rabbitmq-dependencies
-  [:shopping-cart/redis])
+  [])
 (def webapp-dependencies
   [:config :shopping-cart/redis])
 
 (def components
-  {:shopping-cart/redis (component/using (redis/new-Redis {:config-key :shopping-cart/redis}) [:config])
-   :http                (component/using (components.http/new-http :shopping-cart/request-routes) [:config])})
+  {:shopping-cart/redis    (component/using (redis/new-Redis {:config-key :shopping-cart/redis}) [:config])
+   :http                   (component/using (components.http/new-http :shopping-cart/request-routes) [:config])
+   :shopping-cart/rabbitmq (component/using (components.rabbitmq/new-rabbit-mq-v2 :shopping-cart/rabbitmq
+                                                                                  consumers.purchase-list-events/subscribers) [:config])})
 
 (def system-components-test
   {:shopping-cart/redis (component/using (redis/new-redis-mock {:config-key :shopping-cart/redis}) [:config])})
@@ -26,7 +30,12 @@
                                   :port     (or (System/getenv "SHOPPING_CART_REDIS_PORT") 6380)
                                   :username (or (System/getenv "SHOPPING_CART_REDIS_USERNAME") nil)
                                   :password (or (System/getenv "SHOPPING_CART_REDIS_PASSWORD") "pass")
-                                  :timeout  6000}})
+                                  :timeout  6000}
+   :shopping-cart/rabbitmq       {:host     (or (System/getenv "RABBITMQ_HOST") "localhost")
+                                  :port     5672
+                                  :username "guest"
+                                  :password "guest"
+                                  :vhost    "/"}})
 
 (defn config-test
   []
