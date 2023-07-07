@@ -19,7 +19,9 @@
                                                                                   consumers.purchase-list-events/subscribers) rabbitmq-dependencies)})
 
 (def system-components-test
-  {:shopping-cart/redis (component/using (redis/new-redis-mock {:config-key :shopping-cart/redis}) [:config])})
+  {:shopping-cart/redis    (component/using (redis/new-redis-mock {:config-key :shopping-cart/redis}) [:config])
+   :shopping-cart/rabbitmq (component/using (components.rabbitmq/new-rabbit-mq-fake) [])
+   :shopping-cart/http     (component/using (components.http/new-http-mock) [:config])})
 
 (def request-routes
   {:purchase-list/purchase-list-by-id-simple (or (System/getenv "PURCHASE_LIST_BY_ID_URL") "http://localhost:3000/api/purchases/lists/:id/simple")})

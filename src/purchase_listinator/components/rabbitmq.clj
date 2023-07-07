@@ -15,10 +15,6 @@
             [schema.coerce :as coerce])
   (:import (clojure.lang PersistentQueue)))
 
-(def default-subscribers (concat
-                           endpoints.queue.shopping-purchase-list-event-received/subscribers
-                           endpoints.queue.purchase-list-shopping-event-received/subscribers))
-
 (s/defn ->rabbitmq :- s/Str
   [key :- s/Keyword]
   (subs (str key) 1))
@@ -77,7 +73,7 @@
           exchanges (map :exchange subscribers)]
       (doseq [e exchanges]
         (le/declare ch (->rabbitmq e) "fanout" {:durable true}))
-      (doseq [s (or subscribers default-subscribers)]
+      (doseq [s subscribers]
         (start-consumer ch this s))
       (assoc this
         :connection conn
@@ -90,7 +86,9 @@
 
 (defn new-rabbit-mq
   []
-  (map->RabbitMq {:subscribers default-subscribers
+  (map->RabbitMq {:subscribers (concat
+                                 endpoints.queue.shopping-purchase-list-event-received/subscribers
+                                 endpoints.queue.purchase-list-shopping-event-received/subscribers)
                   :config-key  :rabbitmq}))
 
 (defn new-rabbit-mq-v2
