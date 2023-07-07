@@ -9,7 +9,7 @@
 (s/defn start-cart
   [{:keys [list-id shopping-id]} :- schemas.internal.start-shopping/StartShopping
    user-id
-   {:keys [http shopping-cart/redis]}]
+   {:keys [shopping-cart/http shopping-cart/redis]}]
   (if-let [list (diplomat.db.redis/find-list list-id redis)]
     (do (diplomat.db.redis/add-shopping shopping-id list-id redis)
         {:purchase-list list
