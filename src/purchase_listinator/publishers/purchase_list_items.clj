@@ -3,15 +3,18 @@
             [purchase-listinator.models.internal.purchase-list.purchase-item :as models.internal.purchase-item]
             [purchase-listinator.adapters.out.purchase-list-item-events :as adapters.out.purchase-list-item-events]
             [purchase-listinator.misc.date :as misc.date]
-            [purchase-listinator.wires.purchase-list.out.purchase-list-item-events :as wires.out.purchase-list-item-events]
             [purchase-listinator.misc.general :as misc.general]))
 
 
 (s/defn item-created :- models.internal.purchase-item/PurchaseItem
   [item :- models.internal.purchase-item/PurchaseItem
+   list-id :- s/Uuid
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.created
-           (adapters.out.purchase-list-item-events/->ItemCreatedEvent item (misc.date/numb-now) (misc.general/squuid)))
+           (adapters.out.purchase-list-item-events/->ItemCreatedEvent item
+                                                                      list-id
+                                                                      (misc.date/numb-now)
+                                                                      (misc.general/squuid)))
   item)
 
 (s/defn item-changed :- models.internal.purchase-item/PurchaseItem

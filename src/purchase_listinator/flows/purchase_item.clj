@@ -12,7 +12,7 @@
     [purchase-listinator.models.internal.purchase-list.shopping :as models.internal.purchase-list.shopping]))
 
 (s/defn create
-  [{:keys [name category-id] :as item} :- models.internal.purchase-item/PurchaseItem
+  [{:keys [id name category-id] :as item} :- models.internal.purchase-item/PurchaseItem
    user-id :- s/Uuid
    datomic
    rabbitmq]
@@ -25,7 +25,9 @@
             (logic.purchase-item/change-order-position item)
             (logic.purchase-item/link-with-user user-id)
             (datomic.purchase-item/upsert datomic)
-            (publishers.purchase-list-items/item-created rabbitmq))))))
+            (publishers.purchase-list-items/item-created
+              (datomic.purchase-item/get-list-id id allowed-lists-ids datomic)
+              rabbitmq))))))
 
 (s/defn delete
   [item-id :- s/Uuid

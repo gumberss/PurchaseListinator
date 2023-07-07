@@ -1,5 +1,7 @@
 (ns purchase-listinator.wires.purchase-list.in.purchase-category-events
-  (:require [schema.core :as s]))
+  (:require
+    [purchase-listinator.misc.schema :as misc.schema]
+    [schema.core :as s]))
 
 (def purchase-category-deleted-event-skeleton
   {:event-id         s/Uuid
@@ -7,7 +9,7 @@
    :purchase-list-id s/Uuid
    :user-id          s/Uuid
    :moment           s/Num})
-(s/defschema PurchaseCategoryDeletedEvent purchase-category-deleted-event-skeleton)
+(misc.schema/loose-schema PurchaseCategoryDeletedEvent purchase-category-deleted-event-skeleton)
 
 (def purchase-category-created-event-skeleton
   {:event-id         s/Uuid
@@ -18,4 +20,4 @@
    :color            s/Int
    :purchase-list-id s/Uuid
    :moment           s/Num})
-(s/defschema PurchaseCategoryCreatedEvent purchase-category-created-event-skeleton)
+(misc.schema/loose-schema PurchaseCategoryCreatedEvent purchase-category-created-event-skeleton)
