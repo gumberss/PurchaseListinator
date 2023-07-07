@@ -8,15 +8,15 @@
     [purchase-listinator.components.rabbitmq :as components.rabbitmq]))
 
 (def rabbitmq-dependencies
-  [])
+  [:config :shopping-cart/redis :shopping-cart/http])
 (def webapp-dependencies
-  [:config :shopping-cart/redis])
+  [:config :shopping-cart/redis :shopping-cart/http])
 
 (def components
   {:shopping-cart/redis    (component/using (redis/new-Redis {:config-key :shopping-cart/redis}) [:config])
-   :http                   (component/using (components.http/new-http :shopping-cart/request-routes) [:config])
+   :shopping-cart/http     (component/using (components.http/new-http :shopping-cart/request-routes) [:config])
    :shopping-cart/rabbitmq (component/using (components.rabbitmq/new-rabbit-mq-v2 :shopping-cart/rabbitmq
-                                                                                  consumers.purchase-list-events/subscribers) [:config])})
+                                                                                  consumers.purchase-list-events/subscribers) rabbitmq-dependencies)})
 
 (def system-components-test
   {:shopping-cart/redis (component/using (redis/new-redis-mock {:config-key :shopping-cart/redis}) [:config])})
@@ -42,11 +42,10 @@
   {})
 
 (def config
-  {:rabbitmq-dependencies rabbitmq-dependencies
-   :webapp-dependencies   webapp-dependencies
-   :system-components     components
-   :system-config         system-config
-   :routes                (set (concat modules.shopping-cart.diplomat.http.server/routes))})
+  {:webapp-dependencies webapp-dependencies
+   :system-components   components
+   :system-config       system-config
+   :routes              (set (concat modules.shopping-cart.diplomat.http.server/routes))})
 
 
 (defn system-config-test
