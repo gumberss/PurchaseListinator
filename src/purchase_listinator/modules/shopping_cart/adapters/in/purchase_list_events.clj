@@ -8,3 +8,9 @@
   (-> (assoc wire :event-type :purchase-list-category-created
                   :id event-id)
       (dissoc :event-id)))
+
+(s/defn category-deleted-event->internal :- internal.purchase-list-category-events/PurchaseListCategoryDeleted
+  [{:keys [event-id] :as wire} :- wire.in.purchase-list-category-events/PurchaseCategoryDeletedEvent]
+  (-> (assoc wire :event-type :purchase-list-category-deleted
+                  :id event-id)
+      (dissoc :event-id)))
