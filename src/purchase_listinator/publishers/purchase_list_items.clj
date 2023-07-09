@@ -19,9 +19,13 @@
 
 (s/defn item-changed :- models.internal.purchase-item/PurchaseItem
   [item :- models.internal.purchase-item/PurchaseItem
+   list-id :- s/Uuid
    {:keys [publish]}]
   (publish :purchase-listinator/purchase-list.item.changed
-           (adapters.out.purchase-list-item-events/->ItemChangedEvent item (misc.date/numb-now) (misc.general/squuid)))
+           (adapters.out.purchase-list-item-events/->ItemChangedEvent item
+                                                                      list-id
+                                                                      (misc.date/numb-now)
+                                                                      (misc.general/squuid)))
   item)
 
 (s/defn item-deleted :- models.internal.purchase-item/PurchaseItem

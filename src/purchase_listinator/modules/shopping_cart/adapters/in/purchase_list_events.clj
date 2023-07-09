@@ -26,3 +26,9 @@
   (-> (assoc wire :event-type :purchase-list-item-deleted
                   :id event-id)
       (dissoc :event-id)))
+
+(s/defn item-changed-event->internal :- internal.purchase-list-events/PurchaseListItemChanged
+  [{:keys [event-id] :as wire} :- wire.in.purchase-list-events/PurchaseItemChangedEvent]
+  (-> (assoc wire :event-type :purchase-list-item-changed
+                  :id event-id)
+      (dissoc :event-id)))
