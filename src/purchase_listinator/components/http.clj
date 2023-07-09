@@ -37,10 +37,16 @@
   (cond
     (uuid? value) (str value)
     :else value))
+
+(s/defn replace-variable
+  [url [key val]]
+  (if (str/includes? url key)
+    (str/replace url key val)
+    url))
 (s/defn fill-path-params [url params]
   (->> (modify-keys str params)
        (modify-vals ->path-param)
-       (reduce (partial apply str/replace) url)))
+       (reduce replace-variable url)))
 
 (defrecord Http [config request-routes-key]
   component/Lifecycle

@@ -35,10 +35,11 @@
    datomic
    rabbitmq]
   (either/try-right
-    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
+    (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
+          list-id (datomic.purchase-item/get-list-id item-id allowed-lists-ids datomic)]
       (when-let [item (datomic.purchase-item/get-by-id item-id allowed-lists-ids datomic)]
         (datomic.purchase-item/delete-by-id item-id datomic)
-        (publishers.purchase-list-items/item-deleted item rabbitmq)))))
+        (publishers.purchase-list-items/item-deleted item list-id rabbitmq)))))
 
 (s/defn change-items-order-inside-same-category
   [category-id :- s/Uuid
