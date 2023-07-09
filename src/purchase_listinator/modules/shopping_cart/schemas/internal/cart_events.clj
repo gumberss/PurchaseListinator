@@ -45,6 +45,18 @@
    :purchase-list-id             s/Uuid})
 (s/defschema PurchaseListItemDeleted purchase-item-deleted-skeleton)
 
+(def purchase-item-changed-skeleton
+  {:id                           s/Uuid
+   :event-type                   (s/eq :purchase-list-item-changed)
+   :user-id                      s/Uuid
+   :moment                       s/Num
+   :item-id                      s/Uuid
+   :name                         s/Str
+   :quantity                     s/Int
+   :order-position               s/Int
+   :category-id                  s/Uuid})
+(s/defschema PurchaseListItemChanged purchase-item-changed-skeleton)
+
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
   (= expected-event-type event-type))

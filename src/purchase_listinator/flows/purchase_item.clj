@@ -93,11 +93,12 @@
    rabbitmq]
   (either/try-right
     (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
-          {:keys [name] :as item} (datomic.purchase-item/get-by-id item-id allowed-lists-ids datomic)]
+          {:keys [name] :as item} (datomic.purchase-item/get-by-id item-id allowed-lists-ids datomic)
+          list-id (datomic.purchase-item/get-list-id item-id allowed-lists-ids datomic)]
       (if (not= new-name name)
         (-> (assoc item :name new-name)
             (datomic.purchase-item/upsert datomic)
-            (publishers.purchase-list-items/item-changed rabbitmq))))))
+            (publishers.purchase-list-items/item-changed list-id rabbitmq))))))
 
 (s/defn change-item-quantity
   [item-id :- s/Uuid
@@ -106,12 +107,13 @@
    {:keys [datomic rabbitmq]}]
   (either/try-right
     (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)
-          {:keys [quantity] :as item} (datomic.purchase-item/get-by-id item-id allowed-lists-ids datomic)]
+          {:keys [quantity] :as item} (datomic.purchase-item/get-by-id item-id allowed-lists-ids datomic)
+          list-id (datomic.purchase-item/get-list-id item-id allowed-lists-ids datomic)]
       (if (= quantity new-quantity)
         item
         (-> (assoc item :quantity new-quantity)
             (datomic.purchase-item/upsert datomic)
-            (publishers.purchase-list-items/item-changed rabbitmq))))))
+            (publishers.purchase-list-items/item-changed list-id rabbitmq))))))
 
 (s/defn receive-shopping-finished
   [{:keys [categories user-id]} :- models.internal.purchase-list.shopping/Shopping
