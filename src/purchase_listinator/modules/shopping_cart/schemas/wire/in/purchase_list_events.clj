@@ -15,3 +15,7 @@
 (misc.schema/loose-schema PurchaseItemCreatedEvent
   (-> (assoc internal.purchase-list-category-events/purchase-list-item-created-skeleton :event-id s/Uuid)
       (dissoc :id :event-type)))
+
+(misc.schema/loose-schema PurchaseItemDeletedEvent
+  (-> (assoc internal.purchase-list-category-events/purchase-item-deleted-skeleton :event-id s/Uuid)
+      (dissoc :id :event-type)))

@@ -28,6 +28,14 @@
   (-> (adapters.in.purchase-list-events/item-created-event->internal event)
       (flows.cart-events-reception/receive-cart-event-by-list components)))
 
+(s/defn purchase-list-item-deleted-event-received
+  [_channel
+   _metadata
+   components
+   event :- wire.in.purchase-list-events/PurchaseItemDeletedEvent]
+  (-> (adapters.in.purchase-list-events/item-deleted-event->internal #p event)
+      (flows.cart-events-reception/receive-cart-event-by-list components)))
+
 (def subscribers
   [{:exchange :purchase-listinator/purchase-list.category.created
     :queue    :shopping-cart/shopping-list.category.create
@@ -40,5 +48,9 @@
    {:exchange :purchase-listinator/purchase-list.item.created
     :queue    :shopping-cart/shopping-list.item.create
     :schema   wire.in.purchase-list-events/PurchaseItemCreatedEvent
-    :handler  purchase-list-item-created-event-received}])
+    :handler  purchase-list-item-created-event-received}
+   {:exchange :purchase-listinator/purchase-list.item.deleted
+    :queue    :shopping-cart/shopping-list.item.deleted
+    :schema   wire.in.purchase-list-events/PurchaseItemDeletedEvent
+    :handler  purchase-list-item-deleted-event-received}])
 
