@@ -94,12 +94,16 @@
       (left (logic.errors/build 404 {:message nil})))))
 
 (s/defn receive-cart-event
-  [{:keys [shopping-id] :as event} :- models.internal.shopping-cart/CartEvent
-   {:keys [redis]}]
-  (-> (redis.shopping-cart/find-cart shopping-id redis)
-      (logic.shopping-cart-event/add-event event)
-      (redis.shopping-cart/upsert redis))
-  event)
+  [{:keys [shopping-id user-id] :as event} :- models.internal.shopping-cart/CartEvent
+   {:keys [redis datomic http]}]
+  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
+        list-id (datomic.shopping/get-list-id-by-shopping-id shopping-id allowed-lists-ids datomic)
+        event (assoc event :purchase-list-id list-id)]
+    (-> (redis.shopping-cart/find-cart shopping-id redis)
+        (logic.shopping-cart-event/add-event event)
+        (redis.shopping-cart/upsert redis))
+    (http.client.shopping/send-shopping-cart-events event user-id http)
+    event))
 
 (s/defn receive-cart-event-by-list
   [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent

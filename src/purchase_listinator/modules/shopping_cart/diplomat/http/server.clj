@@ -1,10 +1,13 @@
 (ns purchase-listinator.modules.shopping-cart.diplomat.http.server
   (:require
     [purchase-listinator.adapters.misc :as adapters.misc]
+    [purchase-listinator.misc.date :as misc.date]
     [purchase-listinator.misc.either :as misc.either]
     [purchase-listinator.misc.http :as misc.http]
     [purchase-listinator.modules.shopping-cart.flows.cart :as flows.cart]
     [purchase-listinator.modules.shopping-cart.adapters.in.start-shopping :as adapters.in.start-shopping]
+    [purchase-listinator.modules.shopping-cart.adapters.in.cart-events :as adapters.in.cart-events]
+    [purchase-listinator.modules.shopping-cart.flows.cart-events-reception :as flows.cart-events-reception]
     [schema.core :as s]))
 
 
@@ -21,7 +24,19 @@
                              (adapters.misc/string->uuid user-id)
                              component))))
 
+(s/defn receive-events
+  [{component :component
+    wire      :json-params
+    user-id :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (let [now (misc.date/numb-now)
+            user-id (adapters.misc/string->uuid user-id)
+            cart-event (adapters.in.cart-events/wire->internal wire now user-id)]
+        (flows.cart-events-reception/receive-cart-event-by-list cart-event component)))))
+
 (def routes
   #{["/api/shopping-cart/version" :get [get-version] :route-name :get-shopping-cart-version]
-    ["/api/shopping-cart/initiate" :post [start-cart] :route-name :post-start-cart]})
+    ["/api/shopping-cart/initiate" :post [start-cart] :route-name :post-start-cart]
+    ["/api/shopping-cart/events" :post [receive-events] :route-name :receive-cart-events]})
 

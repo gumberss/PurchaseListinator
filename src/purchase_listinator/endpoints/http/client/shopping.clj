@@ -2,6 +2,7 @@
   (:require
     [purchase-listinator.components.http :as components.http]
     [purchase-listinator.models.internal.price-suggestion :as models.internal.price-suggestion]
+    [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
     [purchase-listinator.wires.in.price-suggestion :as wires.in.price-suggestion]
     [purchase-listinator.adapters.in.price-suggestion :as adapters.in.price-suggestion]
     [schema.core :as s]))
@@ -24,3 +25,12 @@
                                  :url           :purchase-list/allowed-lists
                                  :user-id       user-id
                                  :result-schema [s/Uuid]}))
+
+(s/defn send-shopping-cart-events :- [s/Uuid]
+  [event :- models.internal.shopping-cart/CartEvent
+   user-id :- s/Uuid
+   http]
+  (components.http/request http {:method  :post
+                                 :url     :shopping-cart/receive-events
+                                 :user-id user-id
+                                 :body    event}))
