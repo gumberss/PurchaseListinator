@@ -34,3 +34,15 @@
                                  :url     :shopping-cart/receive-events
                                  :user-id user-id
                                  :body    event}))
+
+(s/defn init-shopping-cart :- [s/Uuid]
+  [shopping-id :- s/Uuid
+   purchase-list-id :- s/Uuid
+   user-id :- s/Uuid
+   http]
+  (components.http/request http {:method  :post
+                                 :url     :shopping-cart/init-cart
+                                 :user-id user-id
+                                 :body    {:shopping-id shopping-id
+                                           :list-id     purchase-list-id}}))
+

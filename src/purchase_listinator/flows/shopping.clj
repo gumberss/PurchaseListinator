@@ -27,14 +27,17 @@
     [purchase-listinator.logic.price-suggestion :as logic.price-suggestion]))
 
 (s/defn init-shopping
-  [shopping-initiation :- models.internal.shopping-initiation/ShoppingInitiation
+  [{shopping-id      :id
+    purchase-list-id :list-id
+    :as              shopping-initiation} :- models.internal.shopping-initiation/ShoppingInitiation
    user-id :- s/Uuid
-   {:keys [datomic mongo redis]}]
+   {:keys [datomic mongo redis http]}]
   (either/try-right
     (let [now (misc.date/numb-now)
           {:keys [id] :as shopping} (-> (logic.shopping/initiation->shopping shopping-initiation now)
                                         (logic.shopping/link-with-user user-id))]
-      (->> [(go (-> (logic.shopping-cart/init id)
+      (->> [(go (http.client.shopping/init-shopping-cart shopping-id purchase-list-id user-id http))
+            (go (-> (logic.shopping-cart/init id)
                     (redis.shopping-cart/init-cart redis)))
             (go (-> (logic.shopping-location/initiation->shopping-location shopping-initiation (misc.general/squuid))
                     (mongo.shopping-location/upsert mongo)))
