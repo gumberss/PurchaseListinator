@@ -14,4 +14,3 @@
       (println e)
       (throw e)))
   event)
-

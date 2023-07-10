@@ -89,3 +89,17 @@
             (d/db connection) id allowed-lists-ids)
        ffirst
        adapter.shopping/db->internal))
+
+(s/defn get-list-id-by-shopping-id :- s/Uuid
+  [shopping-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
+   {:keys [connection]}]
+  (->> (d/q '[:find ?l-id
+              :in $ ?s-id [?a-l-id ...]
+              :where
+              [?s :shopping/id ?s-id]
+              [?s :shopping/list ?l]
+              [?l :purchase-list/id ?a-l-id]
+              [?l :purchase-list/id ?l-id]]
+            (d/db connection) shopping-id allowed-lists-ids)
+       ffirst))
