@@ -46,35 +46,38 @@
 (s/defschema PurchaseListItemDeleted purchase-item-deleted-skeleton)
 
 (def purchase-item-changed-skeleton
-  {:id             s/Uuid
-   :event-type     (s/eq :purchase-list-item-changed)
-   :user-id        s/Uuid
-   :moment         s/Num
-   :item-id        s/Uuid
-   :name           s/Str
-   :quantity       s/Int
-   :order-position s/Int
-   :category-id    s/Uuid})
+  {:id               s/Uuid
+   :event-type       (s/eq :purchase-list-item-changed)
+   :user-id          s/Uuid
+   :moment           s/Num
+   :item-id          s/Uuid
+   :name             s/Str
+   :quantity         s/Int
+   :order-position   s/Int
+   :category-id      s/Uuid
+   :purchase-list-id s/Uuid})
 (s/defschema PurchaseListItemChanged purchase-item-changed-skeleton)
 
 (s/defschema ReorderCategoryEvent
-  {:id           s/Uuid
-   :moment       s/Num
-   :event-type   (s/eq :reorder-category)
-   :user-id      s/Uuid
-   :shopping-id  s/Uuid
-   :category-id  s/Uuid
-   :new-position s/Int})
+  {:id               s/Uuid
+   :moment           s/Num
+   :event-type       (s/eq :reorder-category)
+   :user-id          s/Uuid
+   :shopping-id      s/Uuid
+   :category-id      s/Uuid
+   :new-position     s/Int
+   :purchase-list-id s/Uuid})
 
 (s/defschema ReorderItemEvent
-  {:id              s/Uuid
-   :moment          s/Num
-   :event-type      (s/eq :reorder-item)
-   :user-id         s/Uuid
-   :shopping-id     s/Uuid
-   :item-id         s/Uuid
-   :new-position    s/Int
-   :new-category-id s/Uuid})
+  {:id               s/Uuid
+   :moment           s/Num
+   :event-type       (s/eq :reorder-item)
+   :user-id          s/Uuid
+   :shopping-id      s/Uuid
+   :item-id          s/Uuid
+   :new-position     s/Int
+   :new-category-id  s/Uuid
+   :purchase-list-id s/Uuid})
 
 (s/defschema ChangeItemEvent
   {:id               s/Uuid
@@ -84,7 +87,18 @@
    :shopping-id      s/Uuid
    :item-id          s/Uuid
    :price            s/Num
-   :quantity-changed s/Int})
+   :quantity-changed s/Int
+   :purchase-list-id s/Uuid})
+
+(s/defschema ItemPriceSuggested
+  {:id               s/Uuid
+   :event-type       (s/eq :price-suggested)
+   :user-id          s/Uuid
+   :moment           s/Num
+   :shopping-id      s/Uuid
+   :item-id          s/Uuid
+   :price            s/Num
+   :purchase-list-id s/Uuid})
 
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
@@ -99,5 +113,4 @@
     (partial of-type :purchase-list-item-deleted) PurchaseListItemDeleted
     (partial of-type :reorder-category) ReorderCategoryEvent
     (partial of-type :reorder-item) ReorderItemEvent
-    ;(partial of-type :item-price-suggested) ItemPriceSuggested
-    ))
+    (partial of-type :item-price-suggested) ItemPriceSuggested))

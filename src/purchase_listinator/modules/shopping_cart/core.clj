@@ -24,7 +24,8 @@
    :shopping-cart/http     (component/using (components.http/new-http-mock) [:config])})
 
 (def request-routes
-  {:purchase-list/purchase-list-by-id-simple (or (System/getenv "PURCHASE_LIST_BY_ID_URL") "http://localhost:3000/api/purchases/lists/:id/simple")})
+  {:purchase-list/purchase-list-by-id-simple (or (System/getenv "PURCHASE_LIST_BY_ID_URL") "http://localhost:3000/api/purchases/lists/:id/simple")
+   :price-suggestion/items                   (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")})
 
 (def system-config
   {:shopping-cart/request-routes request-routes

@@ -7,6 +7,7 @@
   (get-data [redis key])
   (del-data [redis key])
   (sadd [redis key value])
+  (sadd-many [redis key values])
   (smembers [redis key]))
 
 (defrecord Redis [config-key config]
@@ -43,6 +44,11 @@
          value]
     (wcar connection
           (car/sadd key value)))
+  (sadd-many [{:keys [connection]}
+         key
+         values]
+    (wcar connection
+          (car/sadd key values)))
   (smembers [{:keys [connection]}
              key]
     (wcar connection

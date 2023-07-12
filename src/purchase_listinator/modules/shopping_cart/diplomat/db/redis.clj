@@ -33,3 +33,9 @@
    event :- internal.cart-events/CartEvent
    redis :- redis/IRedis]
   (redis/sadd redis (str list-id "_global_cart") event))
+
+(s/defn add-events
+  [list-id :- s/Uuid
+   events :- [internal.cart-events/CartEvent]
+   redis :- redis/IRedis]
+  (redis/sadd-many redis (str list-id "_global_cart") #p events))
