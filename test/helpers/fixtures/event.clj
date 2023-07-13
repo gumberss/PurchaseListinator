@@ -33,6 +33,7 @@
    :quantity       2
    :order-position 1
    :category-id    category-id
+   :purchase-list-id purchase-list-id
    :user-id        user-id})
 
 (def item-deleted-event-wire
@@ -40,6 +41,7 @@
    :item-id     item-id
    :category-id category-id
    :moment      35
+   :purchase-list-id purchase-list-id
    :user-id     user-id})
 
 (def item-changed-event-wire
@@ -50,4 +52,5 @@
    :quantity       4
    :order-position 2
    :category-id    category-id
+   :purchase-list-id purchase-list-id
    :user-id        user-id})
