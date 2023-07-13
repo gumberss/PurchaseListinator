@@ -8,5 +8,6 @@
    :price            s/Num
    :quantity-in-cart s/Int
    :order-position   s/Int
+   :purchase-list-id s/Uuid
    :category-id      s/Uuid})
 (s/defschema ShoppingItem shopping-item-skeleton)

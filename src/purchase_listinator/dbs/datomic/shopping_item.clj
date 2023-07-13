@@ -35,6 +35,10 @@
    {:db/ident       :shopping-item/user-id
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one
+    :db/doc         "user id"}
+   {:db/ident       :shopping-item/purchase-list-id
+    :db/valueType   :db.type/uuid
+    :db/cardinality :db.cardinality/one
     :db/doc         "user id"}])
 
 (s/defn upsert :- models.internal.shopping-item/ShoppingItem
