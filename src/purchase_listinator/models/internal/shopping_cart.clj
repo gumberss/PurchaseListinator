@@ -61,6 +61,7 @@
    :name                         s/Str
    :quantity                     s/Int
    :order-position               s/Int
+   :purchase-list-id s/Uuid
    :category-id                  s/Uuid})
 
 (s/defschema PurchaseListItemChanged
@@ -73,7 +74,8 @@
    :name                         s/Str
    :quantity                     s/Int
    :order-position               s/Int
-   :category-id                  s/Uuid})
+   :category-id                  s/Uuid
+   :purchase-list-id s/Uuid})
 
 (s/defschema PurchaseListItemDeleted
   {:id                           s/Uuid
@@ -82,7 +84,8 @@
    :moment                       s/Num
    (s/optional-key :shopping-id) s/Uuid
    :item-id                      s/Uuid
-   :category-id                  s/Uuid})
+   :category-id                  s/Uuid
+   :purchase-list-id s/Uuid})
 
 (s/defschema ItemPriceSuggested
   {:id          s/Uuid

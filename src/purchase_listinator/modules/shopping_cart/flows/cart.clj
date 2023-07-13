@@ -14,10 +14,11 @@
   [{:keys [id] :as list} :- modules.shopping-cart.schemas.wire.in.purchase-list/PurchaseList
    user-id :- s/Uuid
    http]
-  (-> (logic.purchase-list/find-items-ids list)
-      (diplomat.http.client/get-price-suggestion user-id http)
-      :price-suggestion
-      (->> (map (partial logic.price-suggestion/->cart-event (misc.general/squuid) id user-id)))))
+  (let [list-items (logic.purchase-list/find-items-ids list)]
+    (when (not-empty list-items)
+      (-> (diplomat.http.client/get-price-suggestion list-items user-id http)
+          :price-suggestion
+          (->> (map (partial logic.price-suggestion/->cart-event (misc.general/squuid) id user-id)))))))
 
 (s/defn start-cart
   [{:keys [list-id shopping-id]} :- schemas.internal.start-shopping/StartShopping
@@ -32,7 +33,8 @@
         (diplomat.db.redis/add-list list redis)
         (diplomat.db.redis/add-shopping shopping-id list-id redis)
         (let [events (build-price-suggestion-events list user-id http)]
+          (diplomat.db.redis/add-events list-id events redis)
           {:purchase-list list
-           :cart-events   (diplomat.db.redis/add-events list-id events redis)}))
+           :cart-events   events}))
       (logic.errors/build-left 404 "[[PURCHASE_LIST_NOT_FOUND]]"))))
 

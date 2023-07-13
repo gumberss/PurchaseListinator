@@ -38,4 +38,5 @@
   [list-id :- s/Uuid
    events :- [internal.cart-events/CartEvent]
    redis :- redis/IRedis]
-  (map #(redis/sadd redis (str list-id "_global_cart") %) events))
+  (map #(redis/sadd redis (str list-id "_global_cart") %) events)
+  events)
