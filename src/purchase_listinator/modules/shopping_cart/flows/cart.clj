@@ -42,6 +42,9 @@
   [{{:keys [list-id id]} :shopping} :- schemas.internal.start-shopping/CloseShopping
    {:keys [shopping-cart/redis]}]
   (when (diplomat.db.redis/find-list list-id redis)
-    (diplomat.db.redis/delete-list list-id redis)
-    (diplomat.db.redis/delete-global-cart list-id redis)
-    (diplomat.db.redis/delete-shopping-sessions list-id redis)))
+    (diplomat.db.redis/remove-shopping id list-id redis)
+    (let [list-sessions (diplomat.db.redis/all-sessions list-id redis)]
+      (when (empty? list-sessions)
+        (diplomat.db.redis/delete-list list-id redis)
+        (diplomat.db.redis/delete-global-cart list-id redis)
+        (diplomat.db.redis/delete-shopping-sessions list-id redis)))))
