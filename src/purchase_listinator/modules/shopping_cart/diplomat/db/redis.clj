@@ -39,6 +39,11 @@
    redis :- redis/IRedis]
   (redis/srem redis (str list-id "_shopping_sessions") shopping-id))
 
+(s/defn all-sessions
+  [list-id :- s/Uuid
+   redis :- redis/IRedis]
+  (redis/smembers redis (str list-id "_shopping_sessions")))
+
 ;todo: schema
 (s/defn get-events
   [list-id :- s/Uuid
