@@ -2,7 +2,7 @@
   (:require
     [purchase-listinator.logic.errors :as logic.errors]
     [purchase-listinator.misc.general :as misc.general]
-    [purchase-listinator.modules.shopping-cart.schemas.internal.start-shopping :as schemas.internal.start-shopping]
+    [purchase-listinator.modules.shopping-cart.schemas.internal.shopping :as schemas.internal.start-shopping]
     [purchase-listinator.modules.shopping-cart.schemas.wire.in.purchase-list :as modules.shopping-cart.schemas.wire.in.purchase-list]
     [schema.core :as s]
     [purchase-listinator.modules.shopping-cart.diplomat.http.client :as diplomat.http.client]
@@ -38,3 +38,10 @@
            :cart-events   events}))
       (logic.errors/build-left 404 "[[PURCHASE_LIST_NOT_FOUND]]"))))
 
+(s/defn close-cart
+  [{{:keys [list-id id]} :shopping} :- schemas.internal.start-shopping/CloseShopping
+   {:keys [shopping-cart/redis]}]
+  (when (diplomat.db.redis/find-list list-id redis)
+    (diplomat.db.redis/delete-list list-id redis)
+    (diplomat.db.redis/delete-global-cart list-id redis)
+    (diplomat.db.redis/delete-shopping-sessions list-id redis)))

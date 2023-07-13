@@ -27,7 +27,7 @@
 (s/defn receive-events
   [{component :component
     wire      :json-params
-    user-id :user-id}]
+    user-id   :user-id}]
   (misc.http/default-branch
     (misc.either/try-right
       (let [now (misc.date/numb-now)
