@@ -45,4 +45,3 @@
                                  :user-id user-id
                                  :body    {:shopping-id shopping-id
                                            :list-id     purchase-list-id}}))
-

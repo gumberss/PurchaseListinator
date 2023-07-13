@@ -16,11 +16,28 @@
   (redis/set-data redis (str id "_list") list)
   list)
 
+(s/defn delete-list :- internal.purchase-list/PurchaseList
+  [id :- s/Uuid
+   redis :- redis/IRedis]
+  (redis/del-data redis (str id "_list"))
+  list)
+
 (s/defn add-shopping
   [shopping-id :- s/Uuid
    list-id :- s/Uuid
    redis :- redis/IRedis]
   (redis/sadd redis (str list-id "_shopping_sessions") shopping-id))
+
+(s/defn delete-shopping-sessions
+  [list-id :- s/Uuid
+   redis :- redis/IRedis]
+  (redis/del-data redis (str list-id "_shopping_sessions")))
+
+(s/defn remove-shopping
+  [shopping-id :- s/Uuid
+   list-id :- s/Uuid
+   redis :- redis/IRedis]
+  (redis/srem redis (str list-id "_shopping_sessions") shopping-id))
 
 ;todo: schema
 (s/defn get-events
@@ -40,3 +57,8 @@
    redis :- redis/IRedis]
   (map #(redis/sadd redis (str list-id "_global_cart") %) events)
   events)
+
+(s/defn delete-global-cart
+  [list-id :- s/Uuid
+   redis :- redis/IRedis]
+  (redis/del-data redis (str list-id "_global_cart")))
