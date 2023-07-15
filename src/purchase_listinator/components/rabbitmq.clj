@@ -12,7 +12,8 @@
             [schema.core :as s]
             [clojure.data.json :as json]
             [camel-snake-kebab.core :as csk]
-            [schema.coerce :as coerce])
+            [schema.coerce :as coerce]
+            [purchase-listinator.components.rabbitmq-channel :as components.rabbitmq-channel])
   (:import (clojure.lang PersistentQueue)))
 
 (s/defn ->rabbitmq :- s/Str
@@ -48,22 +49,8 @@
   (lq/bind ch (->rabbitmq queue) (->rabbitmq exchange))
   (lc/subscribe ch (->rabbitmq queue) (partial consumer-base components schema handler) {:auto-ack true}))
 
-(s/defn publish
-  ([channel
-    exchange :- s/Keyword
-    payload :- {s/Any s/Any}]
-   (publish channel exchange payload {:content-type "application/json"}))
-  ([channel
-    exchange :- s/Keyword
-    payload :- {s/Any s/Any}
-    {:keys [content-type]}]
-   (lb/publish channel
-               (->rabbitmq exchange)
-               ""
-               (misc.content-type-parser/transform-content-to payload content-type)
-               content-type)
-   payload))
-
+;[DEPRECATED]: This RabbitMq record shouldn't be used anymore,
+; use RabbitMqExistentChannel with the rabbitmq-channel component instead
 (defrecord RabbitMq [subscribers config-key config]
   component/Lifecycle
   (start [this]
@@ -78,7 +65,8 @@
       (assoc this
         :connection conn
         :channel ch
-        :publish (partial publish ch))))
+        ;todo: this component shouldn't reference another component directly. use the RabbitMqExistentChannel instead
+        :publish (partial components.rabbitmq-channel/publish ch))))
   (stop [this]
     (rmq/close (:channel this))
     (rmq/close (:connection this))
@@ -109,8 +97,8 @@
 
 (defn new-rabbit-mq-v2
   [config-key channel-component subscribers]
-  (map->RabbitMqExistentChannel {:subscribers subscribers
-                                 :config-key  config-key
+  (map->RabbitMqExistentChannel {:subscribers       subscribers
+                                 :config-key        config-key
                                  :channel-component channel-component}))
 
 (defn new-queue [] (PersistentQueue/EMPTY))
