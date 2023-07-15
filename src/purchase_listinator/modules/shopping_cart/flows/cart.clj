@@ -2,13 +2,14 @@
   (:require
     [purchase-listinator.logic.errors :as logic.errors]
     [purchase-listinator.misc.general :as misc.general]
-    [purchase-listinator.modules.shopping-cart.schemas.internal.shopping :as schemas.internal.start-shopping]
+    [purchase-listinator.modules.shopping-cart.schemas.internal.shopping :as schemas.internal.shopping]
     [purchase-listinator.modules.shopping-cart.schemas.wire.in.purchase-list :as modules.shopping-cart.schemas.wire.in.purchase-list]
     [schema.core :as s]
     [purchase-listinator.modules.shopping-cart.diplomat.http.client :as diplomat.http.client]
     [purchase-listinator.modules.shopping-cart.logic.purchase-list :as logic.purchase-list]
     [purchase-listinator.modules.shopping-cart.logic.price-suggestion :as logic.price-suggestion]
-    [purchase-listinator.modules.shopping-cart.diplomat.db.redis :as diplomat.db.redis]))
+    [purchase-listinator.modules.shopping-cart.diplomat.db.redis :as diplomat.db.redis]
+    [purchase-listinator.modules.shopping-cart.diplomat.producers.shopping-cart-event :as producers.shopping-cart-event]))
 
 (s/defn build-price-suggestion-events
   [{:keys [id] :as list} :- modules.shopping-cart.schemas.wire.in.purchase-list/PurchaseList
@@ -21,7 +22,7 @@
           (->> (map (partial logic.price-suggestion/->cart-event (misc.general/squuid) id user-id)))))))
 
 (s/defn start-cart
-  [{:keys [list-id shopping-id]} :- schemas.internal.start-shopping/StartShopping
+  [{:keys [list-id shopping-id]} :- schemas.internal.shopping/StartShopping
    user-id :- s/Uuid
    {:keys [shopping-cart/http shopping-cart/redis]}]
   (if-let [list (diplomat.db.redis/find-list list-id redis)]
@@ -39,12 +40,14 @@
       (logic.errors/build-left 404 "[[PURCHASE_LIST_NOT_FOUND]]"))))
 
 (s/defn close-cart
-  [{{:keys [list-id id]} :shopping} :- schemas.internal.start-shopping/CloseShopping
-   {:keys [shopping-cart/redis]}]
+  [{{:keys [list-id id] :as shopping} :shopping} :- schemas.internal.shopping/CloseShopping
+   {:keys [shopping-cart/redis shopping-cart/rabbitmq-channel]}]
   (when (diplomat.db.redis/find-list list-id redis)
     (diplomat.db.redis/remove-shopping id list-id redis)
-    (let [list-sessions (diplomat.db.redis/all-sessions list-id redis)]
+    (let [all-events (diplomat.db.redis/get-events list-id redis)
+          list-sessions (diplomat.db.redis/all-sessions list-id redis)]
       (when (empty? list-sessions)
         (diplomat.db.redis/delete-list list-id redis)
         (diplomat.db.redis/delete-global-cart list-id redis)
-        (diplomat.db.redis/delete-shopping-sessions list-id redis)))))
+        (diplomat.db.redis/delete-shopping-sessions list-id redis))
+      (producers.shopping-cart-event/shopping-cart-closed shopping all-events rabbitmq-channel))))

@@ -106,11 +106,15 @@
 
 (s/defschema CartEvent
   (s/conditional
+    ;purchase-list actions
     (partial of-type :purchase-list-category-created) PurchaseListCategoryCreated
     (partial of-type :purchase-list-category-deleted) PurchaseListCategoryDeleted
     (partial of-type :purchase-list-item-created) PurchaseListItemCreated
     (partial of-type :purchase-list-item-changed) PurchaseListItemChanged
     (partial of-type :purchase-list-item-deleted) PurchaseListItemDeleted
+    ;start-cart actions
+    (partial of-type :item-price-suggested) ItemPriceSuggested
+    ;shopping-actions
     (partial of-type :reorder-category) ReorderCategoryEvent
     (partial of-type :reorder-item) ReorderItemEvent
-    (partial of-type :item-price-suggested) ItemPriceSuggested))
+    (partial of-type :change-item) ChangeItemEvent))

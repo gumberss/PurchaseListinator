@@ -9,8 +9,7 @@
     [purchase-listinator.modules.events.core :as modules.events.core]
     [purchase-listinator.modules.price-suggestion.core :as modules.price-suggestion.core]
     [purchase-listinator.modules.shopping-cart.core :as modules.shopping-cart.core]
-    [purchase-listinator.purchase-listinator-core :as purchase-listinator-core]
-    [purchase-listinator.components.pedestal :as components.pedestal])
+    [purchase-listinator.purchase-listinator-core :as purchase-listinator-core])
   (:gen-class))
 
 (def modules-config [purchase-listinator-core/module-config
@@ -28,7 +27,7 @@
   (vec (mapcat :webapp-dependencies modules-config)))
 
 (def default-routes
-  (set/union components.pedestal/default-routes))
+  (set/union pedestal/default-routes))
 (def routes
   (->> (filter :routes modules-config)
        (map :routes)
