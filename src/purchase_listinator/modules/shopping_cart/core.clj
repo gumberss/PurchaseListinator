@@ -18,6 +18,7 @@
    :shopping-cart/http             (component/using (components.http/new-http :shopping-cart/request-routes) [:config])
    :shopping-cart/rabbitmq-channel (component/using (components.rabbitmq-channel/new-rabbit-mq-channel :shopping-cart/rabbitmq) [:config])
    :shopping-cart/rabbitmq         (component/using (components.rabbitmq/new-rabbit-mq-v2 :shopping-cart/rabbitmq
+                                                                                          :shopping-cart/rabbitmq-channel
                                                                                           consumers.purchase-list-events/subscribers) rabbitmq-dependencies)})
 
 (def system-components-test

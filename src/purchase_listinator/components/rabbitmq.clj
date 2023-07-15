@@ -91,10 +91,10 @@
                                  endpoints.queue.purchase-list-shopping-event-received/subscribers)
                   :config-key  :rabbitmq}))
 
-(defrecord RabbitMqExistentChannel [subscribers config-key config]
+(defrecord RabbitMqExistentChannel [subscribers config-key channel-component config]
   component/Lifecycle
   (start [this]
-    (let [{:shopping-cart/keys [rabbitmq-channel]} this
+    (let [{rabbitmq-channel channel-component} this
           exchanges (map :exchange subscribers)
           {:keys [channel]} rabbitmq-channel]
       (doseq [e exchanges]
@@ -108,9 +108,10 @@
     (dissoc this :connection :channel :publish)))
 
 (defn new-rabbit-mq-v2
-  [config-key subscribers]
+  [config-key channel-component subscribers]
   (map->RabbitMqExistentChannel {:subscribers subscribers
-                                 :config-key  config-key}))
+                                 :config-key  config-key
+                                 :channel-component channel-component}))
 
 (defn new-queue [] (PersistentQueue/EMPTY))
 
