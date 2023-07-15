@@ -91,10 +91,11 @@
                                  endpoints.queue.purchase-list-shopping-event-received/subscribers)
                   :config-key  :rabbitmq}))
 
-(defrecord RabbitMqExistentChannel [subscribers config-key config rabbitmq-channel]
+(defrecord RabbitMqExistentChannel [subscribers config-key config]
   component/Lifecycle
   (start [this]
-    (let [exchanges (map :exchange subscribers)
+    (let [{:shopping-cart/keys [rabbitmq-channel]} this
+          exchanges (map :exchange subscribers)
           {:keys [channel]} rabbitmq-channel]
       (doseq [e exchanges]
         (le/declare channel (->rabbitmq e) "fanout" {:durable true}))

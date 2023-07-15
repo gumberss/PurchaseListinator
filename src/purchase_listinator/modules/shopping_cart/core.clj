@@ -9,10 +9,7 @@
     [purchase-listinator.components.rabbitmq :as components.rabbitmq]))
 
 (def rabbitmq-dependencies
-  {:config           :config
-   :redis            :shopping-cart/redis
-   :http             :shopping-cart/http
-   :rabbitmq-channel :shopping-cart/rabbitmq-channel})
+  [:config :shopping-cart/redis :shopping-cart/http :shopping-cart/rabbitmq-channel])
 (def webapp-dependencies
   [:config :shopping-cart/redis :shopping-cart/http])
 
