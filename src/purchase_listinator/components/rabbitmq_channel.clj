@@ -12,7 +12,7 @@
   (subs (str key) 1))
 
 (defprotocol IProducer
-  (publish [channel exchange payload] [channel exchange payload args]))
+  (publish [producer exchange payload] [producer exchange payload args]))
 
 (s/defn publish
   ([channel
@@ -43,11 +43,11 @@
     (dissoc this :connection :channel))
   IProducer
   (publish
-    [channel exchange payload]
-    (publish (:channel channel) exchange payload))
+    [producer exchange payload]
+    (publish (:channel producer) exchange payload))
   (publish
-    [channel exchange payload args]
-    (publish (:channel channel) exchange payload args)))
+    [producer exchange payload args]
+    (publish (:channel producer) exchange payload args)))
 
 (defn new-rabbit-mq-channel
   [config-key]
