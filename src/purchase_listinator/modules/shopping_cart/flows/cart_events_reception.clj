@@ -6,7 +6,7 @@
 
 (s/defn receive-cart-event-by-list
   [{:keys [purchase-list-id] :as event} :- internal.cart-events/CartEvent
-   {:keys [shopping-cart/redis]}]
+   {:keys [redis]}]
   (try
     (when (not (nil? (diplomat.db.redis/find-list purchase-list-id redis)))
       (diplomat.db.redis/add-event purchase-list-id event redis))
