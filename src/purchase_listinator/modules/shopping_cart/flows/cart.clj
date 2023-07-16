@@ -48,12 +48,11 @@
     (let [all-events (diplomat.db.redis/get-events list-id redis)
           list-sessions (diplomat.db.redis/all-sessions list-id redis)]
       (when (empty? list-sessions)
-        (diplomat.db.redis/delete-list list-id redis)
-        (diplomat.db.redis/delete-global-cart list-id redis)
-        (diplomat.db.redis/delete-shopping-sessions list-id redis))
+        (diplomat.db.redis/delete-list-and-related list-id redis))
       (producers.shopping-cart-event/shopping-cart-closed shopping all-events rabbitmq-channel))))
 
 (s/defn remove-list-cart
-  [list-disabled :- internal.purchase-list/PurchaseListDisabled
-   components]
-  (clojure.pprint/pprint list-disabled))
+  [{:keys [list-id]} :- internal.purchase-list/PurchaseListDisabled
+   {:keys [shopping-cart/redis]}]
+  (when (diplomat.db.redis/find-list list-id redis)
+    (diplomat.db.redis/delete-list-and-related list-id redis)))

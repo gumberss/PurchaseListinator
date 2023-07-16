@@ -67,3 +67,11 @@
   [list-id :- s/Uuid
    redis :- redis/IRedis]
   (redis/del-data redis (str list-id "_global_cart")))
+
+(s/defn delete-list-and-related :- internal.purchase-list/PurchaseList
+  [list-id :- s/Uuid
+   redis :- redis/IRedis]
+  (delete-list list-id redis)
+  (delete-global-cart list-id redis)
+  (delete-shopping-sessions list-id redis)
+  list-id)
