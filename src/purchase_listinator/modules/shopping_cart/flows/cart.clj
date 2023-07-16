@@ -2,6 +2,7 @@
   (:require
     [purchase-listinator.logic.errors :as logic.errors]
     [purchase-listinator.misc.general :as misc.general]
+    [purchase-listinator.modules.shopping-cart.schemas.internal.purchase-list :as internal.purchase-list]
     [purchase-listinator.modules.shopping-cart.schemas.internal.shopping :as schemas.internal.shopping]
     [purchase-listinator.modules.shopping-cart.schemas.wire.in.purchase-list :as modules.shopping-cart.schemas.wire.in.purchase-list]
     [schema.core :as s]
@@ -51,3 +52,8 @@
         (diplomat.db.redis/delete-global-cart list-id redis)
         (diplomat.db.redis/delete-shopping-sessions list-id redis))
       (producers.shopping-cart-event/shopping-cart-closed shopping all-events rabbitmq-channel))))
+
+(s/defn remove-list-cart
+  [list-disabled :- internal.purchase-list/PurchaseListDisabled
+   components]
+  (clojure.pprint/pprint list-disabled))

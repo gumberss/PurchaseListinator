@@ -1,7 +1,8 @@
 (ns purchase-listinator.modules.shopping-cart.adapters.in.purchase-list
-  (:require [schema.core :as s]
-            [purchase-listinator.modules.shopping-cart.schemas.wire.in.purchase-list :as shopping-cart.schemas.wire.in.purchase-list]
-            [purchase-listinator.modules.shopping-cart.schemas.internal.purchase-list :as shopping-cart.schemas.internal.purchase-list]))
+  (:require
+    [schema.core :as s]
+    [purchase-listinator.modules.shopping-cart.schemas.wire.in.purchase-list :as shopping-cart.schemas.wire.in.purchase-list]
+    [purchase-listinator.modules.shopping-cart.schemas.internal.purchase-list :as shopping-cart.schemas.internal.purchase-list]))
 
 (s/defn wire-items->internal :- shopping-cart.schemas.internal.purchase-list/Item
   [item :- shopping-cart.schemas.wire.in.purchase-list/Item]

@@ -39,11 +39,11 @@
 
 (s/defn disable-purchase-lists :- {:status s/Int
                                    :body   {}}
-  [{{:keys [datomic]} :component
+  [{components :component
     {id :id}          :path-params
     user-id           :user-id}]
   (branch (misc.either/try-right (-> (adapters.misc/string->uuid id)
-                                     (flows.purchase-list/disable (adapters.misc/string->uuid user-id) datomic)))
+                                     (flows.purchase-list/disable (adapters.misc/string->uuid user-id) components)))
           misc.http/->Error
           misc.http/->Success))
 

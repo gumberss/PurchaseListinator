@@ -8,8 +8,9 @@
     [purchase-listinator.models.internal.purchase-list.purchase-list :as internal.purchase-list]
     [purchase-listinator.logic.purchase-list :as logic.purchase-list]
     [purchase-listinator.logic.purchase-category :as logic.purchase-category]
-    [cats.monad.either :refer [left left? right]]
+    [cats.monad.either :refer [left right]]
     [purchase-listinator.misc.either :as either]
+    [purchase-listinator.publishers.purchase-list :as publishers.purchase-list]
     [purchase-listinator.models.internal.purchase-list.purchase-list-management-data :as internal.purchase-list-management-data]))
 
 (s/defn get-lists
@@ -31,13 +32,20 @@
             (datomic.purchase-list/upsert datomic))))))
 
 
+(s/defn owner-disabling-the-list
+  [list-id :- s/Uuid
+   user-id :- s/Uuid
+   {:keys [datomic rabbitmq]}]
+  (datomic.purchase-list/disable list-id datomic)
+  (publishers.purchase-list/purchase-list-disabled list-id user-id rabbitmq))
+
 (s/defn disable
   [list-id :- s/Uuid
    user-id :- s/Uuid
-   datomic]
+   {:keys [datomic] :as components}]
   (let [allowed-lists-ids (datomic.purchase-list/get-allowed-lists-by-user-id user-id datomic)]
     (cond
-      (datomic.purchase-list/existent? list-id user-id datomic) (datomic.purchase-list/disable list-id datomic)
+      (datomic.purchase-list/existent? list-id user-id datomic) (owner-disabling-the-list list-id user-id components)
       (some #{list-id} allowed-lists-ids) (-> (dbs.datomic.share/find-share-id user-id list-id datomic)
                                               (dbs.datomic.share/remove datomic)
                                               (and {:id list-id}))
