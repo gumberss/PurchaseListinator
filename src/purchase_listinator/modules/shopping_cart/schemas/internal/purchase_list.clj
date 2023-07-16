@@ -24,8 +24,8 @@
 (s/defschema PurchaseList purchase-list-skeleton)
 
 (def purchase-list-disabled-skeleton
-  {:event-id         s/Uuid
-   :purchase-list-id s/Uuid
-   :moment           s/Num
-   :user-id          s/Uuid})
+  {:event-id s/Uuid
+   :list-id  s/Uuid
+   :moment   s/Num
+   :user-id  s/Uuid})
 (s/defschema PurchaseListDisabled purchase-list-disabled-skeleton)

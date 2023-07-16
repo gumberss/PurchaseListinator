@@ -38,5 +38,6 @@
       (dissoc :event-id)))
 
 (s/defn purchase-list-disabled-wire->internal :- internal.purchase-list/PurchaseListDisabled
-  [wire :- wire.in.purchase-list-events/ListDisabledEvent]
-  (select-keys wire (keys internal.purchase-list/purchase-list-disabled-skeleton)))
+  [{:keys [purchase-list-id] :as wire} :- wire.in.purchase-list-events/ListDisabledEvent]
+  (-> (assoc wire :list-id purchase-list-id)
+      (select-keys (keys internal.purchase-list/purchase-list-disabled-skeleton))))
