@@ -10,9 +10,11 @@
     [purchase-listinator.modules.shopping-cart.logic.purchase-list :as logic.purchase-list]
     [purchase-listinator.modules.shopping-cart.logic.price-suggestion :as logic.price-suggestion]
     [purchase-listinator.modules.shopping-cart.diplomat.db.redis :as diplomat.db.redis]
-    [purchase-listinator.modules.shopping-cart.diplomat.producers.shopping-cart-event :as producers.shopping-cart-event]))
+    [purchase-listinator.modules.shopping-cart.diplomat.producers.shopping-cart-event :as producers.shopping-cart-event]
+    [purchase-listinator.modules.shopping-cart.logic.cart :as logic.cart]
+    [purchase-listinator.modules.shopping-cart.schemas.internal.cart :as internal.cart]))
 
-(s/defn build-price-suggestion-events
+(s/defn ^:private build-price-suggestion-events
   [{:keys [id] :as list} :- modules.shopping-cart.schemas.wire.in.purchase-list/PurchaseList
    user-id :- s/Uuid
    http]
@@ -56,3 +58,12 @@
    {:keys [shopping-cart/redis]}]
   (when (diplomat.db.redis/find-list list-id redis)
     (diplomat.db.redis/delete-list-and-related list-id redis)))
+
+(s/defn get-cart :- internal.cart/Cart
+  [list-id :- s/Uuid
+   {:keys [shopping-cart/redis]}]
+  (let [list (diplomat.db.redis/find-list list-id redis)
+        events (diplomat.db.redis/get-events list-id redis)]
+    (if list
+      (logic.cart/->cart list events)
+      (logic.errors/build 404 "[[PURCHASE_LIST_NOT_FOUND]]"))))
