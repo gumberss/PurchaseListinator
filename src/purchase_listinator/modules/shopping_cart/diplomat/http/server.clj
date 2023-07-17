@@ -8,6 +8,7 @@
     [purchase-listinator.modules.shopping-cart.adapters.in.start-shopping :as adapters.in.start-shopping]
     [purchase-listinator.modules.shopping-cart.adapters.in.cart-events :as adapters.in.cart-events]
     [purchase-listinator.modules.shopping-cart.flows.cart-events-reception :as flows.cart-events-reception]
+    [purchase-listinator.modules.shopping-cart.adapters.out.cart :as adapters.out.cart]
     [schema.core :as s]))
 
 
@@ -24,6 +25,15 @@
                              (adapters.misc/string->uuid user-id)
                              component))))
 
+(s/defn get-cart
+  [{:keys             [component]
+    {:keys [list-id]} :path-params}]
+  (misc.http/default-branch-adapter
+    (misc.either/try-right
+      (flows.cart/get-cart (adapters.misc/string->uuid list-id)
+                           component))
+    adapters.out.cart/internal->wire))
+
 (s/defn receive-events
   [{component :component
     wire      :json-params
@@ -38,5 +48,6 @@
 (def routes
   #{["/api/shopping-cart/version" :get [get-version] :route-name :get-shopping-cart-version]
     ["/api/shopping-cart/initiate" :post [start-cart] :route-name :post-start-cart]
-    ["/api/shopping-cart/events" :post [receive-events] :route-name :receive-cart-events]})
+    ["/api/shopping-cart/events" :post [receive-events] :route-name :receive-cart-events]
+    ["/api/shopping-cart/:list-id" :get [get-cart] :route-name :get-cart]})
 
