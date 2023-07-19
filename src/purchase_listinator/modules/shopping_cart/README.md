@@ -12,7 +12,7 @@ This module simplifies the management of shopping cart events, which may origina
 - Shopping Responsiveness: The module reacts to shopping orders. When a shopping session is opened, then this module creates a shopping cart if needed, and when the shopping session is closed and there is no other shopping linked to the purchase list, the cart is closed.
 - Price Suggestion integration: The module communicates with the price suggestion module, requesting the item prices when the first shopping session the created for the purchase list.
 - Cart Provision: Can provide the purchase list at the moment the first shopping session opened and all the subsequent events that happened.
-- Shopping Closed Events: Every time a shopping session is closed, this module provides all the events that happened while the session was opened in a even published to the message queue.
+- Shopping Cart Closed Events: Every time a shopping session is closed, this module provides all the events that happened while the session was opened in an event published to the message queue.
 
 ## Architecture Overview
 
