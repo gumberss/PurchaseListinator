@@ -37,3 +37,13 @@ This module simplifies the management of shopping cart events, which may origina
 
 ![Miro with the C4 model of the Shopping cart, considering the containers part](https://github.com/gumberss/PurchaseListinator/assets/38296002/01e92e0a-0c07-4481-956d-27f50eaf56ec)
 
+### Shopping Cart Startup / Events Reception
+
+![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/cc3454f5-b0d8-485c-ab31-717bb60a7d5b)
+![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/685545e0-4e35-4d55-bfba-93641631c8ea)
+
+### Shopping Cart Clojure
+
+![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/de2f3b9e-8688-40b4-90b1-847ecfe4a02f)
+![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/26395f98-b7c1-4d03-8eb3-50143ce1129a)
+
