@@ -34,15 +34,20 @@ This module simplifies the management of shopping cart events, which may origina
   - To return the shopping cart state (the list with the events)
  
 ### Shopping cart C4 Model (Containers)
+The C4 Model provides a structured and hierarchical overview of the Shopping Cart module architecture, helping to better understand its components, relationships, and interactions. The model below aims to communicate the high-level design of this module clearly and concisely through the separation of concerns and identify potential dependencies. 
+
+The C4 model presented succinctly depicts the vision of the Shopping Cart module, emphasizing only the relevant modules that directly interact with it. Non-impacted modules have been omitted to streamline clarity. Similarly, interactions with other services are excluded, ensuring a focused representation of the Shopping Cart module's architecture. This refined approach provides a clear and concise overview of the system's essential components, enhancing the understanding of its design and functionalities.
 
 ![Miro with the C4 model of the Shopping cart, considering the containers part](https://github.com/gumberss/PurchaseListinator/assets/38296002/01e92e0a-0c07-4481-956d-27f50eaf56ec)
 
-### Shopping Cart Startup / Events Reception
+### Shopping Cart Startup / Events Reception Sequence Diagram
+The Sequence Diagram below provides a clear and detailed representation of the step-by-step interactions between different components, modules, and users involved with the Shopping Cart module as well as how the shopping cart will behave when a shopping session is started and events are received.
 
 ![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/cc3454f5-b0d8-485c-ab31-717bb60a7d5b)
 ![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/685545e0-4e35-4d55-bfba-93641631c8ea)
 
-### Shopping Cart Clojure
+### Shopping Cart Clojure Sequence Diagram
+The Sequence Diagram below provides a clear and detailed representation of the step-by-step interactions between different components, modules, and users involved with the Shopping Cart module as well as how the shopping cart will behave when a shopping session is closed.
 
 ![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/de2f3b9e-8688-40b4-90b1-847ecfe4a02f)
 ![image](https://github.com/gumberss/PurchaseListinator/assets/38296002/26395f98-b7c1-4d03-8eb3-50143ce1129a)
