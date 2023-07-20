@@ -71,6 +71,21 @@
     (-> (redis.shopping-cart/upsert cart+price-suggestions redis)
         (logic.shopping-cart-event/apply-cart shopping))))
 
+(s/defn shadow-cart
+  [list-id :- s/Uuid
+   user-id :- s/Uuid
+   {:keys [shopping-id]} :- models.internal.shopping-list/ShoppingList
+   actual-shopping-cart
+   http]
+  (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
+        new-shopping-cart (logic.shopping-cart/->cart shopping-id new-cart)
+        shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
+        shopping+cart (logic.shopping-cart-event/apply-cart new-shopping-cart shopping)]
+    (clojure.pprint/pprint "[[EQUALS]]: ")
+    (clojure.pprint/pprint (= actual-shopping-cart shopping+cart))
+    (clojure.pprint/pprint "[[DIFF]]: ")
+    (clojure.pprint/pprint (logic.shopping-cart/compare-carts actual-shopping-cart shopping+cart))))
+
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
@@ -84,7 +99,8 @@
         without-price-items-ids (map :id (logic.shopping/items-without-prices shopping+cart))
         shopping-completed (if (seq without-price-items-ids)
                              (generate-price-suggestion-events! without-price-items-ids user-id shopping cart components)
-                             shopping+cart)]
+                             shopping+cart)
+        _ (shadow-cart list-id user-id shopping shopping-completed http)]
     shopping-completed))
 
 (s/defn find-existent

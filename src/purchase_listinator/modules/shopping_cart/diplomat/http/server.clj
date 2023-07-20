@@ -49,5 +49,5 @@
   #{["/api/shopping-cart/version" :get [get-version] :route-name :get-shopping-cart-version]
     ["/api/shopping-cart/initiate" :post [start-cart] :route-name :post-start-cart]
     ["/api/shopping-cart/events" :post [receive-events] :route-name :receive-cart-events]
-    ["/api/shopping-cart/:list-id" :get [get-cart] :route-name :get-cart]})
+    ["/api/shopping-cart/by/:list-id" :get [get-cart] :route-name :get-cart]})
 
