@@ -16,8 +16,6 @@
   {:shopping-id shopping-id
    :events      shopping-cart-events})
 
-
-
 (defn compare-carts
   [map1 map2]
   (data/diff map1 map2))
