@@ -1,16 +1,19 @@
 (ns purchase-listinator.endpoints.http.client.shopping
   (:require
     [purchase-listinator.components.http :as components.http]
+    [purchase-listinator.models.internal.cart :as models.internal.cart]
     [purchase-listinator.models.internal.price-suggestion :as models.internal.price-suggestion]
     [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
     [purchase-listinator.wires.in.price-suggestion :as wires.in.price-suggestion]
     [purchase-listinator.adapters.in.price-suggestion :as adapters.in.price-suggestion]
+    [purchase-listinator.wires.in.shopping-cart :as wires.in.shopping-cart]
+    [purchase-listinator.adapters.in.cart :as adapters.in.cart]
     [schema.core :as s]))
 
 (s/defn get-price-suggestion :- models.internal.price-suggestion/ShoppingItemSuggestedPrices
   [items-ids :- [s/Uuid]
    user-id :- s/Uuid
-   http]
+   http :- components.http/IHttp]
   (-> (components.http/request http {:method        :get
                                      :url           :price-suggestion/items
                                      :query-params  {:items-ids items-ids}
@@ -20,7 +23,7 @@
 
 (s/defn get-allowed-lists :- [s/Uuid]
   [user-id :- s/Uuid
-   http]
+   http :- components.http/IHttp]
   (components.http/request http {:method        :get
                                  :url           :purchase-list/allowed-lists
                                  :user-id       user-id
@@ -29,7 +32,7 @@
 (s/defn send-shopping-cart-events :- [s/Uuid]
   [event :- models.internal.shopping-cart/CartEvent
    user-id :- s/Uuid
-   http]
+   http :- components.http/IHttp]
   (components.http/request http {:method  :post
                                  :url     :shopping-cart/receive-events
                                  :user-id user-id
@@ -39,9 +42,20 @@
   [shopping-id :- s/Uuid
    purchase-list-id :- s/Uuid
    user-id :- s/Uuid
-   http]
+   http :- components.http/IHttp]
   (components.http/request http {:method  :post
                                  :url     :shopping-cart/init-cart
                                  :user-id user-id
                                  :body    {:shopping-id shopping-id
                                            :list-id     purchase-list-id}}))
+
+(s/defn get-shopping-cart :- models.internal.cart/Cart
+  [purchase-list-id :- s/Uuid
+   user-id :- s/Uuid
+   http :- components.http/IHttp]
+  (-> (components.http/request http {:method        :get
+                                     :url           :shopping-cart/cart
+                                     :user-id       user-id
+                                     :query-params  {:list-id purchase-list-id}
+                                     :result-schema wires.in.shopping-cart/Cart})
+      (adapters.in.cart/wire->internal)))

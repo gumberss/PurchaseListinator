@@ -12,6 +12,7 @@
    :quantity              1
    :order-position        0
    :category-id           #uuid "b3448f5c-6b37-498c-859a-cf5574b01108"
+   :user-id               user-id
    :random-loose-property :lala})
 (def internal-item (dissoc wire-purchase-item :random-loose-property))
 (def wire-purchase-category
@@ -21,6 +22,7 @@
    :color                 0
    :purchase-list-id      #uuid "1defd2b6-7abe-4869-8da4-fe73209c849c"
    :items                 [wire-purchase-item]
+   :user-id               user-id
    :random-loose-property 123})
 (def internal-category
   (-> (dissoc wire-purchase-category :random-loose-property)

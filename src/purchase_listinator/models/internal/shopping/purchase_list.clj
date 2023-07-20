@@ -1,4 +1,4 @@
-(ns purchase-listinator.modules.shopping-cart.schemas.internal.purchase-list
+(ns purchase-listinator.models.internal.shopping.purchase-list
   (:require [schema.core :as s]))
 
 (def item-skeleton
@@ -24,10 +24,3 @@
   {:id         s/Uuid
    :categories [Category]})
 (s/defschema PurchaseList purchase-list-skeleton)
-
-(def purchase-list-disabled-skeleton
-  {:event-id s/Uuid
-   :list-id  s/Uuid
-   :moment   s/Num
-   :user-id  s/Uuid})
-(s/defschema PurchaseListDisabled purchase-list-disabled-skeleton)
