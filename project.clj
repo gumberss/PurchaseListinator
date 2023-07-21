@@ -32,4 +32,4 @@
   :aot [purchase-listinator.core]
   :profiles {:uberjar {:aot [purchase-listinator.core]}}
   :uberjar-name "purchase-listinator.jar"
-  :repl-options {:init-ns purchase-listinator.core})
+  :repl-options {:init-ns purchase-listinator.misc.content-type-parser})
