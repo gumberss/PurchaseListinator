@@ -74,7 +74,8 @@
                                                   :body (misc.content-type-parser/transform-content-to body content-type)
                                                   :content-type content-type)
           {:keys [body] :as _request-result} (request-fn url-str request-params)
-          coerced-data (misc.content-type-parser/json->edn body result-schema)]
+          coerced-data (misc.content-type-parser/json->edn body result-schema)
+          _ (when (:error coerced-data) (clojure.pprint/pprint coerced-data))]
       coerced-data)))
 
 (defn new-http [request-routes-key]
