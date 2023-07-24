@@ -38,7 +38,6 @@
   [{component :component
     wire      :json-params
     user-id   :user-id}]
-  (println "[[receive-events]]")
   (misc.http/default-branch
     (misc.either/try-right
       (let [now (misc.date/numb-now)
