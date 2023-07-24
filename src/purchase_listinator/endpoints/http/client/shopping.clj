@@ -30,7 +30,7 @@
                                  :result-schema [s/Uuid]}))
 
 (s/defn send-shopping-cart-events :- [s/Uuid]
-  [event :- models.internal.shopping-cart/CartEvent
+  [event :- wires.in.shopping-cart/ChangeItemEvent
    user-id :- s/Uuid
    http :- components.http/IHttp]
   (components.http/request http {:method  :post

@@ -1,6 +1,7 @@
 (ns purchase-listinator.flows.shopping
   (:require
     [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
+    [purchase-listinator.wires.in.shopping-cart :as wires.in.shopping-cart]
     [schema.core :as s]
     [cats.monad.either :refer [left]]
     [clojure.core.async :refer [go <!! <!] :as async]
@@ -119,6 +120,7 @@
 
 (s/defn receive-cart-event
   [{:keys [shopping-id user-id] :as event} :- models.internal.shopping-cart/CartEvent
+   wire :- wires.in.shopping-cart/ChangeItemEvent
    {:keys [redis datomic http]}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
         list-id (datomic.shopping/get-list-id-by-shopping-id shopping-id allowed-lists-ids datomic)
@@ -126,7 +128,7 @@
     (-> (redis.shopping-cart/find-cart shopping-id redis)
         (logic.shopping-cart-event/add-event event)
         (redis.shopping-cart/upsert redis))
-    (http.client.shopping/send-shopping-cart-events event user-id http)
+    (http.client.shopping/send-shopping-cart-events (assoc wire :purchase-list-id list-id) user-id http)
     event))
 
 (s/defn receive-cart-event-by-list

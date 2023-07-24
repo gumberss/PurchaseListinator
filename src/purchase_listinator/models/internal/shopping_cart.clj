@@ -89,7 +89,7 @@
 
 (s/defschema ItemPriceSuggested
   {:id          s/Uuid
-   :event-type  (s/eq :price-suggested)
+   :event-type  (s/eq :item-price-suggested)
    :user-id     s/Uuid
    :moment      s/Num
    :shopping-id s/Uuid

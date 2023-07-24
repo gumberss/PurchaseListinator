@@ -60,7 +60,7 @@
   [list-id :- s/Uuid
    events :- [internal.cart-events/CartEvent]
    redis :- redis/IRedis]
-  (map #(redis/sadd redis (str list-id "_global_cart") %) events)
+  (mapv #(redis/sadd redis (str list-id "_global_cart") %) events)
   events)
 
 (s/defn delete-global-cart

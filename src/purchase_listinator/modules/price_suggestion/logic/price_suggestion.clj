@@ -10,6 +10,9 @@
         diff-weeks (/ diff-ms (* 1000 60 60 24 7))]
     (Math/floor diff-weeks)))
 
+(s/defn calculate-price
+  [])
+
 (s/defn calculate-by-events :- s/Num
   [events :- [internal.shopping-item-event/Event]
    predict-time :- s/Num]
@@ -23,8 +26,12 @@
                    (map #(+ 1 (week-diff (:moment least-recent-event) %))))
         sum-prices (reduce + prices)
         sum-times (reduce + times)
-        mean-price (/ sum-prices (count prices))
-        mean-time (/ sum-times (count times))
+        mean-price (if (zero? (count prices))
+                     0
+                     (/ sum-prices (count prices)))
+        mean-time (if (zero? (count times))
+                    0
+                    (/ sum-times (count times)))
         time-pow-summed (->> (map #(Math/pow % 2) times)
                              (reduce +))
         time-summed-pow (Math/pow (reduce + times) 2)
