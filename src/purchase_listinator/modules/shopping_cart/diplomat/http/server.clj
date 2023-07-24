@@ -43,7 +43,7 @@
     (misc.either/try-right
       (let [now (misc.date/numb-now)
             user-id (adapters.misc/string->uuid user-id)
-            cart-event (adapters.in.cart-events/wire->internal #p wire now user-id)]
+            cart-event (adapters.in.cart-events/wire->internal wire now user-id)]
         (flows.cart-events-reception/receive-cart-event-by-list cart-event component)))))
 
 (def routes
