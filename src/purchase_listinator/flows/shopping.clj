@@ -1,5 +1,6 @@
 (ns purchase-listinator.flows.shopping
   (:require
+    [clojure.data :as data]
     [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
     [purchase-listinator.wires.in.shopping-cart :as wires.in.shopping-cart]
     [schema.core :as s]
@@ -162,6 +163,29 @@
          (throw e)))
   event)
 
+(s/defn shadow-finish-shopping
+  [user-id
+   {:keys [list-id id] :as shopping}
+   finished-shopping
+   cart
+   http]
+ (try
+   (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
+         new-shopping-cart (logic.shopping-cart/->cart id new-cart)
+         shopping-list (logic.shopping/purchase-list->shopping-list id purchase-list)
+         shadow-shopping (->> (logic.shopping-cart-event/apply-cart new-shopping-cart shopping-list)
+                              :categories
+                              (map (partial logic.shopping-category/->shopping-category id))
+                              (logic.shopping/fill-items-empty-quantity-in-cart)
+                              (logic.shopping/fill-shopping-categories shopping)
+                              (logic.shopping/finish))]
+     (clojure.pprint/pprint "[[SHOPPING DIFF]]")
+     (clojure.pprint/pprint (data/diff finished-shopping shadow-shopping))
+     (clojure.pprint/pprint "[[EVENTS DIFF]]")
+     (clojure.pprint/pprint (data/diff cart new-shopping-cart)))
+   (catch Exception e
+     (clojure.pprint/pprint e))))
+
 (s/defn finish
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
@@ -171,12 +195,14 @@
         {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
         purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
         shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
+        first-shopping shopping
         shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)
                       :categories
                       (map (partial logic.shopping-category/->shopping-category id))
                       (logic.shopping/fill-items-empty-quantity-in-cart)
                       (logic.shopping/fill-shopping-categories shopping)
-                      (logic.shopping/finish))]
+                      (logic.shopping/finish))
+        _ (shadow-finish-shopping user-id first-shopping shopping cart http)]
     (dbs.datomic.shopping-events/upsert events datomic)
     (datomic.shopping/upsert shopping datomic)
     (dbs.redis.shopping-cart/delete id redis)
