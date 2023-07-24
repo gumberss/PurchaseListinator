@@ -52,7 +52,7 @@
       (let [now (misc.date/numb-now)
             user-id (adapters.misc/string->uuid user-id)
             cart-event (adapters.in.shopping-cart-event/wire->internal wire now user-id)]
-        (flows.shopping/receive-cart-event cart-event component)))))
+        (flows.shopping/receive-cart-event cart-event wire component)))))
 
 (s/defn finish-shopping
   [{component             :component

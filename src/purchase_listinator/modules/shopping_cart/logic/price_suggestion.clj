@@ -9,7 +9,7 @@
    user-id :- s/Uuid
    {:keys [item-id predicted-date suggested-price]} :- internal.price-suggestion/ShoppingItemSuggestedPrice]
   {:id               event-id
-   :event-type       :price-suggested
+   :event-type       :item-price-suggested
    :user-id          user-id
    :moment           predicted-date
    :item-id          item-id

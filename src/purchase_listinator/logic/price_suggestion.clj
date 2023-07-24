@@ -11,7 +11,7 @@
    {:keys [shopping-id]} :- models.internal.shopping-list/ShoppingList
    {:keys [item-id predicted-date suggested-price]} :- models.internal.price-suggestion/ShoppingItemSuggestedPrice]
   {:id          event-id
-   :event-type  :price-suggested
+   :event-type  :item-price-suggested
    :user-id     user-id
    :moment      predicted-date
    :shopping-id shopping-id

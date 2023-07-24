@@ -32,7 +32,7 @@
         changed-category (replace-item category changed-item)]
     (replace-category shopping-list changed-category)))
 
-(s/defmethod ^:private apply-event :price-suggested :- models.internal.shopping-list/ShoppingList
+(s/defmethod ^:private apply-event :item-price-suggested :- models.internal.shopping-list/ShoppingList
   [{:keys [item-id price]} :- models.internal.shopping-cart/ItemPriceSuggested
    {:keys [categories] :as shopping-list} :- models.internal.shopping-list/ShoppingList]
   (let [{:keys [category-id] :as item} (->> (mapcat :items categories)
