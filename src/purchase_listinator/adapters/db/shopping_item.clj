@@ -5,10 +5,11 @@
             [purchase-listinator.models.internal.shopping-item :as models.internal.shopping-item]))
 
 (s/defn internal->db
-  [{:keys [category-id order-position] :as internal} :- models.internal.shopping-item/ShoppingItem]
+  [{:keys [category-id order-position price] :as internal} :- models.internal.shopping-item/ShoppingItem]
   (-> (dissoc internal :category-id)
       (assoc :category {:shopping-category/id category-id}
-             :order-position (long order-position))
+             :order-position (long order-position)
+             :price (float price))
       (misc.general/namespace-keys :shopping-item)))
 
 (s/defn db->internal :- models.internal.shopping-item/ShoppingItem
