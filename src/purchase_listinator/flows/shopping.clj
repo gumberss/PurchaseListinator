@@ -74,24 +74,16 @@
     (-> (redis.shopping-cart/upsert cart+price-suggestions redis)
         (logic.shopping-cart-event/apply-cart shopping))))
 
-(s/defn shadow-cart-management
+(s/defn cart-module-management
   [list-id :- s/Uuid
    user-id :- s/Uuid
    {:keys [shopping-id]} :- models.internal.shopping-list/ShoppingList
-   actual-shopping-cart :- models.internal.shopping-list/ShoppingList
    http :- components.http/IHttp]
-  (try
     (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
-          new-shopping-cart (logic.shopping-cart/->cart shopping-id new-cart)
+          shopping-cart (logic.shopping-cart/->cart shopping-id new-cart)
           shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
-          shopping+cart (logic.shopping-cart-event/apply-cart new-shopping-cart shopping)]
-      (clojure.pprint/pprint "[[EQUALS]]: ")
-      (clojure.pprint/pprint (= actual-shopping-cart shopping+cart))
-      (clojure.pprint/pprint "[[DIFF]]: ")
-      (clojure.pprint/pprint (logic.shopping-cart/compare-carts actual-shopping-cart shopping+cart)))
-    (catch Exception ex
-      (clojure.pprint/pprint "[[SHADOW-CART-MANAGEMENT]]")
-      (clojure.pprint/pprint ex))))
+          shopping+cart (logic.shopping-cart-event/apply-cart shopping-cart shopping)]
+      shopping+cart))
 
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
@@ -104,11 +96,11 @@
         cart (redis.shopping-cart/find-cart shopping-id redis)
         shopping+cart (logic.shopping-cart-event/apply-cart cart shopping)
         without-price-items-ids (map :id (logic.shopping/items-without-prices shopping+cart))
-        shopping-completed (if (seq without-price-items-ids)
+        _shopping-completed (if (seq without-price-items-ids)
                              (generate-price-suggestion-events! without-price-items-ids user-id shopping cart components)
                              shopping+cart)
-        _ (shadow-cart-management list-id user-id shopping shopping-completed http)]
-    shopping-completed))
+        shopping-module-completed (cart-module-management list-id user-id shopping http)]
+    shopping-module-completed))
 
 (s/defn find-existent
   [list-id :- s/Uuid
