@@ -9,16 +9,16 @@
     [matcher-combinators.matchers :as m]
     [utils.http]))
 
-
 (def user-id (random-uuid))
 (def item-id (random-uuid))
 (def item-2-id (random-uuid))
+(def shopping-id (random-uuid))
 
 (def event {:id               (random-uuid)
             :moment           123
             :event-type       :some-shopping-event
             :user-id          user-id
-            :shopping-id      (random-uuid)
+            :shopping-id      shopping-id
             :item-id          item-id
             :price            10
             :quantity-in-cart 4})
@@ -31,16 +31,21 @@
   (assoc event :id (random-uuid)
                :item-id (random-uuid)))
 
-(def events {:events [event]})
 (def item-events {:item-id item-id
                   :events  [event]})
 (def item-2-events {:item-id item-2-id
                     :events  [event-2]})
 
+(def events {:events [event]})
+
+(def shopping-cart-closed-event
+  {:purchase-list-id (random-uuid)
+   :shopping-id shopping-id
+   :cart-events      [event]})
 
 (integration-test retrieve-shopping-item-events-test
   (flow "Receive shopping events"
-    (events/publish-event! :purchase-listinator/shopping.finished events))
+    (events/publish-event! :shopping-cart/shopping-cart.closed shopping-cart-closed-event))
   (flow "Retrieve events"
     [response (utils.http/request! {:method               :get
                                     :endpoint             :get-events-by-item-id
@@ -50,14 +55,18 @@
     (match? {:status 200
              :body   events} response)))
 
+(def many-events [event event-2 other-item-event])
 
-(def many-events {:events [event event-2 other-item-event]})
+(def shopping-cart-closed-many-events-event
+  {:purchase-list-id (random-uuid)
+   :shopping-id shopping-id
+   :cart-events      many-events})
 (def events-collections-result
   {:events-collections (m/in-any-order [item-events item-2-events])})
 
 (integration-test retrieve-shopping-items-events-test
   (flow "Receive shopping events"
-    (events/publish-event! :purchase-listinator/shopping.finished many-events))
+    (events/publish-event! :shopping-cart/shopping-cart.closed shopping-cart-closed-many-events-event))
   (flow "Retrieve events"
     [response (utils.http/request! {:method               :get
                                     :endpoint             :get-events-by-items
