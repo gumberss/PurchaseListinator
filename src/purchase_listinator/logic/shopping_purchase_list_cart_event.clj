@@ -13,6 +13,6 @@
 (s/defn created->item :- models.internal.shopping-list/ShoppingItem
   [{:keys [item-id] :as event} :- models.internal.shopping-cart/PurchaseListItemCreated]
   (-> event
-      (assoc :id item-id)
+      (assoc :id item-id :price 0)
       (dissoc :item-id :event-type :moment :shopping-id)))
 
