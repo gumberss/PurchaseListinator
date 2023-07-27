@@ -1,10 +1,10 @@
 (ns purchase-listinator.modules.events.schemas.models.cart-events
   (:require [schema.core :as s]))
 
-(s/defschema ShoppingEventProperty
+(s/defschema ShoppingCartEventProperty
   {s/Keyword s/Any})
 
-(s/defschema CartEvent
+(s/defschema ShoppingCartEvent
   {:id          s/Uuid
    :moment      s/Num
    :event-type  s/Keyword
@@ -12,7 +12,7 @@
    :shopping-id s/Uuid
    :item-id     (s/maybe s/Uuid)
    :category-id (s/maybe s/Uuid)
-   :properties  ShoppingEventProperty})
+   :properties  ShoppingCartEventProperty})
 
-(s/defschema CartEventCollection
-  {:events [CartEvent]})
+(s/defschema ShoppingCartEventCollection
+  {:events [ShoppingCartEvent]})

@@ -3,8 +3,8 @@
     [datahike.api :as d]
     [purchase-listinator.misc.datomic :as misc.datomic]
     [schema.core :as s]
-    [purchase-listinator.modules.events.schemas.models.shopping-events :as schemas.models.shopping-event]
-    [purchase-listinator.modules.events.adapters.db.shopping-events :as adapters.db.shopping-events]))
+    [purchase-listinator.modules.events.adapters.db.shopping-events :as adapters.db.shopping-events]
+    [purchase-listinator.modules.events.schemas.models.cart-events :as models.cart-events]))
 
 (def schema
   [{:db/ident       :shopping-event/id
@@ -34,13 +34,13 @@
     :db/cardinality :db.cardinality/one}])
 
 (s/defn upsert
-  [events :- [schemas.models.shopping-event/ShoppingEvent]
+  [events :- [models.cart-events/ShoppingCartEvent]
    {:keys [connection]}]
   (->> (map adapters.db.shopping-events/internal->db events)
        (apply misc.datomic/transact connection))
   events)
 
-(s/defn get-by-user-id :- [schemas.models.shopping-event/ShoppingEvent]
+(s/defn get-by-user-id :- [models.cart-events/ShoppingCartEvent]
   [user-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?e [*]) ...]
@@ -50,7 +50,7 @@
             (d/db connection) user-id)
        (map adapters.db.shopping-events/db->internal)))
 
-(s/defn get-by-item-id :- [schemas.models.shopping-event/ShoppingEvent]
+(s/defn get-by-item-id :- [models.cart-events/ShoppingCartEvent]
   [item-id :- s/Uuid
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?e [*]) ...]
@@ -60,7 +60,7 @@
             (d/db connection) item-id)
        (map adapters.db.shopping-events/db->internal)))
 
-(s/defn get-by-items-ids :- [schemas.models.shopping-event/ShoppingEvent]
+(s/defn get-by-items-ids :- [models.cart-events/ShoppingCartEvent]
   [items-ids :- [s/Uuid]
    {:keys [connection]}]
   (->> (d/q '[:find [(pull ?e [*]) ...]

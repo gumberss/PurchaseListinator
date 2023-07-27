@@ -11,6 +11,6 @@
   (diplomat.db.shopping-events/upsert events main-db))
 
 (s/defn receive-cart-events
-  [{:keys [events]} :- models.cart-events/CartEventCollection
+  [{:keys [events]} :- models.cart-events/ShoppingCartEventCollection
    {:shopping-events/keys [main-db]}]
   (diplomat.db.shopping-events/upsert events main-db))

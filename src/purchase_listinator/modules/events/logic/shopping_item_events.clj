@@ -8,7 +8,7 @@
   [[item-id events]]
   {:item-id item-id
    :events  events})
-(s/defn ->shopping-events-collections-by-item :- [models.shopping-item-event/ShoppingItemEventCollection]
+(s/defn ->shopping-events-collections-by-item :- [models.shopping-item-event/ShoppingCartItemEventCollection]
   [events :- [schemas.models.shopping-event/ShoppingEvent]]
   (->> (group-by :item-id events)
        (map ->shopping-events-collections)))
