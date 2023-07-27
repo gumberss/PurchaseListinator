@@ -5,11 +5,12 @@
     [schema.core :as s]))
 
 (s/defn receive-cart-event-by-list
-  [{:keys [purchase-list-id] :as event} :- internal.cart-events/CartEvent
+  [{:keys [purchase-list-id shopping-id] :as event} :- internal.cart-events/CartEvent
    {:keys [shopping-cart/redis]}]
   (try
-    (when (not (nil? (diplomat.db.redis/find-list purchase-list-id redis)))
-      (diplomat.db.redis/add-event purchase-list-id event redis))
+    (let [list-id (or purchase-list-id (diplomat.db.redis/get-list-id-by-shopping shopping-id redis))]
+      (when (not (nil? (diplomat.db.redis/find-list list-id redis)))
+        (diplomat.db.redis/add-event list-id (assoc event :purchase-list-id list-id) redis)))
     (catch Exception e
       (println e)
       (throw e)))
