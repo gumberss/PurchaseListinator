@@ -1,4 +1,4 @@
-(ns purchase-listinator.modules.events.adapters.out.shopping-events
+(ns purchase-listinator.modules.events.adapters.out.shopping-cart-events
   (:require
     [purchase-listinator.misc.general :as misc.general]
     [purchase-listinator.modules.events.schemas.models.shopping-events :as models.shopping-event]
