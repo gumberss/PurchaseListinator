@@ -79,11 +79,11 @@
    user-id :- s/Uuid
    {:keys [shopping-id]} :- models.internal.shopping-list/ShoppingList
    http :- components.http/IHttp]
-    (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
-          shopping-cart (logic.shopping-cart/->cart shopping-id new-cart)
-          shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
-          shopping+cart (logic.shopping-cart-event/apply-cart shopping-cart shopping)]
-      shopping+cart))
+  (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
+        shopping-cart (logic.shopping-cart/->cart shopping-id new-cart)
+        shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
+        shopping+cart (logic.shopping-cart-event/apply-cart shopping-cart shopping)]
+    shopping+cart))
 
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
@@ -97,8 +97,8 @@
         shopping+cart (logic.shopping-cart-event/apply-cart cart shopping)
         without-price-items-ids (map :id (logic.shopping/items-without-prices shopping+cart))
         _shopping-completed (if (seq without-price-items-ids)
-                             (generate-price-suggestion-events! without-price-items-ids user-id shopping cart components)
-                             shopping+cart)
+                              (generate-price-suggestion-events! without-price-items-ids user-id shopping cart components)
+                              shopping+cart)
         shopping-module-completed (cart-module-management list-id user-id shopping http)]
     shopping-module-completed))
 
@@ -163,11 +163,11 @@
         new-shopping-cart (logic.shopping-cart/->cart id new-cart)
         shopping-list (logic.shopping/purchase-list->shopping-list id purchase-list)
         shopping (->> (logic.shopping-cart-event/apply-cart new-shopping-cart shopping-list)
-                             :categories
-                             (map (partial logic.shopping-category/->shopping-category id))
-                             (logic.shopping/fill-items-empty-quantity-in-cart)
-                             (logic.shopping/fill-shopping-categories shopping)
-                             (logic.shopping/finish))]
+                      :categories
+                      (map (partial logic.shopping-category/->shopping-category id))
+                      (logic.shopping/fill-items-empty-quantity-in-cart)
+                      (logic.shopping/fill-shopping-categories shopping)
+                      (logic.shopping/finish))]
     shopping))
 
 (s/defn finish
@@ -181,11 +181,11 @@
         shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
         first-shopping shopping
         _shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)
-                      :categories
-                      (map (partial logic.shopping-category/->shopping-category id))
-                      (logic.shopping/fill-items-empty-quantity-in-cart)
-                      (logic.shopping/fill-shopping-categories shopping)
-                      (logic.shopping/finish))
+                       :categories
+                       (map (partial logic.shopping-category/->shopping-category id))
+                       (logic.shopping/fill-items-empty-quantity-in-cart)
+                       (logic.shopping/fill-shopping-categories shopping)
+                       (logic.shopping/finish))
         shopping (finished-shopping user-id first-shopping http)]
     (dbs.datomic.shopping-events/upsert events datomic)
     (datomic.shopping/upsert shopping datomic)
