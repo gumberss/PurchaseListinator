@@ -5,15 +5,13 @@
     [purchase-listinator.modules.shopping-cart.schemas.internal.shopping :as schemas.internal.shopping]
     [purchase-listinator.modules.shopping-cart.schemas.wire.in.purchase-list :as modules.shopping-cart.schemas.wire.in.purchase-list]
     [schema.core :as s]
+    [purchase-listinator.modules.shopping-cart.logic.price-suggestion :as logic.price-suggestion]
     [purchase-listinator.modules.shopping-cart.diplomat.http.client :as diplomat.http.client]
     [purchase-listinator.modules.shopping-cart.logic.purchase-list :as logic.purchase-list]
     [purchase-listinator.modules.shopping-cart.diplomat.db.redis :as diplomat.db.redis]
     [purchase-listinator.modules.shopping-cart.diplomat.producers.shopping-cart-event :as producers.shopping-cart-event]
-    [purchase-listinator.modules.shopping-cart.schemas.internal.price-suggestion :as internal.price-suggestion]
     [purchase-listinator.modules.shopping-cart.logic.cart :as logic.cart]
     [purchase-listinator.modules.shopping-cart.schemas.internal.cart :as internal.cart]))
-
-
 
 (s/defn ^:private build-price-suggestion-events
   [{:keys [id] :as list} :- modules.shopping-cart.schemas.wire.in.purchase-list/PurchaseList
@@ -23,7 +21,7 @@
     (when (not-empty list-items)
       (let [price-suggestions (-> (diplomat.http.client/get-price-suggestion list-items user-id http)
                                   :price-suggestion)]
-        (map (partial logic.cart/->cart-event price-suggestions id user-id) list-items)))))
+        (map (partial logic.price-suggestion/generate-cart-event price-suggestions id user-id) list-items)))))
 
 (s/defn start-cart
   [{:keys [list-id shopping-id]} :- schemas.internal.shopping/StartShopping
