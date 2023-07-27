@@ -26,7 +26,18 @@
   [shopping-id :- s/Uuid
    list-id :- s/Uuid
    redis :- redis/IRedis]
-  (redis/sadd redis (str list-id "_shopping_sessions") shopping-id))
+  (redis/sadd redis (str list-id "_shopping_sessions") shopping-id)
+  (redis/set-data redis (str shopping-id "_list_id") list-id))
+
+(s/defn get-list-id-by-shopping :- (s/maybe s/Uuid)
+  [shopping-id :- s/Uuid
+   redis :- redis/IRedis]
+  (redis/get-data redis (str shopping-id "_list_id")))
+
+(s/defn remove-shopping-session-link
+  [shopping-id :- s/Uuid
+   redis :- redis/IRedis]
+  (redis/del-data redis (str shopping-id "_list_id")))
 
 (s/defn delete-shopping-sessions
   [list-id :- s/Uuid
@@ -37,7 +48,8 @@
   [shopping-id :- s/Uuid
    list-id :- s/Uuid
    redis :- redis/IRedis]
-  (redis/srem redis (str list-id "_shopping_sessions") shopping-id))
+  (redis/srem redis (str list-id "_shopping_sessions") shopping-id)
+  (remove-shopping-session-link shopping-id redis))
 
 (s/defn all-sessions
   [list-id :- s/Uuid
@@ -73,5 +85,8 @@
    redis :- redis/IRedis]
   (delete-list list-id redis)
   (delete-global-cart list-id redis)
+  (->> (all-sessions list-id redis)
+       (mapv #(remove-shopping-session-link % redis)))
   (delete-shopping-sessions list-id redis)
+
   list-id)

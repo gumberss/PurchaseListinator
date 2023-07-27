@@ -61,6 +61,7 @@
 (s/defn upsert
   [cart-events :- [models.internal.shopping-cart/CartEvent]
    {:keys [connection]}]
-  (->> (map adapters.db.shopping-event/internal->db cart-events)
-       (apply misc.datomic/transact connection))
-  cart-events)
+  (when (not-empty cart-events)
+    (->> (map adapters.db.shopping-event/internal->db cart-events)
+         (apply misc.datomic/transact connection))
+    cart-events))
