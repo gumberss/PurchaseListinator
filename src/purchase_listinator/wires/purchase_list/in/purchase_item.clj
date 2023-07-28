@@ -9,5 +9,3 @@
    :category-id      s/Str})
 
 (s/defschema PurchaseItem purchase-item-skeleton)
-
-(s/defschema PurchaseItems [PurchaseItem])
