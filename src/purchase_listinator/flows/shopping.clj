@@ -77,29 +77,20 @@
 (s/defn cart-module-management
   [list-id :- s/Uuid
    user-id :- s/Uuid
-   {:keys [shopping-id]} :- models.internal.shopping-list/ShoppingList
+   shopping-id :- s/Uuid
    http :- components.http/IHttp]
   (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
         shopping-cart (logic.shopping-cart/->cart shopping-id new-cart)
-        shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
-        shopping+cart (logic.shopping-cart-event/apply-cart shopping-cart shopping)]
-    shopping+cart))
+        shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)]
+    (logic.shopping-cart-event/apply-cart shopping-cart shopping-list)))
 
 (s/defn get-in-progress-list
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
-   {:keys [datomic redis http] :as components}]
+   {:keys [datomic http]}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
-        {:keys [list-id date]} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
-        purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
-        shopping (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
-        cart (redis.shopping-cart/find-cart shopping-id redis)
-        shopping+cart (logic.shopping-cart-event/apply-cart cart shopping)
-        without-price-items-ids (map :id (logic.shopping/items-without-prices shopping+cart))
-        _shopping-completed (if (seq without-price-items-ids)
-                              (generate-price-suggestion-events! without-price-items-ids user-id shopping cart components)
-                              shopping+cart)
-        shopping-module-completed (cart-module-management list-id user-id shopping http)]
+        {:keys [list-id]} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
+        shopping-module-completed (cart-module-management list-id user-id shopping-id http)]
     shopping-module-completed))
 
 (s/defn find-existent
@@ -175,20 +166,9 @@
    user-id :- s/Uuid
    {:keys [redis datomic rabbitmq http]}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
-        {:keys [events] :as cart} (redis.shopping-cart/find-cart shopping-id redis)
-        {:keys [list-id date id] :as shopping} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
-        purchase-list (dbs.datomic.purchase-list/get-management-data list-id allowed-lists-ids date datomic)
-        shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)
-        first-shopping shopping
-        _shopping (->> (logic.shopping-cart-event/apply-cart cart shopping-list)
-                       :categories
-                       (map (partial logic.shopping-category/->shopping-category id))
-                       (logic.shopping/fill-items-empty-quantity-in-cart)
-                       (logic.shopping/fill-shopping-categories shopping)
-                       (logic.shopping/finish))
-        shopping (finished-shopping user-id first-shopping http)]
-    (dbs.datomic.shopping-events/upsert events datomic)
+        {:keys [id] :as shopping} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
+        shopping (finished-shopping user-id shopping http)]
     (datomic.shopping/upsert shopping datomic)
     (dbs.redis.shopping-cart/delete id redis)
-    (publishers.shopping/shopping-finished shopping events rabbitmq)))
+    (publishers.shopping/shopping-finished shopping rabbitmq)))
 
