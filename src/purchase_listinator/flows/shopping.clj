@@ -1,7 +1,5 @@
 (ns purchase-listinator.flows.shopping
   (:require
-    [clojure.data :as data]
-    [purchase-listinator.models.internal.shopping-list :as models.internal.shopping-list]
     [purchase-listinator.wires.in.shopping-cart :as wires.in.shopping-cart]
     [schema.core :as s]
     [cats.monad.either :refer [left]]
@@ -17,17 +15,14 @@
     [purchase-listinator.misc.general :as misc.general]
     [purchase-listinator.logic.errors :as logic.errors]
     [purchase-listinator.models.internal.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
-    [purchase-listinator.dbs.datomic.purchase-list :as dbs.datomic.purchase-list]
     [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
     [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]
     [purchase-listinator.logic.shopping-cart :as logic.shopping-cart]
     [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
-    [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]
     [purchase-listinator.logic.shopping-category :as logic.shopping-category]
     [purchase-listinator.dbs.redis.shopping-cart :as dbs.redis.shopping-cart]
     [purchase-listinator.publishers.shopping :as publishers.shopping]
-    [purchase-listinator.endpoints.http.client.shopping :as http.client.shopping]
-    [purchase-listinator.logic.price-suggestion :as logic.price-suggestion]))
+    [purchase-listinator.endpoints.http.client.shopping :as http.client.shopping]))
 
 (s/defn init-shopping
   [{shopping-id      :id
@@ -60,19 +55,6 @@
     (if first-near-shopping
       first-near-shopping
       (left {:status 404 :data "not-found"}))))
-
-(s/defn generate-price-suggestion-events! :- models.internal.shopping-list/ShoppingList
-  [items-without-price-ids :- [s/Uuid]
-   user-id :- s/Uuid
-   shopping :- models.internal.shopping-list/ShoppingList
-   cart :- models.internal.shopping-cart/Cart
-   {:keys [http redis]}]
-  (let [cart+price-suggestions (->> (http.client.shopping/get-price-suggestion items-without-price-ids user-id http)
-                                    :price-suggestion
-                                    (map (partial logic.price-suggestion/->cart-event (random-uuid) user-id shopping))
-                                    (reduce logic.shopping-cart-event/add-event cart))]
-    (-> (redis.shopping-cart/upsert cart+price-suggestions redis)
-        (logic.shopping-cart-event/apply-cart shopping))))
 
 (s/defn cart-module-management
   [list-id :- s/Uuid
