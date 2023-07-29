@@ -1,6 +1,9 @@
 (ns purchase-listinator.wires.in.cart
-  (:require [schema.core :as s]
-            [purchase-listinator.models.internal.cart-events :as internal.cart-events]))
+  (:require
+    [purchase-listinator.misc.schema :as misc.schema]
+    [purchase-listinator.models.internal.shopping.purchase-list :as internal.shopping.purchase-list]
+    [schema.core :as s]
+    [purchase-listinator.models.internal.cart-events :as internal.cart-events]))
 
 (s/defn of-type
   [expected-event-type {:keys [event-type]}]
@@ -21,3 +24,6 @@
     (partial of-type "reorder-item") internal.cart-events/ReorderItemEvent
     (partial of-type "change-item") internal.cart-events/ChangeItemEvent))
 
+(misc.schema/loose-schema Cart
+  {:purchase-list        internal.shopping.purchase-list/PurchaseList
+   :shopping-cart-events [CartEvent]})
