@@ -3,10 +3,9 @@
     [purchase-listinator.components.http :as components.http]
     [purchase-listinator.models.internal.cart :as models.internal.cart]
     [purchase-listinator.models.internal.price-suggestion :as models.internal.price-suggestion]
-    [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
     [purchase-listinator.wires.in.price-suggestion :as wires.in.price-suggestion]
     [purchase-listinator.adapters.in.price-suggestion :as adapters.in.price-suggestion]
-    [purchase-listinator.wires.in.shopping-cart :as wires.in.shopping-cart]
+    [purchase-listinator.wires.in.cart :as wires.in.cart]
     [purchase-listinator.adapters.in.cart :as adapters.in.cart]
     [schema.core :as s]))
 
@@ -48,5 +47,5 @@
                                      :url           :shopping-cart/cart
                                      :user-id       user-id
                                      :query-params  {:list-id purchase-list-id}
-                                     :result-schema wires.in.shopping-cart/Cart})
+                                     :result-schema wires.in.cart/Cart})
       (adapters.in.cart/wire->internal)))
