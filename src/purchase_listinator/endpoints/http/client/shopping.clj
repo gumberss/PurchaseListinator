@@ -29,15 +29,6 @@
                                  :user-id       user-id
                                  :result-schema [s/Uuid]}))
 
-(s/defn send-shopping-cart-events :- [s/Uuid]
-  [event :- wires.in.shopping-cart/ChangeItemEvent
-   user-id :- s/Uuid
-   http :- components.http/IHttp]
-  (components.http/request http {:method  :post
-                                 :url     :shopping-cart/receive-events
-                                 :user-id user-id
-                                 :body    event}))
-
 (s/defn init-shopping-cart :- [s/Uuid]
   [shopping-id :- s/Uuid
    purchase-list-id :- s/Uuid

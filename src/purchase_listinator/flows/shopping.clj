@@ -1,6 +1,5 @@
 (ns purchase-listinator.flows.shopping
   (:require
-    [purchase-listinator.wires.in.shopping-cart :as wires.in.shopping-cart]
     [schema.core :as s]
     [cats.monad.either :refer [left]]
     [clojure.core.async :refer [go <!! <!] :as async]
@@ -16,11 +15,8 @@
     [purchase-listinator.logic.errors :as logic.errors]
     [purchase-listinator.models.internal.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
     [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
-    [purchase-listinator.dbs.redis.shopping-cart :as redis.shopping-cart]
     [purchase-listinator.logic.shopping-cart :as logic.shopping-cart]
-    [purchase-listinator.models.internal.shopping-cart :as models.internal.shopping-cart]
     [purchase-listinator.logic.shopping-category :as logic.shopping-category]
-    [purchase-listinator.dbs.redis.shopping-cart :as dbs.redis.shopping-cart]
     [purchase-listinator.publishers.shopping :as publishers.shopping]
     [purchase-listinator.endpoints.http.client.shopping :as http.client.shopping]))
 
@@ -29,14 +25,12 @@
     purchase-list-id :list-id
     :as              shopping-initiation} :- models.internal.shopping-initiation/ShoppingInitiation
    user-id :- s/Uuid
-   {:keys [datomic mongo redis http]}]
+   {:keys [datomic mongo http]}]
   (either/try-right
     (let [now (misc.date/numb-now)
-          {:keys [id] :as shopping} (-> (logic.shopping/initiation->shopping shopping-initiation now)
-                                        (logic.shopping/link-with-user user-id))]
+          shopping (-> (logic.shopping/initiation->shopping shopping-initiation now)
+                       (logic.shopping/link-with-user user-id))]
       (->> [(go (http.client.shopping/init-shopping-cart shopping-id purchase-list-id user-id http))
-            (go (-> (logic.shopping-cart/init id)
-                    (redis.shopping-cart/init-cart redis)))
             (go (-> (logic.shopping-location/initiation->shopping-location shopping-initiation (misc.general/squuid))
                     (mongo.shopping-location/upsert mongo)))
             (go (datomic.shopping/upsert shopping datomic))]
@@ -84,50 +78,6 @@
       existent
       (left (logic.errors/build 404 {:message nil})))))
 
-(s/defn receive-cart-event
-  [{:keys [shopping-id user-id] :as event} :- models.internal.shopping-cart/CartEvent
-   wire :- wires.in.shopping-cart/ChangeItemEvent
-   {:keys [redis datomic http]}]
-  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
-        list-id (datomic.shopping/get-list-id-by-shopping-id shopping-id allowed-lists-ids datomic)
-        event (assoc event :purchase-list-id list-id)]
-    (-> (redis.shopping-cart/find-cart shopping-id redis)
-        (logic.shopping-cart-event/add-event event)
-        (redis.shopping-cart/upsert redis))
-    (http.client.shopping/send-shopping-cart-events (assoc wire :purchase-list-id list-id) user-id http)
-    event))
-
-(s/defn receive-cart-event-by-list
-  [{:keys [purchase-list-id] :as event} :- models.internal.shopping-cart/CartEvent
-   user-id :- s/Uuid
-   {:keys [redis datomic http]}]
-  (try (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
-             shopping-id (:id (datomic.shopping/get-in-progress-by-list-id purchase-list-id allowed-lists-ids datomic))
-             event+shopping-id (assoc event :shopping-id shopping-id)]
-         (some-> shopping-id
-                 (redis.shopping-cart/find-cart redis)
-                 (logic.shopping-cart-event/add-event event+shopping-id)
-                 (redis.shopping-cart/upsert redis)))
-       (catch Exception e
-         (println e)
-         (throw e)))
-  event)
-
-(s/defn receive-cart-event-by-category
-  [{:keys [category-id user-id] :as event} :- models.internal.shopping-cart/CartEvent
-   {:keys [redis datomic http]}]
-  (try (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
-             shopping-id (:id (datomic.shopping/get-in-progress-by-category-id category-id allowed-lists-ids datomic))
-             event+shopping-id (assoc event :shopping-id shopping-id)]
-         (some-> shopping-id
-                 (redis.shopping-cart/find-cart redis)
-                 (logic.shopping-cart-event/add-event event+shopping-id)
-                 (redis.shopping-cart/upsert redis)))
-       (catch Exception e
-         (println e)
-         (throw e)))
-  event)
-
 (s/defn finished-shopping
   [user-id :- s/Uuid
    {:keys [list-id id] :as shopping}
@@ -146,11 +96,10 @@
 (s/defn finish
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
-   {:keys [redis datomic rabbitmq http]}]
+   {:keys [datomic rabbitmq http]}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
-        {:keys [id] :as shopping} (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
+        shopping (datomic.shopping/get-by-id shopping-id allowed-lists-ids datomic)
         shopping (finished-shopping user-id shopping http)]
     (datomic.shopping/upsert shopping datomic)
-    (dbs.redis.shopping-cart/delete id redis)
     (publishers.shopping/shopping-finished shopping rabbitmq)))
 
