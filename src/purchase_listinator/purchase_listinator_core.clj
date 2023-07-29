@@ -3,18 +3,16 @@
             [purchase-listinator.components.datomic :as datomic]
             [purchase-listinator.components.mongo :as mongo]
             [purchase-listinator.components.rabbitmq :as rabbitmq]
-            [purchase-listinator.components.redis :as redis]
             [purchase-listinator.endpoints.http.purchase-list :as http.purchase-list]
             [purchase-listinator.endpoints.http.shopping :as http.shopping]
             [purchase-listinator.endpoints.http.user :as endpoints.http.user]
             [purchase-listinator.components.http :as components.http]))
 
 (def rabbitmq-dependencies
-  [:config :redis :datomic :mongo :http])
+  [:config :datomic :mongo :http])
 
 (def purchase-listinator-components
-  {:redis    (component/using (redis/new-Redis {:config-key :redis}) [:config])
-   :mongo    (component/using (mongo/new-mongo) [:config])
+  {:mongo    (component/using (mongo/new-mongo) [:config])
    :datomic  (component/using (datomic/new-datomic) [:config :service-map])
    :rabbitmq (component/using (rabbitmq/new-rabbit-mq) rabbitmq-dependencies)
    :http     (component/using (components.http/new-http :shopping/request-routes) [:config])})
@@ -36,11 +34,6 @@
                                        :path    (or (System/getenv "DATAHIKE_PATH") "")}
                                       {:backend :mem
                                        :id      "default"})}
-   :redis                   {:host     (or (System/getenv "REDIS_HOST") "localhost")
-                             :port     (or (System/getenv "REDIS_PORT") 6379)
-                             :username (or (System/getenv "REDIS_USERNAME") nil)
-                             :password (or (System/getenv "REDIS_PASSWORD") "pass")
-                             :timeout  6000}
    :rabbitmq                {:host     (or (System/getenv "RABBITMQ_HOST") "localhost")
                              :port     5672
                              :username "guest"
@@ -50,7 +43,6 @@
 
 (def system-components-test
   {:datomic  (component/using (datomic/new-datomic) [:config :service-map])
-   :redis    (component/using (redis/new-redis-mock {:config-key :redis}) [:config])
    :rabbitmq (component/using (rabbitmq/new-rabbit-mq-fake) [])
    :http     (component/using (components.http/new-http-mock) [:config])
    ;todo: fake mongo
@@ -71,7 +63,7 @@
 
 (def module-config
   {:rabbitmq-dependencies rabbitmq-dependencies
-   :webapp-dependencies   [:service-map :mongo :redis :datomic :rabbitmq :http]
+   :webapp-dependencies   [:service-map :mongo :datomic :rabbitmq :http]
    :routes                (set (concat endpoints.http.user/routes
                                        http.purchase-list/routes
                                        http.shopping/routes))
