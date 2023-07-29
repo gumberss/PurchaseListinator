@@ -7,9 +7,7 @@
             [purchase-listinator.adapters.out.shopping-initiation-data :as adapters.out.shopping-initiation-data]
             [purchase-listinator.adapters.in.shopping-initiation :as adapters.in.shopping-initiation]
             [purchase-listinator.adapters.in.shopping-initiation-data-request :as adapters.in.shopping-initiation-data-request]
-            [purchase-listinator.adapters.in.shopping-cart-event :as adapters.in.shopping-cart-event]
-            [purchase-listinator.adapters.misc :as adapters.misc]
-            [purchase-listinator.misc.date :as misc.date]))
+            [purchase-listinator.adapters.misc :as adapters.misc]))
 
 (s/defn init-shopping
   [{component :component
@@ -44,17 +42,6 @@
       (-> (adapters.misc/string->uuid shopping-id)
           (flows.shopping/get-in-progress-list (adapters.misc/string->uuid user-id) component)))))
 
-(s/defn receive-events
-  [{component :component
-    wire      :json-params
-    user-id   :user-id}]
-  (misc.http/default-branch
-    (misc.either/try-right
-      (let [now (misc.date/numb-now)
-            user-id (adapters.misc/string->uuid user-id)
-            cart-event (adapters.in.shopping-cart-event/wire->internal wire now user-id)]
-        (flows.shopping/receive-cart-event cart-event wire component)))))
-
 (s/defn finish-shopping
   [{component             :component
     {:keys [shopping-id]} :path-params
@@ -69,5 +56,4 @@
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
     ["/api/shopping/list/:shopping-id" :get [get-shopping-list] :route-name :get-in-progress]
-    ["/api/shopping/cart/events" :post [receive-events] :route-name :receive-shopping-list-events]
     ["/api/shopping/finish/:shopping-id" :post [finish-shopping] :route-name :finish-shopping]})
