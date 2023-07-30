@@ -25,13 +25,25 @@
                                           (flows.shopping/get-initial-data (adapters.misc/string->uuid user-id) component)))
                                     adapters.out.shopping-initiation-data/shopping->wire))
 
+;todo: deprecated, remove references and remove it
 (s/defn existent-shopping
   [{component         :component
     {:keys [list-id]} :path-params
     user-id           :user-id}]
-  (misc.http/default-branch (misc.either/try-right
-                              (-> (adapters.misc/string->uuid list-id)
-                                  (flows.shopping/find-existent (adapters.misc/string->uuid user-id) component)))))
+  (misc.http/default-branch
+    (misc.either/try-right
+      (-> (adapters.misc/string->uuid list-id)
+          (flows.shopping/find-existent (adapters.misc/string->uuid user-id) component)))))
+
+(s/defn active-shopping
+  [{component         :component
+    {:keys [list-id]} :path-params
+    user-id           :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (flows.shopping/active-shopping (adapters.misc/string->uuid list-id)
+                                      (adapters.misc/string->uuid user-id)
+                                      component))))
 
 (s/defn get-shopping-list
   [{component             :component
@@ -55,5 +67,6 @@
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/existent/:list-id" :get [existent-shopping] :route-name :get-existent-shopping]
+    ["/api/shopping/active/:list-id" :get [active-shopping] :route-name :get-active-shopping]
     ["/api/shopping/list/:shopping-id" :get [get-shopping-list] :route-name :get-in-progress]
     ["/api/shopping/finish/:shopping-id" :post [finish-shopping] :route-name :finish-shopping]})

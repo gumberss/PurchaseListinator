@@ -60,6 +60,20 @@
        ffirst
        adapter.shopping/db->internal))
 
+(s/defn get-in-progress-by-list-id* :- [models.internal.shopping/Shopping]
+  [list-id :- s/Uuid
+   allowed-lists-ids :- [s/Uuid]
+   {:keys [connection]}]
+  (->> (d/q '[:find [(pull ?s [* {:shopping/list [:purchase-list/id]}]) ...]
+              :in $ ?l-id [?a-l-id ...]
+              :where
+              [?l :purchase-list/id ?l-id]
+              [?l :purchase-list/id ?a-l-id]
+              [?s :shopping/list ?l]
+              [?s :shopping/status :in-progress]]
+            (d/db connection) list-id allowed-lists-ids)
+       (map adapter.shopping/db->internal)))
+
 (s/defn get-by-id :- models.internal.shopping/Shopping
   [id :- s/Uuid
    allowed-lists-ids :- [s/Uuid]

@@ -78,6 +78,13 @@
       existent
       (left (logic.errors/build 404 {:message nil})))))
 
+(s/defn active-shopping
+  [list-id :- s/Uuid
+   user-id :- s/Uuid
+   {:keys [datomic http]}]
+  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)]
+    (datomic.shopping/get-in-progress-by-list-id* list-id allowed-lists-ids datomic)))
+
 (s/defn finished-shopping
   [user-id :- s/Uuid
    {:keys [list-id id] :as shopping}
