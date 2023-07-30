@@ -11,6 +11,7 @@
     [purchase-listinator.modules.shopping-cart.diplomat.db.redis :as diplomat.db.redis]
     [purchase-listinator.modules.shopping-cart.diplomat.producers.shopping-cart-event :as producers.shopping-cart-event]
     [purchase-listinator.modules.shopping-cart.logic.cart :as logic.cart]
+    [purchase-listinator.modules.shopping-cart.logic.events :as logic.events]
     [purchase-listinator.modules.shopping-cart.schemas.internal.cart :as internal.cart]))
 
 (s/defn ^:private build-price-suggestion-events
@@ -47,10 +48,11 @@
   (when (diplomat.db.redis/find-list list-id redis)
     (diplomat.db.redis/remove-shopping id list-id redis)
     (let [all-events (diplomat.db.redis/get-events list-id redis)
+          current-shopping-events (logic.events/filter-by-shopping id all-events)
           list-sessions (diplomat.db.redis/all-sessions list-id redis)]
       (when (empty? list-sessions)
         (diplomat.db.redis/delete-list-and-related list-id redis))
-      (producers.shopping-cart-event/shopping-cart-closed shopping all-events rabbitmq-channel))))
+      (producers.shopping-cart-event/shopping-cart-closed shopping current-shopping-events rabbitmq-channel))))
 
 (s/defn remove-list-cart
   [{:keys [list-id]} :- internal.purchase-list/PurchaseListDisabled
