@@ -117,3 +117,10 @@
     (partial of-type :reorder-category) ReorderCategoryEvent
     (partial of-type :reorder-item) ReorderItemEvent
     (partial of-type :change-item) ChangeItemEvent))
+
+
+(def cart-skeleton
+  {:shopping-id s/Uuid
+   :events      [CartEvent]})
+(s/defschema Cart cart-skeleton)
+

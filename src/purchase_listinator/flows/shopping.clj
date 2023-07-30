@@ -56,7 +56,7 @@
    shopping-id :- s/Uuid
    http :- components.http/IHttp]
   (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
-        shopping-cart (logic.shopping-cart/->cart shopping-id new-cart)
+        shopping-cart (logic.shopping-cart/->shopping-cart shopping-id new-cart)
         shopping-list (logic.shopping/purchase-list->shopping-list shopping-id purchase-list)]
     (logic.shopping-cart-event/apply-cart shopping-cart shopping-list)))
 
@@ -83,7 +83,7 @@
    {:keys [list-id id] :as shopping}
    http :- components.http/IHttp]
   (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id user-id http)
-        new-shopping-cart (logic.shopping-cart/->cart id new-cart)
+        new-shopping-cart (logic.shopping-cart/->shopping-cart id new-cart)
         shopping-list (logic.shopping/purchase-list->shopping-list id purchase-list)
         shopping (->> (logic.shopping-cart-event/apply-cart new-shopping-cart shopping-list)
                       :categories
