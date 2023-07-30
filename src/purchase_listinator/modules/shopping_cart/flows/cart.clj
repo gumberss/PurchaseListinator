@@ -31,7 +31,8 @@
   (if-let [list (diplomat.db.redis/find-list list-id redis)]
     (do (diplomat.db.redis/add-shopping shopping-id list-id redis)
         {:purchase-list list
-         :cart-events   (diplomat.db.redis/get-events list-id redis)})
+         :cart-events   (->> (diplomat.db.redis/get-events list-id redis)
+                             (logic.events/filter-by-shopping shopping-id))})
     (if-let [list (diplomat.http.client/get-purchase-list list-id user-id http)]
       (do
         (diplomat.db.redis/add-list list redis)
@@ -62,9 +63,11 @@
 
 (s/defn get-cart :- internal.cart/Cart
   [list-id :- s/Uuid
+   shopping-id :- s/Uuid
    {:keys [shopping-cart/redis]}]
   (let [list (diplomat.db.redis/find-list list-id redis)
-        events (diplomat.db.redis/get-events list-id redis)]
+        events (->> (diplomat.db.redis/get-events list-id redis)
+                    (logic.events/filter-by-shopping shopping-id))]
     (if list
       (logic.cart/->cart list events)
       (logic.errors/build 404 "[[PURCHASE_LIST_NOT_FOUND]]"))))
