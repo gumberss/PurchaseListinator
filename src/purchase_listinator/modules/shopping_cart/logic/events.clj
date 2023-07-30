@@ -13,4 +13,4 @@
 (s/defn filter-by-shopping :- [internal.cart-events/CartEvent]
   [shopping-id :- s/Uuid
    events :- [internal.cart-events/CartEvent]]
-  (remove (partial irrelevant-events? shopping-id)) events)
+  (remove (partial irrelevant-events? shopping-id) events))
