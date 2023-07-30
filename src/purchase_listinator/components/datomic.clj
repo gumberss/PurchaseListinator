@@ -5,7 +5,6 @@
             [purchase-listinator.dbs.datomic.purchase-category :as datomic.purchase-category]
             [purchase-listinator.dbs.datomic.purchase-item :as datomic.purchase-item]
             [purchase-listinator.dbs.datomic.shopping :as datomic.shopping]
-            [purchase-listinator.dbs.datomic.shopping-event :as dbs.datomic.shopping-events]
             [purchase-listinator.dbs.datomic.shopping-category :as dbs.datomic.shopping-category]
             [purchase-listinator.dbs.datomic.shopping-item :as dbs.datomic.shopping-item]
             [purchase-listinator.dbs.datomic.user :as dbs.datomic.user]
@@ -16,7 +15,6 @@
                     datomic.purchase-category/schema
                     datomic.purchase-item/schema
                     datomic.shopping/schema
-                    dbs.datomic.shopping-events/schema
                     dbs.datomic.shopping-item/schema
                     dbs.datomic.shopping-category/schema
                     dbs.datomic.share/schema))

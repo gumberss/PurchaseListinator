@@ -1,8 +1,7 @@
 (ns purchase-listinator.logic.shopping-cart-event-test
   (:require [clojure.test :refer :all]
             [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
-            [schema.test :as st]
-            [nrepl.misc :as misc]))
+            [schema.test :as st]))
 
 (def purchase-list-id (random-uuid))
 (def shopping-id (random-uuid))
@@ -48,6 +47,7 @@
    :moment           123
    :event-type       :change-item
    :shopping-id      shopping-id
+   :purchase-list-id purchase-list-id
    :item-id          item-id
    :price            0
    :quantity-changed 10})
@@ -57,6 +57,7 @@
    :user-id          user-id
    :moment           123
    :event-type       :change-item
+   :purchase-list-id purchase-list-id
    :shopping-id      shopping-id
    :item-id          item-id
    :price            0
@@ -90,7 +91,6 @@
    :event-type       :purchase-list-category-created
    :name             "New category"
    :user-id          user-id
-   :shopping-id      shopping-id
    :category-id      new-category-id
    :order-position   50
    :color            321
@@ -113,7 +113,6 @@
    :moment           213
    :event-type       :purchase-list-category-deleted
    :user-id          user-id
-   :shopping-id      shopping-id
    :category-id      category-id
    :purchase-list-id purchase-list-id})
 
