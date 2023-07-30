@@ -69,14 +69,12 @@
         shopping-module-completed (cart-module-management list-id user-id shopping-id http)]
     shopping-module-completed))
 
-(s/defn find-existent
+(s/defn active-shopping
   [list-id :- s/Uuid
    user-id :- s/Uuid
    {:keys [datomic http]}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)]
-    (if-let [existent (datomic.shopping/get-in-progress-by-list-id list-id allowed-lists-ids datomic)]
-      existent
-      (left (logic.errors/build 404 {:message nil})))))
+    (datomic.shopping/get-in-progress-by-list-id list-id allowed-lists-ids datomic)))
 
 (s/defn finished-shopping
   [user-id :- s/Uuid

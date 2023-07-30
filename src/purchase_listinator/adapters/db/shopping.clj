@@ -13,7 +13,7 @@
 
 (s/defn db->internal :- models.internal.shopping/Shopping
   [{:shopping/keys [list] :as db-wire}]
-  (when (not-empty db-wire)
+   (when (not-empty db-wire)
     (-> (misc.datomic/datomic->entity db-wire)
         (misc.general/unnamespace-keys)
         (assoc :list-id (:purchase-list/id list))

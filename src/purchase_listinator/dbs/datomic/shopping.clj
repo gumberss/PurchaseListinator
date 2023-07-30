@@ -45,11 +45,12 @@
          (apply misc.datomic/transact connection)))
   shopping)
 
-(s/defn get-in-progress-by-list-id :- models.internal.shopping/Shopping
+
+(s/defn get-in-progress-by-list-id :- [models.internal.shopping/Shopping]
   [list-id :- s/Uuid
    allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?s [* {:shopping/list [:purchase-list/id]}])
+  (->> (d/q '[:find [(pull ?s [* {:shopping/list [:purchase-list/id]}]) ...]
               :in $ ?l-id [?a-l-id ...]
               :where
               [?l :purchase-list/id ?l-id]
@@ -57,8 +58,7 @@
               [?s :shopping/list ?l]
               [?s :shopping/status :in-progress]]
             (d/db connection) list-id allowed-lists-ids)
-       ffirst
-       adapter.shopping/db->internal))
+       (map adapter.shopping/db->internal)))
 
 (s/defn get-by-id :- models.internal.shopping/Shopping
   [id :- s/Uuid
