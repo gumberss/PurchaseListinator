@@ -32,7 +32,7 @@
     (do (diplomat.db.redis/add-shopping shopping-id list-id redis)
         {:purchase-list list
          :cart-events   (->> (diplomat.db.redis/get-events list-id redis)
-                             (logic.events/filter-by-shopping shopping-id))})
+                             (logic.events/relevant-by-shopping shopping-id))})
     (if-let [list (diplomat.http.client/get-purchase-list list-id user-id http)]
       (do
         (diplomat.db.redis/add-list list redis)
@@ -49,7 +49,7 @@
   (when (diplomat.db.redis/find-list list-id redis)
     (diplomat.db.redis/remove-shopping id list-id redis)
     (let [all-events (diplomat.db.redis/get-events list-id redis)
-          current-shopping-events (logic.events/filter-by-shopping id all-events)
+          current-shopping-events (logic.events/relevant-by-shopping id all-events)
           list-sessions (diplomat.db.redis/all-sessions list-id redis)]
       (when (empty? list-sessions)
         (diplomat.db.redis/delete-list-and-related list-id redis))
@@ -62,6 +62,17 @@
     (diplomat.db.redis/delete-list-and-related list-id redis)))
 
 (s/defn get-cart :- internal.cart/Cart
+  [list-id :- s/Uuid
+   shopping-id :- s/Uuid
+   {:keys [shopping-cart/redis]}]
+  (let [list (diplomat.db.redis/find-list list-id redis)]
+    (if list
+      (logic.cart/->cart list
+                         (->> (diplomat.db.redis/get-events list-id redis)
+                              (logic.events/relevant-by-shopping shopping-id)))
+      (logic.errors/build 404 "[[PURCHASE_LIST_NOT_FOUND]]"))))
+
+(s/defn get-exclusive-cart :- internal.cart/Cart
   [list-id :- s/Uuid
    shopping-id :- s/Uuid
    {:keys [shopping-cart/redis]}]

@@ -51,3 +51,16 @@
                                                      :shopping-id shopping-id}
                                      :result-schema wires.in.cart/Cart})
       (adapters.in.cart/wire->internal)))
+
+(s/defn get-shopping-exclusive-cart :- models.internal.cart/Cart
+  [purchase-list-id :- s/Uuid
+   shopping-id :- s/Uuid
+   user-id :- s/Uuid
+   http :- components.http/IHttp]
+  (-> (components.http/request http {:method        :get
+                                     :url           :shopping-cart/exclusive-cart
+                                     :user-id       user-id
+                                     :query-params  {:list-id purchase-list-id
+                                                     :shopping-id shopping-id}
+                                     :result-schema wires.in.cart/Cart})
+      (adapters.in.cart/wire->internal)))

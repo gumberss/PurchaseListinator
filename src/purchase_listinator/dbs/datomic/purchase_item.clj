@@ -180,7 +180,8 @@
 (s/defn update-item-quantity :- [[models.internal.purchase-item/PurchaseItem]]
   [purchase-items-pair :- [[models.internal.purchase-item/PurchaseItem]]
    {:keys [connection]}]
-  (->> (map build-cas-by-items-pair purchase-items-pair)
-       (filter identity)
-       (apply misc.datomic/transact connection))
+  (when (not-empty purchase-items-pair)
+    (->> (map build-cas-by-items-pair purchase-items-pair)
+         (filter identity)
+         (apply misc.datomic/transact connection)))
   purchase-items-pair)
