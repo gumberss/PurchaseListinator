@@ -80,7 +80,7 @@
   [user-id :- s/Uuid
    {:keys [list-id id] :as shopping}
    http :- components.http/IHttp]
-  (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-cart list-id id user-id http)
+  (let [{:keys [purchase-list] :as new-cart} (http.client.shopping/get-shopping-exclusive-cart list-id id user-id http)
         new-shopping-cart (logic.shopping-cart/->shopping-cart id new-cart)
         shopping-list (logic.shopping/purchase-list->shopping-list id purchase-list)
         shopping (->> (logic.shopping-cart-event/apply-cart new-shopping-cart shopping-list)

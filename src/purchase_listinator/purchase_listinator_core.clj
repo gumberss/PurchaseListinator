@@ -22,7 +22,8 @@
    :purchase-list/allowed-lists  (or (System/getenv "PURCHASE_LIST_URL") "http://localhost:3000/api/lists/allowed")
    :shopping-cart/receive-events (or (System/getenv "SHOPPING_CART_RECEIVE_EVENTS") "http://localhost:3000/api/shopping-cart/events")
    :shopping-cart/init-cart      (or (System/getenv "SHOPPING_CART_INITIATE_CART") "http://localhost:3000/api/shopping-cart/initiate")
-   :shopping-cart/cart           (or (System/getenv "SHOPPING_CART_GET_CART") "http://localhost:3000/api/shopping-cart/by/:list-id/:shopping-id")})
+   :shopping-cart/cart           (or (System/getenv "SHOPPING_CART_GET_CART") "http://localhost:3000/api/shopping-cart/by/:list-id/:shopping-id")
+   :shopping-cart/exclusive-cart (or (System/getenv "SHOPPING_CART_GET_EXCLUSIVE_CART") "http://localhost:3000/api/shopping-cart/exclusive-by/:list-id/:shopping-id")})
 
 (def purchase-listinator-config
   {:mongo                   {:port    27017
