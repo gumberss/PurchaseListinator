@@ -1,5 +1,7 @@
 # Requirements 
 - cassandra-driver
+- pip install 'uvicorn[standard]'
+- pip install fastapi
 
 Needs:
     Get variables from the OS

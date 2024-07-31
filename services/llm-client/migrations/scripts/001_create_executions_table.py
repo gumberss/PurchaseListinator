@@ -7,10 +7,10 @@ def run_migration(session):
     """)
     session.execute("""
     CREATE TABLE IF NOT EXISTS execution.interactions (
-        interaction_id UUID PRIMARY KEY,
+        id UUID PRIMARY KEY,
         input text,
         response text,
-        request_date date,
+        request_date bigint,
         status int,
         timeout int 
     );
