@@ -5,3 +5,13 @@ class Interaction:
         self.variables = variables
         self.images = images
         self.message = None
+
+    def failed(self):
+        self.status = 'failed'
+        return self
+
+class InteractionResult:
+    def __init__(self, id, status, response):
+        self.id = id
+        self.status = status
+        self.response = response

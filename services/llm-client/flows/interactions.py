@@ -1,29 +1,19 @@
 
 from components.scylla_connection import ScyllaConnection
-from uuid import uuid4
 from datetime import datetime, timezone
-from models.interactions import Interaction
+from models.interactions import Interaction, InteractionResult
 from diplomat.db import interactions as interactions_db
-
-class InteractionResponse:
-    def __init__(self, id, status, response):
-        self.id = id
-        self.status = status
-        self.response = response
+from logic import interactions as interactions_logic
 
 def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
     existent_interaction = interactions_db.get_interaction(interaction.id, scylla)
     if(existent_interaction is not None):
-        if(existent_interaction.status == 'completed' or existent_interaction.status == 'failed'):
+        if(interactions_logic.is_final_state(existent_interaction)):
             return existent_interaction
         else:
-            print(existent_interaction.request_date + existent_interaction.timeout)
-            print(existent_interaction.request_date + existent_interaction.timeout -  int(datetime.now(timezone.utc).timestamp() * 1000)) 
-            print( int(datetime.now(timezone.utc).timestamp() * 1000))
-            if(existent_interaction.request_date + existent_interaction.timeout < int(datetime.now(timezone.utc).timestamp() * 1000)):
-                print("failes")
-                existent_interaction.status='failed'
-                interactions_db.update_interaction(InteractionResponse(existent_interaction.id, 'failed', None), scylla)
+            if(interactions_logic.is_timed_out(existent_interaction, int(datetime.now(timezone.utc).timestamp() * 1000))):
+                existent_interaction.failed()
+                interactions_db.update_interaction(InteractionResult(existent_interaction.id, 'failed', None), scylla)
                 return existent_interaction
             else:
                 return existent_interaction
@@ -34,7 +24,7 @@ def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
         return None
     
     # fill prompt with variables
-    insert(interaction, scylla)
+    interactions_db.insert(interaction, scylla)
     # request Open IA
     # update the database
     # return
