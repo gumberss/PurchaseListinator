@@ -3,6 +3,9 @@
 - pip install 'uvicorn[standard]'
 - pip install fastapi
 
+docker run -d --name some-scylla -p 9042:9042 scylladb/scylla
+docker exec -it some-scylla cqlsh 
+
 Needs:
     Get variables from the OS
     Make it works on doker

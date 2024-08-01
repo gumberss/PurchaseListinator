@@ -17,4 +17,4 @@ async def shutdown_event():
 
 @app.post("/api/llm/interactions")
 def greet(interaction: Interaction):
-    new_interaction(dto_to_model(interaction), ComponentManager.get_component(ScyllaConnection))
+    return new_interaction(dto_to_model(interaction), ComponentManager.get_component(ScyllaConnection))

@@ -11,7 +11,7 @@ def run_migration(session):
         input text,
         response text,
         request_date bigint,
-        status int,
+        status text,
         timeout int 
     );
     """)
