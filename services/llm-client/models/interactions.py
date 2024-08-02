@@ -9,21 +9,17 @@ class Interaction:
         self.message = message
 
 class InteractionRequest:
-    def __init__(self, id, interaction, response, request_date, status, timeout):
+    def __init__(self, id, interaction, response, request_date, status, timeout, details):
         self.id = id
         self.interaction = interaction
         self.response = response
         self.request_date = request_date
         self.status = status
         self.timeout = timeout
+        self.details = details
 
-    def failed(self):
+    def failed(self, details: str):
         self.status = 'failed'
+        self.details = details
         return self
         
-
-class InteractionResult:
-    def __init__(self, id, status, response):
-        self.id = id
-        self.status = status
-        self.response = response
