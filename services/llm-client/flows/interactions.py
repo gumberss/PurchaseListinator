@@ -3,6 +3,7 @@ from components.scylla_connection import ScyllaConnection
 from datetime import datetime, timezone
 from models.interactions import Interaction, InteractionResult
 from diplomat.db import interactions as interactions_db
+from diplomat.db import prompts as prompts_db
 from logic import interactions as interactions_logic
 
 def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
@@ -18,8 +19,7 @@ def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
             else:
                 return existent_interaction
 
-
-    prompt = interactions_db.get_prompt(interaction.prompt_name, scylla)
+    prompt = prompts_db.get_prompt(interaction.prompt_name, scylla)
     if(prompt is None): 
         return None
     

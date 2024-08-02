@@ -6,9 +6,9 @@ def run_migration(session):
     WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'};
     """)
     session.execute("""
-    CREATE TABLE IF NOT EXISTS execution.interactions (
+    CREATE TABLE IF NOT EXISTS execution.interaction_requests (
         id UUID PRIMARY KEY,
-        input text,
+        interaction text,
         response text,
         request_date bigint,
         status text,
