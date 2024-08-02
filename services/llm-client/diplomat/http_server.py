@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from wires.inputs.interactions import Interaction
+from flows.interactions import new_interaction
+from adapters.inputs.interaction import dto_to_model
 from components.component_manager import ComponentManager
 from components.scylla_connection import ScyllaConnection
 
@@ -15,10 +17,4 @@ async def shutdown_event():
 
 @app.post("/api/llm/interactions")
 def greet(interaction: Interaction):
-    a = ComponentManager.get_component(ScyllaConnection)
-    query = "select * from configuration.prompts where prompt_name = 'tick_shopping_items' ;"
-    prepared = a.session.prepare(query)
-    #bound = prepared.bind(('value',))  # Replace 'value' with the actual value you want to query
-    rows = a.session.execute(query)
-    for row in rows:
-        print(row)
+    return new_interaction(dto_to_model(interaction), ComponentManager.get_component(ScyllaConnection))
