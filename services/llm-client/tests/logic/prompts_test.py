@@ -73,12 +73,12 @@ def test_find_missing_variables_empty_values():
 def test_replace_variables():
     template = "Hello, {{name}}. You have {{count}} new messages."
     values = {"name": "Alice", "count": 5}
-    assert prompts.replace_variables(template, values) == "Hello, Alice. You have 5 new messages."
+    assert prompts.replace_variables(Prompt("",template), values) == "Hello, Alice. You have 5 new messages."
     
     template = "Hello, {{name}}. You have {{count}} new messages and your ID is {{id}}."
     values = {"name": "Bob", "count": 10, "id": 12345}
-    assert prompts.replace_variables(template, values) == "Hello, Bob. You have 10 new messages and your ID is 12345."
+    assert prompts.replace_variables(Prompt("",template), values) == "Hello, Bob. You have 10 new messages and your ID is 12345."
     
     template = "Hello, {{name}}."
     values = {}
-    assert prompts.replace_variables(template, values) == "Hello, {{name}}."
+    assert prompts.replace_variables(Prompt("",template), values) == "Hello, {{name}}."
