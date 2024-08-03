@@ -2,10 +2,20 @@
 from components.scylla_connection import ScyllaConnection
 from datetime import datetime, timezone
 from models.interactions import Interaction
+from models.prompts import Prompt, RenderedPrompt
 from diplomat.db import interactions as interactions_db
 from diplomat.db import prompts as prompts_db
 from logic import interactions as interactions_logic
 from logic import prompts as prompts_logic
+
+def render_prompt(interaction: Interaction, prompt: Prompt) -> RenderedPrompt:
+    prompt_variables = prompts_logic.find_variables(prompt)
+    missing_variables = prompts_logic.find_missing_variables(prompt_variables, interaction.variables)
+    if (missing_variables):
+        missing_variables_str = ", ".join(missing_variables)
+        raise ValueError(f"Variables missing: {missing_variables_str}")
+    return RenderedPrompt(prompt.prompt_name, prompts_logic.replace_variables(prompt, interaction.variables), interaction.images) 
+
 
 def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
     existent_interaction = interactions_db.get_interaction(interaction.id, scylla)
@@ -28,16 +38,17 @@ def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
         interactions_db.update_interaction(interaction_request, scylla)
         return interaction_request
     
-    prompt_variables = prompts_logic.find_variables(prompt)
-    missing_variables = prompts_logic.find_missing_variables(prompt_variables, interaction.variables)
-
-    if(missing_variables):
-        missing_variables = ", ".join(missing_variables)
-        interaction_request.failed(f"Variables missing: {missing_variables}")
+    rendered_prompt = None
+    
+    try:
+        rendered_prompt = render_prompt(interaction, prompt)
+    except ValueError as e:
+        error_message = str(e)
+        interaction_request.failed(error_message)
         interactions_db.update_interaction(interaction_request, scylla)
         return interaction_request
 
-    rendered_prompt = prompts_logic.replace_variables(prompt, interaction.variables)
+    
     
 
     # request Open IA
