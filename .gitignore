@@ -17,3 +17,5 @@ pom.xml.asc
 .idea/
 .clj-kondo/
 .lsp/
+**/.venv
+**/__pycache__/
