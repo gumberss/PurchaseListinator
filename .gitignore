@@ -18,4 +18,11 @@ pom.xml.asc
 .clj-kondo/
 .lsp/
 **/.venv
-**/__pycache__/
+
+__pycache__/
+
+*.pyc
+*.pyo
+
+*.pyd
+*.py[co]
