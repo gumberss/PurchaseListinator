@@ -19,7 +19,13 @@ class InteractionRequest:
         self.details = details
 
     def failed(self, details: str):
-        self.status = 'failed'
+        self.status = 'failed'  
         self.details = details
+        return self
+    
+    def sucess(self, response: str):
+        self.status = 'success'
+        self.details = ""
+        self.response = response
         return self
         

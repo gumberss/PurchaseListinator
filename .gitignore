@@ -17,3 +17,12 @@ pom.xml.asc
 .idea/
 .clj-kondo/
 .lsp/
+**/.venv
+
+**/__pycache__/
+
+*.pyc
+*.pyo
+
+*.pyd
+*.py[co]
