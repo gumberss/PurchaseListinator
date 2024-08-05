@@ -1,10 +1,10 @@
 
 from openai import OpenAI
 from models.prompts import RenderedPrompt
+import os;
 
 client = OpenAI(
-  api_key=""
-  #os.environ['OPENAI_API_KEY'],  # this is also the default, it can be omitted
+  api_key=os.getenv('OPENAI_API_KEY').strip()
 )
 
 def complete(rendered_prompt : RenderedPrompt):
@@ -17,19 +17,19 @@ def complete(rendered_prompt : RenderedPrompt):
     } for image in rendered_prompt.images]
    
     completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": rendered_prompt.prompt
-                    },
-                    *images
-                ]
-            }
-        ],
-    )
-    print(completion.choices[0].message.content)
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": rendered_prompt.prompt
+                        },
+                        *images
+                    ]
+                }
+            ],
+        )
     return completion.choices[0].message.content
+    

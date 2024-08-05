@@ -7,6 +7,7 @@ from diplomat.db import interactions as interactions_db
 from diplomat.db import prompts as prompts_db
 from logic import interactions as interactions_logic
 from logic import prompts as prompts_logic
+from diplomat import http_client
 
 def render_prompt(interaction: Interaction, prompt: Prompt) -> RenderedPrompt:
     prompt_variables = prompts_logic.find_variables(prompt)
@@ -39,7 +40,7 @@ def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
         return interaction_request
     
     rendered_prompt = None
-    
+
     try:
         rendered_prompt = render_prompt(interaction, prompt)
     except ValueError as e:
@@ -48,13 +49,16 @@ def new_interaction(interaction: Interaction, scylla: ScyllaConnection):
         interactions_db.update_interaction(interaction_request, scylla)
         return interaction_request
 
-    
-    
-
-    # request Open IA
-    # update the database
-    # return
-    return rendered_prompt
+    try:
+        request_response = http_client.complete(rendered_prompt)
+        interaction_request.sucess(request_response)
+        interactions_db.update_interaction(interaction_request, scylla)
+        return interaction_request
+    except Exception as e:
+        error_message = str(e)
+        interaction_request.failed(error_message)
+        interactions_db.update_interaction(interaction_request, scylla)
+        return interaction_request
 
 
     
