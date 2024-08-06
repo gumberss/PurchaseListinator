@@ -4,6 +4,7 @@ from flows.interactions import new_interaction
 from adapters.inputs.interaction import dto_to_model
 from components.component_manager import ComponentManager
 from components.scylla_connection import ScyllaConnection
+from adapters.outputs import interactions
 
 app = FastAPI()
 
@@ -17,4 +18,5 @@ async def shutdown_event():
 
 @app.post("/api/llm/interactions")
 def greet(interaction: Interaction):
-    return new_interaction(dto_to_model(interaction), ComponentManager.get_component(ScyllaConnection))
+    return interactions.model_to_dto(new_interaction(dto_to_model(interaction), ComponentManager.get_component(ScyllaConnection)))
+
