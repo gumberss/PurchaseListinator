@@ -13,10 +13,10 @@
     {:conn conn
      :db   db}))
 
-(defrecord Mongo [config indexes]
+(defrecord Mongo [config config-key indexes]
   component/Lifecycle
   (start [this]
-    (let [{{:keys [host port db-name uri]} :mongo} config
+    (let [{{:keys [host port db-name uri]} config-key} config
           conn (mg/connect {:host host :port port})
           db (mg/get-db conn db-name)]
       (if uri
@@ -32,8 +32,9 @@
     (dissoc this :connection :db)))
 
 (defn new-mongo
-  [indexes]
-  (map->Mongo {:indexes indexes}))
+  [config-key indexes]
+  (map->Mongo {:indexes indexes
+               :config-key config-key}))
 
 
 (defrecord MongoFake [config]

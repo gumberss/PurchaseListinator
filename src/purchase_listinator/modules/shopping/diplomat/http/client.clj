@@ -5,7 +5,7 @@
     [purchase-listinator.modules.shopping.schemas.models.price-suggestion :as models.internal.price-suggestion]
     [purchase-listinator.wires.in.price-suggestion :as wires.in.price-suggestion]
     [purchase-listinator.modules.shopping.adapters.in.price-suggestion :as adapters.in.price-suggestion]
-    [purchase-listinator.wires.in.cart :as wires.in.cart]
+    [purchase-listinator.modules.shopping.schemas.wires.in.cart :as wires.in.cart]
     [purchase-listinator.modules.shopping.adapters.in.cart :as adapters.in.cart]
     [schema.core :as s]))
 

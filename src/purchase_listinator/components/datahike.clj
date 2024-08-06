@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [datahike.api :as d]))
 
-(defn create-schema [conn, schemas]
+(defn create-schema [conn schemas]
   (d/transact conn schemas))
 
 (defrecord Datahike [config-key schemas config]

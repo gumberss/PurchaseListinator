@@ -2,10 +2,8 @@
   (:require [schema.core :as s]
             [datahike.api :as d]
             [purchase-listinator.modules.shopping.adapters.db.datomic.shopping :as adapter.shopping]
-            [purchase-listinator.modules.shopping.misc.datomic :as misc.datomic]
-            [purchase-listinator.modules.shopping.schemas.models.shopping :as models.shopping]
-            [purchase-listinator.modules.shopping.adapters.datomic.db.shopping-item :as adapters.db.shopping-item]
-            [purchase-listinator.modules.shopping.adapters.datomic.db.shopping-category :as adapters.db.shopping-category]))
+            [purchase-listinator.misc.datomic :as misc.datomic]
+            [purchase-listinator.modules.shopping.schemas.models.shopping :as models.shopping]))
 
 (def schema
   [{:db/ident       :shopping/id

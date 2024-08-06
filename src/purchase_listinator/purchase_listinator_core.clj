@@ -7,7 +7,7 @@
             [purchase-listinator.components.http :as components.http]))
 
 (def rabbitmq-dependencies
-  [:config :datomic :mongo :http])
+  [:config :datomic :http])
 
 (def purchase-listinator-components
   {:datomic  (component/using (datomic/new-datomic) [:config :service-map])
@@ -46,7 +46,7 @@
 
 (def module-config
   {:rabbitmq-dependencies rabbitmq-dependencies
-   :webapp-dependencies   [:service-map :mongo :datomic :rabbitmq :http]
+   :webapp-dependencies   [:service-map :datomic :rabbitmq :http]
    :routes                (set (concat endpoints.http.user/routes
                                        http.purchase-list/routes))
    :system-config         purchase-listinator-config

@@ -23,13 +23,6 @@
     (decrement-order item)
     item))
 
-(s/defn increment-if-after-or-equal :- models.logic.reposition/Reorder
-  [position
-   {:keys [order-position] :as item} :- models.logic.reposition/Reorder]
-  (if (>= order-position position)
-    (increment-order item)
-    item))
-
 (s/defn ^:private reposition-one :- models.logic.reposition/Reorder
   [old-position :- s/Num
    new-position :- s/Num

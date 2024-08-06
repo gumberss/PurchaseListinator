@@ -18,9 +18,9 @@
   [:shopping/rabbitmq :shopping/main-db :shopping/http :shopping/mongo])
 
 (def schemas
-  [datomic.shopping/schema
-   datomic.shopping-item/schema
-   datomic.shopping-category/schema])
+  (concat datomic.shopping/schema
+          datomic.shopping-item/schema
+          datomic.shopping-category/schema))
 
 (def mongo-indexes
   [db.mongo.shopping-location/indexes])
@@ -30,13 +30,13 @@
    :shopping/main-db          (component/using (components.datahike/new-datahike :shopping/main-db schemas) [:config])
    :shopping/rabbitmq-channel (component/using (components.rabbitmq-channel/new-rabbit-mq-channel :shopping/rabbitmq) [:config])
    :shopping/rabbitmq         (component/using (components.rabbitmq/new-rabbit-mq-v2 :shopping/rabbitmq :shopping/rabbitmq-channel []) rabbitmq-dependencies)
-   :shopping/mongo            (component/using (components.mongo/new-mongo mongo-indexes) [:config])})
+   :shopping/mongo            (component/using (components.mongo/new-mongo :shopping/mongo mongo-indexes) [:config])})
 
 (def system-components-test
   {:shopping/main-db  (component/using (components.datahike/new-datahike :shopping/main-db schemas) [:config])
    :shopping/rabbitmq (component/using (components.rabbitmq/new-rabbit-mq-fake) rabbitmq-dependencies)
    ;todo: fake mongo
-   :mongo    (component/using (components.mongo/new-mongo-fake) [:config])})
+   :shopping/mongo    (component/using (components.mongo/new-mongo-fake) [:config])})
 
 (def request-routes
   {:price-suggestion/items       (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")
@@ -48,7 +48,7 @@
 
 
 (def system-config
-  {:mongo                   {:port    27017
+  {:shopping/mongo                   {:port    27017
                              :host    (or (System/getenv "MONGODB_HOST") "localhost")
                              :db-name "purchase-listinator"
                              :uri     (or (System/getenv "MONGODB_URI") nil)}
@@ -69,7 +69,7 @@
   {:shopping/main-db  {:store {:backend :mem
                                :id      (str (random-uuid))}}
    :shopping/rabbitmq {}
-   :mongo      {:port    27017
+   :shopping/mongo      {:port    27017
                 :host    (or (System/getenv "MONGODB_HOST") "localhost")
                 :db-name "purchase-listinator-test"
                 :uri     (or (System/getenv "MONGODB_URI") nil)}})

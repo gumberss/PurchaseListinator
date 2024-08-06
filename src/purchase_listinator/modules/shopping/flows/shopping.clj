@@ -10,7 +10,7 @@
     [purchase-listinator.modules.shopping.logic.shopping-location :as logic.shopping-location]
     [purchase-listinator.misc.date :as misc.date]
     [purchase-listinator.modules.shopping.diplomat.db.mongo.shopping-location :as mongo.shopping-location]
-    [purchase-listinator.modules.shopping.misc.general :as misc.general]
+    [purchase-listinator.misc.general :as misc.general]
     [purchase-listinator.modules.shopping.schemas.models.shopping-initiation-data-request :as models.internal.shopping-initiation-data-request]
     [purchase-listinator.modules.shopping.logic.shopping-cart-event :as logic.shopping-cart-event]
     [purchase-listinator.components.http :as components.http]
