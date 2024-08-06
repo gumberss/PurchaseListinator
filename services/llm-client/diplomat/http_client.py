@@ -8,7 +8,6 @@ client = OpenAI(
 )
 
 def complete(rendered_prompt : RenderedPrompt):
-
     images = [{
         "type": "image_url",
         "image_url": {

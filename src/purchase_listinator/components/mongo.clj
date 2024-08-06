@@ -1,9 +1,6 @@
 (ns purchase-listinator.components.mongo
   (:require [monger.core :as mg]
-            [com.stuartsierra.component :as component]
-            [purchase-listinator.dbs.mongo.shopping-location :as dbs.mongo.shopping-location]))
-
-(def indexes (vector dbs.mongo.shopping-location/indexes))
+            [com.stuartsierra.component :as component]))
 
 (defn connect-by-uri
   [uri]
@@ -16,7 +13,7 @@
     {:conn conn
      :db   db}))
 
-(defrecord Mongo [config]
+(defrecord Mongo [config indexes]
   component/Lifecycle
   (start [this]
     (let [{{:keys [host port db-name uri]} :mongo} config
@@ -35,8 +32,8 @@
     (dissoc this :connection :db)))
 
 (defn new-mongo
-  []
-  (map->Mongo {}))
+  [indexes]
+  (map->Mongo {:indexes indexes}))
 
 
 (defrecord MongoFake [config]

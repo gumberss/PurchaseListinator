@@ -9,13 +9,15 @@
     [purchase-listinator.modules.events.core :as modules.events.core]
     [purchase-listinator.modules.price-suggestion.core :as modules.price-suggestion.core]
     [purchase-listinator.modules.shopping-cart.core :as modules.shopping-cart.core]
+    [purchase-listinator.modules.shopping.core :as modules.shopping.core]
     [purchase-listinator.purchase-listinator-core :as purchase-listinator-core])
   (:gen-class))
 
 (def modules-config [purchase-listinator-core/module-config
                      modules.events.core/config
                      modules.price-suggestion.core/config
-                     modules.shopping-cart.core/config])
+                     modules.shopping-cart.core/config
+                     modules.shopping.core/config])
 (def system-config
   (reduce conj
           {:env        (keyword (or (System/getenv "ENVIRONMENT_TYPE") "dev"))

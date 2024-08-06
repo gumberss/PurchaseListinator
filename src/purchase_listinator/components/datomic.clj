@@ -14,9 +14,6 @@
                     datomic.purchase-list/schema
                     datomic.purchase-category/schema
                     datomic.purchase-item/schema
-                    datomic.shopping/schema
-                    dbs.datomic.shopping-item/schema
-                    dbs.datomic.shopping-category/schema
                     dbs.datomic.share/schema))
 
 (defn create-schema [conn]
