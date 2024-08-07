@@ -1,6 +1,6 @@
-(ns purchase-listinator.logic.shopping-cart-event-test
+(ns purchase-listinator.modules.shopping.logic.shopping-cart-event-test
   (:require [clojure.test :refer :all]
-            [purchase-listinator.logic.shopping-cart-event :as logic.shopping-cart-event]
+            [purchase-listinator.modules.shopping.logic.shopping-cart-event :as logic.shopping-cart-event]
             [schema.test :as st]))
 
 (def purchase-list-id (random-uuid))

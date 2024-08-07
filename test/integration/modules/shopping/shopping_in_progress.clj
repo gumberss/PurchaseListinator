@@ -1,4 +1,4 @@
-(ns purchase-list.shopping-in-progress
+(ns modules.shopping.shopping-in-progress
   (:require [clojure.test :refer :all]
             [purchase-listinator.wires.purchase-list.out.purchase-list :as wires.purchase-list.out.purchase-list]
             [state-flow.core :refer [flow]]
