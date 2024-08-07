@@ -15,7 +15,7 @@
 (def rabbitmq-dependencies
   [:config :shopping/main-db])
 (def webapp-dependencies
-  [:shopping/rabbitmq :shopping/main-db :shopping/http :shopping/mongo])
+  [:shopping/rabbitmq :shopping/rabbitmq-channel :shopping/main-db :shopping/http :shopping/mongo])
 
 (def schemas
   (concat datomic.shopping/schema

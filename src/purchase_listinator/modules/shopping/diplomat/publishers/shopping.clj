@@ -1,5 +1,6 @@
 (ns purchase-listinator.modules.shopping.diplomat.publishers.shopping
   (:require
+    [purchase-listinator.components.rabbitmq-channel :as components.rabbitmq-channel]
     [schema.core :as s]
     [purchase-listinator.misc.date :as misc.date]
     [purchase-listinator.misc.general :as misc.general]
@@ -8,7 +9,8 @@
 
 (s/defn shopping-finished :- models.internal.shopping/Shopping
   [shopping :- models.internal.shopping/Shopping
-   {:keys [publish]}]
-  (publish :purchase-listinator/shopping.finished
-           (adapters.out.shopping/->ShoppingFinishedEvent shopping (misc.date/numb-now) (misc.general/squuid)))
+   producer :- components.rabbitmq-channel/IProducer]
+  (components.rabbitmq-channel/publish producer
+                                       :purchase-listinator/shopping.finished
+                                       (adapters.out.shopping/->ShoppingFinishedEvent shopping (misc.date/numb-now) (misc.general/squuid)))
   shopping)

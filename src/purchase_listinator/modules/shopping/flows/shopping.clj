@@ -93,10 +93,10 @@
 (s/defn finish
   [shopping-id :- s/Uuid
    user-id :- s/Uuid
-   {:shopping/keys [main-db rabbitmq http]}]
+   {:shopping/keys [main-db rabbitmq-channel http]}]
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
         shopping (datomic.shopping/get-by-id shopping-id allowed-lists-ids main-db)
         shopping (finished-shopping user-id shopping http)]
     (datomic.shopping/upsert shopping main-db)
-    (publishers.shopping/shopping-finished shopping rabbitmq)))
+    (publishers.shopping/shopping-finished shopping rabbitmq-channel)))
 
