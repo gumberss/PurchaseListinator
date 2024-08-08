@@ -1,6 +1,6 @@
-(ns purchase-listinator.adapters.in.shopping-initiation-test
+(ns purchase-listinator.modules.shopping.adapters.in.shopping-initiation-test
   (:require [clojure.test :refer :all]
-            [purchase-listinator.adapters.in.shopping-initiation :as adapters.in.shopping-initiation]
+            [purchase-listinator.modules.shopping.adapters.in.shopping-initiation :as adapters.in.shopping-initiation]
             [schema.test :as s]))
 
 (def wire-shopping-initiation

@@ -1,6 +1,6 @@
-(ns purchase-listinator.adapters.in.shopping-initiation-data-request-test
+(ns purchase-listinator.modules.shopping.adapters.in.shopping-initiation-data-request-test
   (:require [clojure.test :refer :all]
-            [purchase-listinator.adapters.in.shopping-initiation-data-request :as adapters.in.shopping-initiation-data-request]
+            [purchase-listinator.modules.shopping.adapters.in.shopping-initiation-data-request :as adapters.in.shopping-initiation-data-request]
             [schema.test :as s]))
 
 (def wire-shopping-initiation-data-request

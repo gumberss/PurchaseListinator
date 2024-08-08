@@ -1,4 +1,4 @@
-(ns purchase-listinator.logic.purchase-category-test
+(ns purchase-listinator.modules.shopping.logic.purchase-category-test
   (:require [clojure.test :refer :all]
             [schema.test :as s]
             [purchase-listinator.logic.purchase-category :as logic.purchase-category]))
@@ -37,6 +37,6 @@
     (is (= category-with-items-ordered (logic.purchase-category/sort-items-by-position first-category)))))
 
 (s/deftest sort-by-position-test
-  (testing "Should order catgories by position"
+  (testing "Should order categories by position"
     (is (= [first-category second-category third-category]
            (logic.purchase-category/sort-by-position [third-category second-category first-category])))))
