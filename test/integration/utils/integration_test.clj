@@ -8,13 +8,15 @@
             [purchase-listinator.purchase-listinator-core :as purchase-listinator-core]
             [purchase-listinator.modules.events.core :as modules.events.core]
             [purchase-listinator.modules.price-suggestion.core :as modules.price-suggestion.core]
-            [purchase-listinator.modules.shopping-cart.core :as modules.shopping-cart.core]))
+            [purchase-listinator.modules.shopping-cart.core :as modules.shopping-cart.core]
+            [purchase-listinator.modules.shopping.core :as modules.shopping.core]))
 
 (def module-config-test
   [purchase-listinator-core/module-config-test
    modules.events.core/system-config-test
    modules.price-suggestion.core/system-config-test
    modules.shopping-cart.core/system-config-test
+   modules.shopping.core/system-config-test
    ])
 
 (defn system-config-test

@@ -3,7 +3,7 @@ services:
   purchase_listinator_server:
     container_name: purchase_listinator_server
     restart: always
-    image: gumberss/purchase-listinator:v2
+    image: gumberss/purchase-listinator:v3
     ports:
       - "3000:3000"
     volumes:
@@ -14,7 +14,7 @@ services:
       - rabbitmq
     environment:
       - DATAHIKE_PATH=/usr/purchaselistinator/database
-      - REDIS_HOST=redis
+      - SHOPPING_CART_REDIS_HOST=redis
       - MONGODB_HOST=mongodb
       - RABBITMQ_HOST=rabbitmq
       - ENVIRONMENT_TYPE=prod

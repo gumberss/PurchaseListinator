@@ -33,7 +33,7 @@
 (def system-config
   {:shopping-cart/request-routes request-routes
    :shopping-cart/redis          {:host     (or (System/getenv "SHOPPING_CART_REDIS_HOST") "localhost")
-                                  :port     (or (System/getenv "SHOPPING_CART_REDIS_PORT") 6380)
+                                  :port     (or (some-> (System/getenv "SHOPPING_CART_REDIS_PORT") int) 6379)
                                   :username (or (System/getenv "SHOPPING_CART_REDIS_USERNAME") nil)
                                   :password (or (System/getenv "SHOPPING_CART_REDIS_PASSWORD") "pass")
                                   :timeout  6000}

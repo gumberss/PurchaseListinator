@@ -52,3 +52,22 @@
 (defn new-rabbit-mq-channel
   [config-key]
   (map->RabbitMqChannel {:config-key config-key}))
+
+
+(defrecord RabbitMqChannelFake [config-key config]
+  component/Lifecycle
+  (start [this]
+    this)
+  (stop [this]
+   this)
+  IProducer
+  (publish
+    [producer exchange payload]
+    payload)
+  (publish
+    [producer exchange payload args]
+    payload))
+
+(defn new-rabbit-mq-channel-fake
+  [config-key]
+  (map->RabbitMqChannelFake {:config-key config-key}))
