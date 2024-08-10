@@ -1,5 +1,6 @@
 (ns purchase-listinator.modules.shopping.flows.shopping
   (:require
+    [purchase-listinator.modules.shopping.schemas.models.shopping-list :as models.internal.shopping-list]
     [schema.core :as s]
     [cats.monad.either :refer [left]]
     [clojure.core.async :refer [go <!! <!] :as async]
@@ -49,7 +50,7 @@
       first-near-shopping
       (left {:status 404 :data "not-found"}))))
 
-(s/defn cart-module-management
+(s/defn cart-module-management :- models.internal.shopping-list/ShoppingList
   [list-id :- s/Uuid
    user-id :- s/Uuid
    shopping-id :- s/Uuid
@@ -100,3 +101,14 @@
     (datomic.shopping/upsert shopping main-db)
     (publishers.shopping/shopping-finished shopping rabbitmq-channel)))
 
+(s/defn mark-items
+  [request-id :- s/Uuid
+   shopping-id :- s/Uuid
+   user-id :- s/Uuid
+   image :- s/Str
+   {:shopping/keys [http main-db]}]
+  (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
+        {:keys [list-id]} (datomic.shopping/get-by-id shopping-id allowed-lists-ids main-db)
+        shopping (cart-module-management list-id user-id shopping-id http)
+        response (http.client.shopping/post-interaction request-id shopping image user-id http)]
+    (clojure.pprint/pprint response)))
