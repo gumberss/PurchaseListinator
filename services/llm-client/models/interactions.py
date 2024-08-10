@@ -1,7 +1,8 @@
 from uuid import UUID
+from typing import List
 
 class Interaction:
-    def __init__(self, id: UUID, prompt_name:str, variables:dict, images:dict, message:str = None):
+    def __init__(self, id: UUID, prompt_name:str, variables:dict, images:List[str], message:str = None):
         self.id = id
         self.prompt_name = prompt_name
         self.variables = variables
