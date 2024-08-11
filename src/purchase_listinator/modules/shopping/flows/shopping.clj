@@ -110,5 +110,9 @@
   (let [allowed-lists-ids (http.client.shopping/get-allowed-lists user-id http)
         {:keys [list-id]} (datomic.shopping/get-by-id shopping-id allowed-lists-ids main-db)
         shopping (cart-module-management list-id user-id shopping-id http)
-        response (http.client.shopping/post-interaction request-id shopping image user-id http)]
+        item-ids (http.client.shopping/post-interaction request-id shopping image user-id http)
+        items-marked-by-ia (logic.shopping/get-items shopping item-ids)
+        now (misc.date/numb-now)
+        response (http.client.shopping/post-cart-events-in-batch shopping items-marked-by-ia now user-id http)]
+
     (clojure.pprint/pprint response)))

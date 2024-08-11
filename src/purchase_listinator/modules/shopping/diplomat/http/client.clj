@@ -69,7 +69,20 @@
                                      :result-schema wires.in.cart/Cart})
       (adapters.in.cart/wire->internal)))
 
-(s/defn post-interaction :- models.internal.cart/Cart
+(s/defn post-cart-events-in-batch :- models.internal.cart/Cart
+  [shopping :- models.internal.shopping-list/ShoppingList
+   items :- [models.internal.shopping-list/ShoppingItem]
+   now :- s/Num
+   user-id :- s/Uuid
+   http :- components.http/IHttp]
+  (-> (components.http/request http {:method        :post
+                                     :url           :shopping-cart/receive-events-in-batch
+                                     :user-id       user-id
+                                     :query-params  (adapters.in.cart/items->change-item-event items shopping now)
+                                     :result-schema wires.in.cart/Cart})
+      (adapters.in.cart/wire->internal)))
+
+(s/defn post-interaction :- (s/maybe [s/Uuid])
   [request-id :- s/Uuid
    shopping :- models.internal.shopping-list/ShoppingList
    image :- s/Str

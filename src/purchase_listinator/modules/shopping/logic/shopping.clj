@@ -56,3 +56,9 @@
 (s/defn finish :- models.internal.shopping/Shopping
   [shopping :- models.internal.shopping/Shopping]
   (assoc shopping :status :done))
+
+(s/defn get-items :- [models.internal.shopping-item/ShoppingItem]
+  [shopping :- models.internal.shopping-list/ShoppingList
+   items-ids :- [s/Uuid]]
+  (->> (mapcat :items (:categories shopping))
+       (filter #(contains? (set items-ids) (:id %)))))

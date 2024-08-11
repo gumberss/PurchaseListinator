@@ -41,13 +41,14 @@
    :shopping/mongo            (component/using (components.mongo/new-mongo-fake) [:config])})
 
 (def request-routes
-  {:price-suggestion/items       (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")
-   :purchase-list/allowed-lists  (or (System/getenv "PURCHASE_LIST_URL") "http://localhost:3000/api/lists/allowed")
-   :shopping-cart/receive-events (or (System/getenv "SHOPPING_CART_RECEIVE_EVENTS") "http://localhost:3000/api/shopping-cart/events")
-   :shopping-cart/init-cart      (or (System/getenv "SHOPPING_CART_INITIATE_CART") "http://localhost:3000/api/shopping-cart/initiate")
-   :shopping-cart/cart           (or (System/getenv "SHOPPING_CART_GET_CART") "http://localhost:3000/api/shopping-cart/by/:list-id/:shopping-id")
-   :shopping-cart/exclusive-cart (or (System/getenv "SHOPPING_CART_GET_EXCLUSIVE_CART") "http://localhost:3000/api/shopping-cart/exclusive-by/:list-id/:shopping-id")
-   :llm-client/interactions      (or (System/getenv "LLM_CLIENT_INTERACTION") "http://localhost:3100/api/llm/interactions")})
+  {:price-suggestion/items                (or (System/getenv "PRICE_SUGGESTION_ITEMS_URL") "http://localhost:3000/api/price-suggestion/by/items")
+   :purchase-list/allowed-lists           (or (System/getenv "PURCHASE_LIST_URL") "http://localhost:3000/api/lists/allowed")
+   :shopping-cart/receive-events          (or (System/getenv "SHOPPING_CART_RECEIVE_EVENTS") "http://localhost:3000/api/shopping-cart/events")
+   :shopping-cart/receive-events-in-batch (or (System/getenv "SHOPPING_CART_RECEIVE_EVENTS_IN_BATCH") "http://localhost:3000/api/shopping-cart/batch-events")
+   :shopping-cart/init-cart               (or (System/getenv "SHOPPING_CART_INITIATE_CART") "http://localhost:3000/api/shopping-cart/initiate")
+   :shopping-cart/cart                    (or (System/getenv "SHOPPING_CART_GET_CART") "http://localhost:3000/api/shopping-cart/by/:list-id/:shopping-id")
+   :shopping-cart/exclusive-cart          (or (System/getenv "SHOPPING_CART_GET_EXCLUSIVE_CART") "http://localhost:3000/api/shopping-cart/exclusive-by/:list-id/:shopping-id")
+   :llm-client/interactions               (or (System/getenv "LLM_CLIENT_INTERACTION") "http://localhost:3100/api/llm/interactions")})
 
 
 (def system-config

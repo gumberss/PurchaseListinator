@@ -6,7 +6,7 @@ def run_migration(session):
     VALUES('mark_shopping_items', 'You are an assistant that is helping the customer to mark items on their shopping list, you received a json containing the items with their respective ids, they are the products the customer need to buy, and an image with the items they added on the cart. You must only return a json, nothing more than it. 
 
 
-The list products that the customer has in his list will be presented to you in a json with the name and the id of each product: \{\{products\}\}
+The list products that the customer has in his list will be presented to you in a json with the name and the id of each product: {{products}}
 
 
 You need to:

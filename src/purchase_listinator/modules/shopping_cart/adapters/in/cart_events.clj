@@ -48,3 +48,9 @@
                 :moment moment
                 :user-id user-id)
     (dissoc :event-id)))
+
+(s/defn batch-wire->list-internal :- [internal.cart-events/CartEvent]
+  [wire-list
+   moment :- s/Num
+   user-id :- s/Uuid]
+  (map #(wire->internal % moment user-id) wire-list))

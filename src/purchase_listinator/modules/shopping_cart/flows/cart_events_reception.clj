@@ -15,3 +15,9 @@
       (println e)
       (throw e)))
   event)
+
+(s/defn receive-cart-event-in-batch-by-list
+  [events :- [internal.cart-events/CartEvent]
+   {:keys [shopping-cart/redis]}]
+  (map #(receive-cart-event-by-list % redis) events)
+  events)
