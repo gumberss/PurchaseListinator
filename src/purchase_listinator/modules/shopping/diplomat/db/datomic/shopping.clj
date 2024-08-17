@@ -63,7 +63,7 @@
   [id :- s/Uuid
    allowed-lists-ids :- [s/Uuid]
    {:keys [connection]}]
-  (->> (d/q '[:find (pull ?s [* {:shopping/list [:purchase-list/id]}])
+  (->> (d/q '[:find (pull ?s [*])
               :in $ ?id [?a-l-id ...]
               :where
               [?s :shopping/id ?id]

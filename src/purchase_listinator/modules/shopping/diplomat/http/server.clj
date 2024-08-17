@@ -53,9 +53,22 @@
       (-> (adapters.misc/string->uuid shopping-id)
           (flows.shopping/finish (adapters.misc/string->uuid user-id) component)))))
 
+(s/defn mark-shopping-items
+  [{component                     :component
+    {:keys [shopping-id]}         :path-params
+    {:keys [request-id] :as wire} :json-params
+    user-id                       :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+          (flows.shopping/mark-items (adapters.misc/string->uuid request-id)
+                                     (adapters.misc/string->uuid shopping-id)
+                                     (adapters.misc/string->uuid user-id)
+                                     (:image wire) component))))
+
 (def routes
   #{["/api/shopping/init" :post [init-shopping] :route-name :post-init-shopping]
     ["/api/shopping/init" :get [get-init-shopping-data] :route-name :get-init-shopping-data]
     ["/api/shopping/active/:list-id" :get [active-shopping] :route-name :get-active-shopping]
     ["/api/shopping/list/:shopping-id" :get [get-shopping-list] :route-name :get-in-progress]
-    ["/api/shopping/finish/:shopping-id" :post [finish-shopping] :route-name :finish-shopping]})
+    ["/api/shopping/finish/:shopping-id" :post [finish-shopping] :route-name :finish-shopping]
+    ["/api/shopping/mark-items/:shopping-id" :post [mark-shopping-items] :route-name :mark-shopping-items]})

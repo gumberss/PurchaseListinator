@@ -56,10 +56,22 @@
             cart-event (adapters.in.cart-events/wire->internal wire now user-id)]
         (flows.cart-events-reception/receive-cart-event-by-list cart-event component)))))
 
+(s/defn receive-events-in-batch
+  [{component :component
+    wire-list :json-params
+    user-id   :user-id}]
+  (misc.http/default-branch
+    (misc.either/try-right
+      (let [now (misc.date/numb-now)
+            user-id (adapters.misc/string->uuid user-id)
+            cart-events (adapters.in.cart-events/batch-wire->list-internal wire-list now user-id)]
+        (flows.cart-events-reception/receive-cart-event-in-batch-by-list cart-events component)))))
+
 (def routes
   #{["/api/shopping-cart/version" :get [get-version] :route-name :get-shopping-cart-version]
     ["/api/shopping-cart/initiate" :post [start-cart] :route-name :post-start-cart]
     ["/api/shopping-cart/events" :post [receive-events] :route-name :receive-cart-events]
+    ["/api/shopping-cart/batch-events" :post [receive-events-in-batch] :route-name :receive-cart-events-in-batch]
     ["/api/shopping-cart/by/:list-id/:shopping-id" :get [get-cart] :route-name :get-cart]
     ["/api/shopping-cart/exclusive-by/:list-id/:shopping-id" :get [get-exclusive-cart] :route-name :get-exclusive-cart]})
 
