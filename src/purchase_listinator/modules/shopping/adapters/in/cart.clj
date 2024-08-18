@@ -1,28 +1,26 @@
 (ns purchase-listinator.modules.shopping.adapters.in.cart
   (:require
-    [purchase-listinator.modules.shopping.schemas.models.cart :as models.internal.cart]
     [purchase-listinator.modules.shopping.schemas.models.cart-events :as internal.cart-events]
     [purchase-listinator.modules.shopping.schemas.models.shopping-list :as models.internal.shopping-list]
-    [purchase-listinator.modules.shopping.schemas.wires.in.cart :as wires.in.cart]
     [schema.core :as s]))
 
-(s/defn wire->internal :- models.internal.cart/Cart
-  [wire :- wires.in.cart/Cart]
+(s/defn wire->internal :- [internal.cart-events/CartEvent]
+  [wire :- [internal.cart-events/CartEvent]]
   wire)
 
 (s/defn ^:private item->change-item-event :- internal.cart-events/ChangeItemEvent
-  [{:keys [id quantity quantity-in-cart price ] } :- models.internal.shopping-list/ShoppingItem
-   {:keys [purchase-list-id user-id ] :as  shopping} :- models.internal.shopping-list/ShoppingList
+  [{:keys [id quantity quantity-in-cart price]} :- models.internal.shopping-list/ShoppingItem
+   {:keys [shopping-id user-id] :as shopping-list} :- models.internal.shopping-list/ShoppingList
    now :- s/Num]
-  {:id               id
+  {:event-id         id
    :moment           now
    :event-type       :change-item
    :user-id          user-id
-   :shopping-id      (:id shopping)
+   :shopping-id      shopping-id
    :item-id          id
    :price            price
-   :quantity-changed (- quantity quantity-in-cart)
-   :purchase-list-id purchase-list-id})
+   :quantity-changed (- quantity (or quantity-in-cart 0))
+   :purchase-list-id (:id shopping-list)})
 
 (s/defn items->change-item-event :- [internal.cart-events/ChangeItemEvent]
   [items :- [models.internal.shopping-list/ShoppingItem]

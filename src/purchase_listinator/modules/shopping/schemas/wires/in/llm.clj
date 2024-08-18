@@ -2,7 +2,7 @@
   (:require [schema.core :as s]))
 
 (s/defschema InteractionResponse
-  {:request-id s/Uuid
+  {:request-id s/Str
    :response (s/maybe s/Str)
    :status s/Str
    :details s/Str})

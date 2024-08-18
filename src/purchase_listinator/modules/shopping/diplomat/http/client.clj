@@ -2,6 +2,7 @@
   (:require
     [purchase-listinator.components.http :as components.http]
     [purchase-listinator.modules.shopping.schemas.models.cart :as models.internal.cart]
+    [purchase-listinator.modules.shopping.schemas.models.cart-events :as internal.cart-events]
     [purchase-listinator.modules.shopping.schemas.models.price-suggestion :as models.internal.price-suggestion]
     [purchase-listinator.modules.shopping.schemas.models.shopping-list :as models.internal.shopping-list]
     [purchase-listinator.modules.shopping.schemas.wires.in.llm :as shopping.schemas.wires.in.llm]
@@ -69,18 +70,16 @@
                                      :result-schema wires.in.cart/Cart})
       (adapters.in.cart/wire->internal)))
 
-(s/defn post-cart-events-in-batch :- models.internal.cart/Cart
+(s/defn post-cart-events-in-batch :- [internal.cart-events/CartEvent]
   [shopping :- models.internal.shopping-list/ShoppingList
    items :- [models.internal.shopping-list/ShoppingItem]
    now :- s/Num
    user-id :- s/Uuid
    http :- components.http/IHttp]
-  (-> (components.http/request http {:method        :post
-                                     :url           :shopping-cart/receive-events-in-batch
-                                     :user-id       user-id
-                                     :query-params  (adapters.in.cart/items->change-item-event items shopping now)
-                                     :result-schema wires.in.cart/Cart})
-      (adapters.in.cart/wire->internal)))
+  (components.http/request http {:method  :post
+                                 :url     :shopping-cart/receive-events-in-batch
+                                 :user-id user-id
+                                 :body    (adapters.in.cart/items->change-item-event items shopping now)}))
 
 (s/defn post-interaction :- (s/maybe [s/Uuid])
   [request-id :- s/Uuid

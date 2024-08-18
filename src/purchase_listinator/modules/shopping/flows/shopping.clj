@@ -113,6 +113,6 @@
         item-ids (http.client.shopping/post-interaction request-id shopping image user-id http)
         items-marked-by-ia (logic.shopping/get-items shopping item-ids)
         now (misc.date/numb-now)
-        response (http.client.shopping/post-cart-events-in-batch shopping items-marked-by-ia now user-id http)]
-
-    (clojure.pprint/pprint response)))
+        _response (http.client.shopping/post-cart-events-in-batch shopping items-marked-by-ia now user-id http)
+        final-shopping (cart-module-management list-id user-id shopping-id http)]
+    final-shopping))
