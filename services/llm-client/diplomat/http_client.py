@@ -14,7 +14,6 @@ def complete(rendered_prompt : RenderedPrompt):
             "url": f"data:image/jpeg;base64,{image}"
         }
     } for image in rendered_prompt.images]
-    print(rendered_prompt.prompt)
     completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -30,5 +29,6 @@ def complete(rendered_prompt : RenderedPrompt):
                 }
             ],
         )
+    print(completion.choices[0].message.content)
     return completion.choices[0].message.content
     
